@@ -1,0 +1,259 @@
+\documentclass{article}
+\usepackage[yyyymmdd]{datetime}
+\usepackage[shortlabels]{enumitem}
+\usepackage[nottoc]{tocbibind}
+\usepackage{url}
+\usepackage{geometry}
+\usepackage{xcolor}
+\usepackage{mdframed}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{width=10cm,compat=1.9}
+\usepgfplotslibrary{external}
+\definecolor{pearl}{RGB}{234,224,220}
+\definecolor{bg-se}{RGB}{246, 246, 246}
+\usepackage{listings}
+
+\definecolor{clr-background}{RGB}{255,255,255}
+\definecolor{clr-text}{RGB}{0,0,0}
+\definecolor{clr-string}{RGB}{163,21,21}
+\definecolor{clr-namespace}{RGB}{0,0,0}
+\definecolor{clr-preprocessor}{RGB}{128,128,128}
+\definecolor{clr-keyword}{RGB}{0,0,255}
+\definecolor{clr-type}{RGB}{43,145,175}
+\definecolor{clr-variable}{RGB}{0,0,0}
+\definecolor{clr-constant}{RGB}{111,0,138} % macro color
+\definecolor{clr-comment}{RGB}{0,128,0}
+
+\lstdefinestyle{VS2017}{
+	backgroundcolor=\color{pearl},
+	basicstyle=\color{clr-text}, % any text
+	stringstyle=\color{clr-string},
+	identifierstyle=\color{clr-variable}, % just about anything that isn't a directive, comment, string or known type
+	commentstyle=\color{clr-comment},
+	directivestyle=\color{clr-preprocessor}, % preprocessor commands
+	% listings doesn't differentiate between types and keywords (e.g. int vs return)
+	breakatwhitespace=false,         
+	breaklines=true, 
+	% use the user types color
+	keywordstyle=\color{clr-type},
+	keywordstyle={[2]\color{clr-constant}}, % you'll need to define these or use a custom language
+	tabsize=2
+}
+
+% Make header with name and date etc.
+\usepackage{fancyhdr}
+\lhead{Pedro D. Llerenas\\An\'alisis de Datos I}
+\rhead{\today\\Tarea I}
+\thispagestyle{fancy}
+
+\usepackage[utf8]{inputenc}
+\setlength{\parindent}{0pt} % Don't indent new paragraphs
+\setlength{\headheight}{24pt} 
+
+\newcommand{\Z}{{\mathbb Z}}
+\newcommand{\Q}{\mathbb Q}
+\newcommand{\R}{\mathbb R}
+\newcommand{\C}{\mathbb C}
+
+
+\begin{document}
+	
+	\begin{enumerate}
+		
+		
+		\item Durante el festival Cervantino, se instalan en la Plaza de la Paz de Gto 4 ba\~nos p\'ublicos m\'oviles, uno a lado de otro. Est\'as en la b\'usqueda del ba\~no m\'as limpio. Puedes abrir la puerta de un ba\~no y en base de lo que ves, decidir quedarse con este ba\~no, o explorar el siguiente ba\~no. Como hay gente detr\'as de ti, no puedes regresar a un ba\~no ya visitado.
+		
+		Decides aplicar la siguiente estrategia:
+		\begin{enumerate}[\textbullet]
+			\item abres la puerta del primer ba\~no para ver (nada m\'as) su estado y te diriges despu\'es al segundo ba\~no;
+			\item abres la puerta del segundo ba\~no; si est\'a en mejores condiciones que el primer ba\~no, te quedas con este ba\~no; si no, abres la puerta del tercer ba\~no; si est\'a en mejores condiciones que los dos ba\~nos anteriores, te quedas con este ba\~no; si no, te decides por el cuarto ba\~no.
+		\end{enumerate}
+		Suponiendo que no hay dos ba\~nos en condiciones iguales: ¿cu\'al es la probabilidad de quedarse con el mejor ba\~no? ¿Cu\'ales supuestos hiciste?
+		\begin{mdframed}[
+			linecolor=darkgray,
+			backgroundcolor=pearl]
+			\begin{proof}[\textbf{Demostraci\'on.}]
+				Sean las posiciones de los ba\~nos $X = \{1,2,3,4\}$ y sus condiciones higi\'enicas $Y = \{A,B,C,D\}$, donde $A$ es el m\'as limpio, y $D$ el m\'as sucio. Definimos nuestro espacio muestral como $\Omega = \{(x,y) \in X\times Y \;|\; x_1 \neq x_2 \implies y_1\neq y_2 \}$. Es decir, para dos ba\~nos distintos, su suciedad es distinta.
+				
+				Vamos a calcular la probabilidad de no obtener el mejor ba\~no. Es decir, $P(A^c)$. Para simplificar el problema, podemos ver el conjunto como palabras de 4 letras distintas. Tenemos 4 casos:
+				\begin{enumerate}[a)]
+					\item El primer ba\~no es A.
+					\item El primer ba\~no es B.
+					\item El primer ba\~no es C.
+					\item El primer ba\~no es D.
+				\end{enumerate}
+				En el caso a), es garantizado no obtener el mejor ba\~no. El caso b) nos garantiza elegir el ba\~no A, ya que en cualquier posici\'on es el \'unico que ser\'a mejor que todos los previamente vistos. En el caso c), debemos elegir el ba\~no B, ya que el D es imposible escogerlo, debido a que es el m\'as sucio que los previamente vistos. Para elegir \'este, debe estar antes de A. En el caso d), cualquier configuraci\'on que no sea A en segundo funciona, ya que cualquiera es m\'as limpio que el D.
+				
+				En resumen, para a) tenemos $3!$ casos, para el b) $0$, el c) tiene $3!/2! = 3$ (posiciones en las que B se encuentra antes de A). Finalmente, para d) tenemos $2! + 2! = 4$ casos (A no es segunda posici\'on). En total, $13$ casos en los que no obtenemos el mejor ba\~no, de $4! = 24$ posibles. Entonces,
+				\[ 
+					P(y = A) = 1 - P(y\neq A) = 1 - \frac{13}{24} = \frac{11}{24}.				
+				\]
+			\end{proof}
+		\end{mdframed}
+		\pagebreak		
+		\item Dado $\Omega$, $P$, y ciertos eventos $A$, $B$, $C$. Expresa las siguientes situaciones con operaciones sobre conjuntos (uni\'on, complemento, etc):
+		\begin{enumerate}[a)]
+			\item Los tres eventos ocurren,
+			\item Ocurre al menos un evento,
+			\item Ocurren A o B pero no C.
+		\end{enumerate}
+		\begin{mdframed}[
+			linecolor=darkgray,
+			backgroundcolor=pearl]
+			\begin{proof}[\textbf{Demostraci\'on.}]
+				\begin{enumerate}[a)]
+					
+					\item Los tres eventos ocurren,
+					\[ 
+						\{x\in \Omega : x\in A \wedge x\in B\wedge x\in C\} = \{x\in A\cap B\cap C\}
+					\]
+					
+					\item Ocurre al menos un evento,
+					\[ 
+						\{x\in \Omega : x\in A \vee x\in B\vee x\in C\} = \{x\in A\cup B\cup C\}
+					\]
+					\item Ocurren A o B pero no C
+					\begin{align*}
+						\{x\in \Omega : (x\in A \vee x\in B)\wedge x\notin C\} &= \{x\in \Omega : (x\in A \vee x\in B)\wedge x\in C^c\}\\
+						&= \{x\in (A\cup B)\cap C^c\}\\
+						&= \{x\in (A\cup B)\backslash C\}
+					\end{align*}
+				\end{enumerate}
+			\end{proof}
+		\end{mdframed}
+		
+		\vspace{12pt}
+		
+		\item Se lanzan cuatro dados y se multiplican los n\'umeros que se obtienen. ¿Cu\'al es la probabilidad de que este producto sea divisible por 5?
+		
+		\begin{mdframed}[
+			linecolor=darkgray,
+			backgroundcolor=pearl]
+			\begin{proof}[\textbf{Demostraci\'on.}]
+				Sea $\mathcal D = \{1,2,3,4,5,6\}$. Definimos nuestro espacio muestral como $\Omega = \mathcal D^4$. Entonces, nos interesan los eventos
+				\[ 
+					A = \{(d_1, d_2, d_3, d_4)\in D^4 : 5 | d_1d_2d_3d_4\}
+				\]
+				Para que el producto sea divisible entre 5, por descomposici\'on prima, al menos uno debe ser m\'ultiplo de 5 (ya que 5 es primo). Entonces, esto se reduce a la probabilidad de que al menos un dado sea 5. Analicemos el evento contrario: que ning\'un 5 se presente. Como los dados son independientes, que todos sean distintos de 5 se calcula como
+				\[ 
+					P(C^c) =\frac{5}{6}\cdot \frac{5}{6}\cdot \frac{5}{6}\cdot \frac{5}{6} =  \frac{5^4}{6^4}.
+				\]
+				Entonces, \[ P(C) = 1 - \frac{5^4}{6^4} \approx 0.518. \]
+				
+			\end{proof}
+		\end{mdframed}
+		\pagebreak
+		\item En un campus universitario, el 25 \% de todos los estudiantes programan en Python, el 10 \% programan en C++ y el 5 \% programan en ambos, Python y C++. Te encuentras con un estudiante al azar en el campus. Cu\'al es la probabilidad de que no programe ni en Python ni en C++?
+		\begin{mdframed}[
+			linecolor=darkgray,
+			backgroundcolor=pearl]
+			\begin{proof}[\textbf{Demostraci\'on.}]
+				Sea $\Omega$ el conjunto de estudiantes universitarios. Sea $Y$ el conjunto de estudiantes programan Python y $C$ los que programan en C++. Entonces, $P(Y) = 0.25$, $P(C) = 0.1$ y $P(C\cap Y) = 0.05$. Buscamos $P(C^c\cap Y^c) = P((C\cup Y)^c)$.
+				\begin{align*}
+					P((C\cup Y)^c) &= 1 - P(C\cup Y) \\
+					&= 1 - (P(Y) + P(C) - P(C\cap Y))\\
+					&= 1 - (0.25 + 0.1 - 0.05)\\
+					&= 1 - (0.3)\\
+					&= 0.7
+				\end{align*}
+				Es decir, el 70\% de los estudiantes no programan en ninguno de los dos lenguajes.				
+			\end{proof}
+		\end{mdframed}
+		
+		\vspace{12pt}
+		
+		\item Supongamos que $A \subset B \subset C$. Indica para cada una de las siguientes afirmaciones si siempre es cierta o no. Da un contraejemplo cuando no es cierta y demu\'estralo si es cierta.
+		\begin{enumerate}[a)]
+			\item $P(A|B) \leq P(A)$
+			\item $P(B^c) \leq P(A^c)$
+			\item $P(A) = P(A|B) P(B|C) P(C)$
+		\end{enumerate}
+		
+		\begin{mdframed}[
+			linecolor=darkgray,
+			backgroundcolor=pearl]
+			\begin{proof}[\textbf{Demostraci\'on.}]
+				\begin{enumerate}[a)]
+					\item $P(A|B) \leq P(A)$ es falso. De hecho, probamos lo contrario. Dado que $A\subset B$, tenemos $A\cap B = A$. Entonces,
+					\begin{align*}
+						P(A|B) &= \frac{P(A\cap B)}{P(B)}\\
+						&= \frac{P(A)}{P(B)}\\
+						&\geq P(A),
+					\end{align*}
+					donde el \'ultimo paso sigue de $$0<P(B)\leq 1 \implies 1\leq \frac{1}{P(B)} < \infty\implies P(A)\leq \frac{P(A)}{P(B)}.$$
+					\item $P(B^c) \leq P(A^c)$ es verdadero. Tenemos $A\subset B$, notemos que
+					\[ \{x\in B^c\} \iff \{x\notin B\} \implies  \{x\notin A\} \iff \{x\in A^c\}. \]
+					Esto es, $B^c \subset A^c$. Esto implica $P(B^c) \leq P(A^c)$.
+					\item $P(A) = P(A|B) P(B|C) P(C)$ es verdadero:
+					\begin{align*}
+						P(A|B) P(B|C) P(C) &= \frac{P(A\cap B)}{P(B)} \frac{P(B\cap C)}{P(C)} P(C)\\
+						&=  \frac{P(A)}{P(B)} \frac{P(B)}{P(C)} P(C)\\
+						&= P(A).
+					\end{align*}
+				\end{enumerate}			
+			\end{proof}
+		\end{mdframed}
+		\vspace{12pt}
+		\item Elige al azar $b, c \in [0, 1]$ de manera independiente. ¿C\'ual es la probabilidad que $x^2 + 2bx + c = 0$ tenga dos raices reales?
+		
+		\begin{mdframed}[
+			linecolor=darkgray,
+			backgroundcolor=pearl]
+			\begin{proof}[\textbf{Demostraci\'on.}]
+				Nuestro conjunto de valores es $\Omega = [0,1]^2$. Queremos $b,c$ tal que \[ 4b^2-4c \geq 0. \] Esto es, que el discriminante del polinomio cuadr\'atico sea positivo. Como $b,c \geq 0$, la expresi\'on es equivalente a \[ b\geq \sqrt{c} \] con gr\'afica.
+				 
+				\begin{center}
+						\begin{tikzpicture}
+						\begin{axis}
+							\addplot[color=purple, thick, domain=0:1, samples=200, xlabel={$c$}, ylabel={$b$}]{sqrt(x)};
+							\legend{b=$\sqrt{c}$}
+						\end{axis}
+					\end{tikzpicture}
+				\end{center}
+				
+				Nos interesa el \'area arriba de la curva, que no sobrepase $b=1$. Es decir,
+				\[  
+					\int_0^q \sqrt{c} \;dc = \frac{2}{3}q^{3/2},
+				\]
+				donde $q\in \R_{+}$ es el punto tal que $\sqrt{q} = 1$. Por lo tanto, $q = 1$. Entonces, tenemos
+				\[  
+					\int_0^{1} \sqrt{c} \;dc = \frac{2}{3}.
+				\]
+				Entonces, el area arriba de la curva es
+				\[  
+				\int_0^{1} 1 - \sqrt{c}\; dc = 1 - \frac{2}{3} = \frac{1}{3}.
+				\]
+			\end{proof}
+		\end{mdframed}
+		
+		\vspace{12pt}
+		
+		\item Tomamos dos n\'umeros $x, y$ al azar de $[0, 1]$ y de manera independiente. Si sabemos que su suma es menor que 1, calcula la probabilidad que $\max(x, y) < 0,2$.
+		\begin{mdframed}[
+			linecolor=darkgray,
+			backgroundcolor=pearl]
+			\begin{proof}[\textbf{Demostraci\'on.}]
+				Nuestro conjunto de valores es $\Omega = [0,1]^2$. Notemos que la condici\'on $x+y<1$ equivale a $y<1-x$, que se traduce a la gr\'afica siguiente:
+				
+				\begin{center}
+					\begin{tikzpicture}
+						\begin{axis}
+							\addplot[color=purple, thick, domain=0:1, samples=200, xlabel={$x$}, ylabel={$y$}]{1-x};
+							\legend{y=$1-x$}
+						\end{axis}
+					\end{tikzpicture}
+				\end{center}
+				
+				Entonces, sean $A = \{(x,y)\in [0,1]^2 : \max(x,y) < 0.2\}$ y $B = \{(x,y)\in [0,1]^2 : x+y<1\}$. Podemos adem\'as notar que \[ A = \{(x,y)\in [0,0.2)^2\}. \] Con estas representaciones, es f\'acil ver que $A\subset B$. Por lo tanto, tenemos
+				\begin{align*}
+					P(A|B) &= \frac{P(A\cap B)}{P(B)}\\ &= \frac{P(A)}{P(B)}\\ &= \frac{0.2^2}{0.5}\\ &= \frac{0.04}{0.5}\\ &= 2\cdot 0.04\\ &= 0.08.
+				\end{align*} 
+			\end{proof}
+		\end{mdframed}
+	\end{enumerate}
+\end{document}

@@ -1,0 +1,33 @@
+\begin{thebibliography}{1}
+
+\bibitem{cppreference:arithmetic_types}
+{cppreference.com}.
+\newblock Arithmetic types --- {Boolean type}, 2025.
+\newblock Accessed: 2025-08-20.
+
+\bibitem{cppreference:std_streams}
+{cppreference.com}.
+\newblock std-streams, 2025.
+\newblock Accessed: 2025-08-20.
+
+\bibitem{cppreference:fprintf}
+{cppreference.com}.
+\newblock \texttt{fprintf}, 2025.
+\newblock Accessed: 2025-08-20.
+
+\bibitem{cppreference:fscanf}
+{cppreference.com}.
+\newblock \texttt{fscanf}, 2025.
+\newblock Accessed: 2025-08-20.
+
+\bibitem{cppreference:vfprintf}
+{cppreference.com}.
+\newblock \texttt{vfprintf}, 2025.
+\newblock Accessed: 2025-08-20.
+
+\bibitem{cppreference:vfscanf}
+{cppreference.com}.
+\newblock \texttt{vfscanf}, 2025.
+\newblock Accessed: 2025-08-20.
+
+\end{thebibliography}

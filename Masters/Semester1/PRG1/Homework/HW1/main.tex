@@ -1,0 +1,200 @@
+\documentclass{article}
+\usepackage[yyyymmdd]{datetime}
+\usepackage[shortlabels]{enumitem}
+\usepackage[nottoc]{tocbibind}
+\usepackage{url}
+\usepackage{geometry}
+\usepackage{xcolor}
+\usepackage{mdframed}
+\usepackage{amsfonts}
+\definecolor{pearl}{RGB}{234,224,220}
+\definecolor{bg-se}{RGB}{246, 246, 246}
+\usepackage{listings}
+
+\definecolor{clr-background}{RGB}{255,255,255}
+\definecolor{clr-text}{RGB}{0,0,0}
+\definecolor{clr-string}{RGB}{163,21,21}
+\definecolor{clr-namespace}{RGB}{0,0,0}
+\definecolor{clr-preprocessor}{RGB}{128,128,128}
+\definecolor{clr-keyword}{RGB}{0,0,255}
+\definecolor{clr-type}{RGB}{43,145,175}
+\definecolor{clr-variable}{RGB}{0,0,0}
+\definecolor{clr-constant}{RGB}{111,0,138} % macro color
+\definecolor{clr-comment}{RGB}{0,128,0}
+
+\lstdefinestyle{VS2017}{
+	backgroundcolor=\color{pearl},
+	basicstyle=\color{clr-text}, % any text
+	stringstyle=\color{clr-string},
+	identifierstyle=\color{clr-variable}, % just about anything that isn't a directive, comment, string or known type
+	commentstyle=\color{clr-comment},
+	directivestyle=\color{clr-preprocessor}, % preprocessor commands
+	% listings doesn't differentiate between types and keywords (e.g. int vs return)
+	breakatwhitespace=false,         
+	breaklines=true, 
+	% use the user types color
+	keywordstyle=\color{clr-type},
+	keywordstyle={[2]\color{clr-constant}}, % you'll need to define these or use a custom language
+	tabsize=2
+}
+
+% Make header with name and date etc.
+\usepackage{fancyhdr}
+\lhead{Pedro D. Llerenas\\Programaci\'on y Algoritmos I}
+\rhead{\today\\Tarea I}
+\thispagestyle{fancy}
+
+\usepackage[utf8]{inputenc}
+\setlength{\parindent}{0pt} % Don't indent new paragraphs
+\setlength{\headheight}{24pt} 
+
+\newcommand{\Z}{{\mathbb Z}}
+\newcommand{\Q}{\mathbb Q}
+\newcommand{\R}{\mathbb R}
+\newcommand{\C}{\mathbb C}
+
+
+\begin{document}
+	
+	\begin{enumerate}
+		\item
+		\begin{enumerate}[(a)]
+			\item Describa el funcionamiento general del Sistema Operativo. Referencia: Relationship between Operating System, Computer Hardware, Application Software, and Other Software; An Overview of Computer Operating Systems and Emerging Trends
+			\item Ventajas y desventajas de la programación Multicore y Multiprocesadores: \url{https://www.tutorialspoint.com/multiprocessor-and-multicore-organization}.
+			
+		\end{enumerate}
+
+	
+		\vspace{12pt}
+		
+		\item
+		\begin{enumerate}[(a)]
+			\item ¿Cuál es la diferencia entre los formatos \texttt{\%i} y \texttt{\%d}? Dé un ejemplo.
+			\begin{mdframed}[
+				linecolor=darkgray,
+				backgroundcolor=pearl]
+				Cuando se especifica el formato en las funciones
+				\begin{itemize}
+					\item \texttt{scanf}
+					\item \texttt{fscanf}
+					\item \texttt{sscanf}
+					\item \texttt{scanf\_s}
+					\item \texttt{fscanf\_s}
+					\item \texttt{sscanf\_s}
+					\item \texttt{vscanf}
+					\item \texttt{vfscanf}
+					\item \texttt{vsscanf}
+					\item \texttt{vscanf\_s}
+					\item \texttt{vfscanf\_s}
+					\item \texttt{vsscanf\_s},
+				\end{itemize}
+				la diferencia entre \texttt{\%i} y \texttt{\%d} es la base que asume en la que se escribio el n\'umero insertado por el usuario. \texttt{\%d} asume que es un n\'umero decimal (base 10), mientras que \texttt{\%i} infieire la base. Es decir, si insertamos \texttt{29}, asume base 10, mientras que si insertamos \texttt{0x1D} asume base 16. Ver  \cite{cppreference:fscanf, cppreference:vfscanf}.
+				
+				Por otra parte, estos son equivalentes al usar las funciones de output e.g. \texttt{printf} \cite{cppreference:fprintf, cppreference:vfprintf}.
+			\end{mdframed}
+			\vspace{12pt}
+			\item ¿Cuál es la diferencia entre la declaración \texttt{bool} y \texttt{\_Bool} en C?
+			\begin{mdframed}[
+				linecolor=darkgray,
+				backgroundcolor=pearl]
+				Previo a C23, \texttt{bool} no era reconocida como una palabra reservada (keyword), por lo que se deb\'ia importar \texttt{stdbool.h} para que fuese reconocida como una palabra reservada. El prop\'osito de \texttt{bool} es simplemente ser mapeada (es decir, un macro) a \texttt{\_Bool}, que ha existido dato primitivo desde la primer versi\'on de C. Asimismo, \texttt{true} era un macro para 1, mientras que \texttt{false} era un macro para 0.
+				
+				En C23, ya no es necesario el uso de \texttt{stdbool.h}, ya que \texttt{bool} es una palabra reservada. \cite{cppreference:arithmetic_types}
+			\end{mdframed}
+		\end{enumerate}
+	
+		\vspace{12pt}
+	
+		\item
+		\begin{enumerate}[(a)]
+			\item ¿Qué pasa si al leer un entero con scanf(), el usuario teclea el número seguido con una letra? Ejem: 67f, ¿Cómo explica el resultado?
+			\begin{mdframed}[
+				linecolor=darkgray,
+				backgroundcolor=pearl]
+				\texttt{stdin}, que es de tipo FILE*, es el lugar donde se guarda lo que insertamos a la consola. Lo que hace \texttt{scanf} con formato \texttt{\%d} es buscar, comenzando por el primer caracter al que apunta \texttt{stdin}, un entero v\'alido. Este se detiene cuando ya no se apunta a lo que considera parte del entero. En este caso, lee \texttt{67}, y reconoce que el char \texttt{f} ya no forma parte del formato que especificamos. Sin embargo, el char \texttt{f} sigue en \texttt{stdin}, y es el caracter que queda apuntado.
+			\end{mdframed}
+			\vspace{12pt}
+			\item Enseguida de la instrucción anterior, añada ahora la lectura de un carácter, ¿Qué pasa y cómo explica este comportamiento?
+			\begin{mdframed}[
+				linecolor=darkgray,
+				backgroundcolor=pearl]
+				Retomando de la respuesta anterior, ahora el siguiente \texttt{scanf} lee de \texttt{stdin}, que por lo que dijimos, apunta a algo no nulo. En este caso, al char \texttt{f}. Entonces, \texttt{scanf} lee el char \texttt{f} \cite{cppreference:std_streams}.
+			\end{mdframed}
+		\end{enumerate}
+		\vspace{12pt}
+		\item
+		Programa que realice una operaci\'on aritm\'etica especificada entre dos fracciones. La entrada debe ser de la forma: $a/b \oplus c/b$, donde $\oplus \in \{+, -, *, /\}$.
+		\begin{mdframed}[
+			linecolor=darkgray,
+			backgroundcolor=pearl]
+			Para compilar este codigo, hacer \texttt{gcc p4.c} y correr directamente, sin argumentos de consola. Adentro, habr\'a un ciclo infinito que permite al usuario teclear fracciones en formato $a/b(*,+,-,/)c/d$ y ver su resultado. Por ejemplo, introducir 
+			\texttt{1/2*2/4} imprime
+			\texttt{1/2*2/4 = 2/8 = 0.250000}. 
+			
+			El programa imprime errores cuando se introducen caracteres incorrectos al scanf o un operador no reconocible.
+			\lstinputlisting[caption=Programa que realiza operaciones de fracciones, language=C, style=VS2017]{p4.c}
+			
+		\end{mdframed}
+		
+		
+		\vspace{12pt}
+		
+		
+		\item
+		Programa que imprima un n\'umero entero dado de $n$ digitos al rev\'es.
+		\vspace{12pt}
+		\begin{mdframed}[
+			linecolor=darkgray,
+			backgroundcolor=pearl]
+			
+			Para compilar el programa, usar gcc p5.c y ejecutar sin argumentos de consola. El programa lee un string y recorre el arreglo en direcci\'on contraria, imprimiendo el entero al rev\'es. Tomamos como maximo 10 digitos, ya que $2^31-1$ tiene 10 digitos.
+			
+			\lstinputlisting[caption=Programa que imprime un n\'umero entero al rev\'es, language=C, style=VS2017]{p5.c}
+		\end{mdframed}
+		
+		
+		\item Programa que eval\'ue la expresi\'on
+		\[ 
+			e^{-x^2} = \sum_{n=0}^{\infty} \frac{(-1)^n}{n!}x^{2n}.		
+		\] 
+		Debe pedir el n\'umero de t\'erminos a evaluar.
+		
+		\begin{mdframed}[
+			linecolor=darkgray,
+			backgroundcolor=pearl]
+			Para compilar, usar \texttt{gcc p6.c} y ejecutar sin argumentos de consola. El programa primero pide un punto de precisi\'on doble, luego un n\'umero natural $n$ de t\'erminos que se usar\'an para aproximar $\exp(-x^2)$.
+			\lstinputlisting[caption=Programa que calcula la serie de $\exp(-x^2)$, language=C, style=VS2017]{p6.c}
+		\end{mdframed}
+		
+		\vspace{12pt}
+		
+		
+		
+		\item Programa que convierta un n\'umero decimal a cualquier base.
+		\begin{mdframed}[
+			linecolor=darkgray,
+			backgroundcolor=pearl]
+			Para compilar, usar \texttt{gcc p7.c}, ejecutar sin argumentos de consola. El programa pedir\'a un numero decimal y una base a la cual convertir. Por ejemplo, insertar \texttt{24.3 5} imprime
+			\texttt{24.299999 base 10 = 44.1222222210 base 5}. La parte fraccionaria tiene un limite de 10 iteraciones para converger, si no, hay una truncaci\'on.
+			
+			\lstinputlisting[caption=Programa que convierte un n\'umero decimal a uno de cualquier base, language=C, style=VS2017]{p7.c}
+		\end{mdframed}
+		
+		
+		\vspace{12pt}
+		
+		
+		
+		\item Programa que acepte una fracci\'on del tipo $a/b$ tal que $a/b\in \Z$ y la convierta a una fracci\'on irreducible.
+		\begin{mdframed}[
+			linecolor=darkgray,
+			backgroundcolor=pearl]
+			Compilar con \texttt{gcc p8.c}, correr sin argumentos de consola. Inicia pidiendo una fracci\'on en forma $a/b$, si el formato es correcto, calcula la fracci\'on simplificada. Si no, no imprime nada. Utiliza el algoritmo de Euclides para calcular el gcd, luego divide numerador y denominador entre ese t\'ermino. Usamos \texttt{long int} para permitir n\'umeros de mayor magnitud.  
+			\lstinputlisting[caption=Programa que simplifica una fracci\'on usando el algoritmo de Euclides, language=C, style=VS2017]{p8.c}
+		\end{mdframed}
+	\end{enumerate}
+	
+	\bibliographystyle{plain}
+	\bibliography{references}
+	
+\end{document}
