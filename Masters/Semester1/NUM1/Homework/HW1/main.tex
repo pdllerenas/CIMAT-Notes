@@ -77,10 +77,26 @@
 			      Usaremos 16 bits en total. 1 para el signo, 3 para el exponente, 12 para la mantisa. Esto nos genera n\'umeros en el rango
 			      \[ [-1*2^7*(2^{12} - 1), 2^7*(2^{12} - 1)] = [-524160, 524160] \]
 
-			      \lstinputlisting[caption=Calcular epsilon de la m\'aquina, language=C, style=VS2017]{p1.c}
+			      \lstinputlisting[caption=Generaci\'on de n\'umeros posibles con el sistema elegido. Fraccionario y entero., language=C, style=VS2017]{p1.c}
 
 
-			      el c\'odigo anterior genera un csv con todos los valores (positivos) posibles de la representaci\'on elegida.
+			      el c\'odigo anterior genera un csv con todos los valores (positivos) posibles de la representaci\'on elegida. En la siguiente tabla, presentamos algunos valores. La columna representa el exponente por que se multiplica el binario. 
+
+			      \begin{center}
+				      \begin{tabular}{c|cccccccc}
+					      \textbf{binary} & $2^{0}$ & $2^{1}$ & $2^{2}$ & $2^{3}$ & $2^{4}$ & $2^{5}$ & $2^{6}$ & $2^{7}$ \\ \hline
+					      000000000001    & 1       & 2       & 4       & 8       & 16      & 32      & 64      & 128     \\
+					      000000000010    & 2       & 4       & 8       & 16      & 32      & 64      & 128     & 256     \\
+					      000000000011    & 3       & 6       & 12      & 24      & 48      & 96      & 192     & 384     \\
+					      000000000100    & 4       & 8       & 16      & 32      & 64      & 128     & 256     & 512     \\
+					      000000000101    & 5       & 10      & 20      & 40      & 80      & 160     & 320     & 640     \\
+					      000000000110    & 6       & 12      & 24      & 48      & 96      & 192     & 384     & 768     \\
+					      000000000111    & 7       & 14      & 28      & 56      & 112     & 224     & 448     & 896     \\
+					      000000001000    & 8       & 16      & 32      & 64      & 128     & 256     & 512     & 1024    \\
+					      \vdots          & \vdots  & \vdots  & \vdots  & \vdots  & \vdots  & \vdots  & \vdots  & \vdots  \\
+					      111111111111    & 4095    & 8190    & 16380   & 32760   & 65520   & 131040  & 262080  & 524160
+				      \end{tabular}
+			      \end{center}
 
 			      Para el sistema fraccionario, definimos el bit implicito como
 
@@ -97,8 +113,24 @@
 					      \texttt{exp} = 2            & \texttt{if } \texttt{exp} = 0
 				      \end{cases}
 			      $$
-			      de esta manera, obtenemos los valores que
-
+			      de esta manera, obtenemos los valores
+			      \begin{center}
+				      \resizebox{\textwidth}{!}{
+					      \begin{tabular}{c|cccccccc}
+						      \textbf{binary} & $2^{0}$  & $2^{1}$  & $2^{2}$  & $2^{3}$  & $2^{4}$   & $2^{5}$   & $2^{6}$   & $2^{7}$    \\ \hline
+						      000000000000    & 0.000244 & 0.000488 & 0.000977 & 0.001953 & 0.003906  & 0.007812  & 0.015625  & 0.031250   \\
+						      000000000001    & 0.000488 & 0.000977 & 0.001953 & 0.003906 & 0.007812  & 0.015625  & 0.031250  & 0.062500   \\
+						      000000000010    & 0.000732 & 0.001465 & 0.002930 & 0.005859 & 0.011719  & 0.023437  & 0.046875  & 0.093750   \\
+						      000000000011    & 0.000977 & 0.001953 & 0.003906 & 0.007812 & 0.015625  & 0.031250  & 0.062500  & 0.125000   \\
+						      000000000100    & 0.001221 & 0.002441 & 0.004883 & 0.009766 & 0.019531  & 0.039062  & 0.078125  & 0.156250   \\
+						      000000000101    & 0.001465 & 0.002930 & 0.005859 & 0.011719 & 0.023437  & 0.046875  & 0.093750  & 0.187500   \\
+						      000000000110    & 0.001709 & 0.003418 & 0.006836 & 0.013672 & 0.027344  & 0.054687  & 0.109375  & 0.218750   \\
+						      000000000111    & 0.001953 & 0.003906 & 0.007812 & 0.015625 & 0.031250  & 0.062500  & 0.125000  & 0.250000   \\
+						      \vdots          & \vdots   & \vdots   & \vdots   & \vdots   & \vdots    & \vdots    & \vdots    & \vdots     \\
+						      111111111111    & 1.000000 & 2.000000 & 4.000000 & 8.000000 & 15.000000 & 32.000000 & 64.000000 & 128.000000\\
+					      \end{tabular}
+				      }
+			      \end{center}
 		      \end{proof}
 	      \end{mdframed}
 
@@ -116,28 +148,28 @@
 			      linecolor=darkgray,
 		      ]
 		      \begin{proof}[\textbf{Demostraci\'on.}]
-            Primero mostraremos que utilizar directamente la secuencia resulta en los t\'erminos divergiendo a infinito debido a los errores de precisi\'on de punto flotante. 
-            Podemos notar que la secuencia puede ser reescrita de tal manera que la cantidad de restas (2) se puede reducir a 1. 
-            \begin{align*}
-              x_{n+1} &= 2^{n-1/2} \sqrt{1-\sqrt{1-4^{1-n}x^2_n}}\\
-                     &= 2^{n-1/2} \sqrt{1-\sqrt{1-4^{1-n}x^2_n}} \cdot\frac{\sqrt{1-\sqrt{1+4^{1-n}x^2_n}}}{\sqrt{1+\sqrt{1-4^{1-n}x^2_n}}}\\
-                     &= 2^{n-1/2}\frac{\sqrt{1-(1-4^{1-n}x^2_n)}}{\sqrt{1-\sqrt{1+4^{1-n}x^2_n}}} \\
-                     &= 2^{n-1/2} \frac{2^{1-n}x_n}{\sqrt{1-\sqrt{1+4^{1-n}x^2_n}}}\\
-                     &= \frac{\sqrt{2}x_n}{\sqrt{1-\sqrt{1+4^{1-n}x^2_n}}}.
-            \end{align*}
+			      Primero mostraremos que utilizar directamente la secuencia resulta en los t\'erminos divergiendo a infinito debido a los errores de precisi\'on de punto flotante.
+			      Podemos notar que la secuencia puede ser reescrita de tal manera que la cantidad de restas (2) se puede reducir a 1.
+			      \begin{align*}
+				      x_{n+1} & = 2^{n-1/2} \sqrt{1-\sqrt{1-4^{1-n}x^2_n}}                                                                            \\
+				              & = 2^{n-1/2} \sqrt{1-\sqrt{1-4^{1-n}x^2_n}} \cdot\frac{\sqrt{1-\sqrt{1+4^{1-n}x^2_n}}}{\sqrt{1+\sqrt{1-4^{1-n}x^2_n}}} \\
+				              & = 2^{n-1/2}\frac{\sqrt{1-(1-4^{1-n}x^2_n)}}{\sqrt{1-\sqrt{1+4^{1-n}x^2_n}}}                                           \\
+				              & = 2^{n-1/2} \frac{2^{1-n}x_n}{\sqrt{1-\sqrt{1+4^{1-n}x^2_n}}}                                                         \\
+				              & = \frac{\sqrt{2}x_n}{\sqrt{1-\sqrt{1+4^{1-n}x^2_n}}}.
+			      \end{align*}
 			      \lstinputlisting[caption=Calcular secuencia de n\'umeros que se acerca a $\pi$, language=C, style=VS2017]{p2.c}
 
-            \begin{figure}[H]
-             \caption{Secuencia usando algoritmo ingenuo}
+			      \begin{figure}[H]
+				      \caption{Secuencia usando algoritmo ingenuo}
 				      \includegraphics[width=\textwidth]{naive_pi_approx}
-            \end{figure}
+			      \end{figure}
 
-            \begin{figure}[H]
-             \caption{Secuencia usando algoritmo reduciendo restas}
+			      \begin{figure}[H]
+				      \caption{Secuencia usando algoritmo reduciendo restas}
 				      \includegraphics[width=\textwidth]{pi_approx}
-            \end{figure}
-              
-            Como podemos observar, el segundo algoritmo (que reduce el numero de restas), se mantiene cerca de $\pi$, mientras que el ingenuo explota y diverge a infinito.
+			      \end{figure}
+
+			      Como podemos observar, el segundo algoritmo (que reduce el numero de restas), se mantiene cerca de $\pi$, mientras que el ingenuo explota y diverge a infinito.
 		      \end{proof}
 	      \end{mdframed}
 
