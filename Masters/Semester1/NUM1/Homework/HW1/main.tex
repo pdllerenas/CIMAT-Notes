@@ -52,7 +52,7 @@
 
 % Make header with name and date etc.
 \usepackage{fancyhdr}
-\lhead{Pedro D. Llerenas\\An\'alisis de Datos I}
+\lhead{Pedro D. Llerenas\\M\'etodos Numericos}
 \rhead{\today\\Tarea I}
 \thispagestyle{fancy}
 
@@ -68,11 +68,7 @@
 
 
 \begin{document}
-<<<<<<< HEAD
-
 \begin{enumerate}
-
-
 	\item Como es bien sabido, la representaci\'on num\'erica binaria de tipo signo/exponente/mantisa, depende de la creatividad o precisi\'on que desee el programador. Analicemos qu\'e sucede con un sistema de numeraci\'on binario a $n>0$ (entero) bits, para esto elige un valor par entre 10 y 20, crea el sistema de numeraci\'on entero similar al estudiado en clase, (la mantisa debe ser, al menos, la mitad del n\'umero elegido). Describe tu sistema de numeraci\'on, ¿Cu\'al es el menor y mayor de los n\'umeros representados? Presenta un n\'umero que no se pueda representar en tu sistema seleccionado. Describe tu proceso. (4 pts) NOTA: punto extra si adem\'as se describe un sistema fraccionario que tenga sentido.
 	      \begin{mdframed}[
 			      linecolor=darkgray,
@@ -220,56 +216,5 @@
 	      \end{mdframed}
 
 \end{enumerate}
-=======
 	
-	\begin{enumerate}
-		
-		
-		\item Como es bien sabido, la representaci\'on num\'erica binaria de tipo signo/exponente/mantisa, depende de la creatividad o precisi\'on que desee el programador. Analicemos qu\'e sucede con un sistema de numeraci\'on binario a $n>0$ (entero) bits, para esto elige un valor par entre 10 y 20, crea el sistema de numeraci\'on entero similar al estudiado en clase, (la mantisa debe ser, al menos, la mitad del n\'umero elegido). Describe tu sistema de numeraci\'on, ¿Cu\'al es el menor y mayor de los n\'umeros representados? Presenta un n\'umero que no se pueda representar en tu sistema seleccionado. Describe tu proceso. (4 pts) NOTA: punto extra si adem\'as se describe un sistema fraccionario que tenga sentido.
-		\begin{mdframed}[
-			linecolor=darkgray,
-			backgroundcolor=pearl]
-			\begin{proof}[\textbf{Demostraci\'on.}]
-				Usaremos 16 bits en total. 1 para el signo, 3 para el exponente, 12 para la mantisa. Esto nos genera n\'umeros en el rango
-				\[ [-1*2^7*(2^{12} - 1), 2^7*(2^{12} - 1)] = [-524160, 524160] \]
-			\end{proof}
-		\end{mdframed}
-		
-		\item Consideremos la siguiente sucesi\'on $\{x_n\}_{n\in \N} \subset \R$ definida de manera recurrente como: (4 pts)
-		\begin{align*}
-			x_2&=2,\\
-			x_{n+1} &= 2^{n-\frac{1}{2}}\sqrt{1-\sqrt{1-4^{1-n}x^2_n}}
-		\end{align*}
-		\begin{enumerate}
-			\item Escribe un programa para encontrar los primeros $n$ t\'erminos de la sucesi\'on.
-			\item Aplica tu programa para encontrar los t\'erminos de la sucesi\'on cuando $n = 6, 7, 8, 9, 10, 12, 18, 20$, ¿a qu\'e valor tiende la sucesi\'on? (\'esta sucesi\'on tiende a un valor distinto de cero).
-			\item Encuentra los t\'erminos 50 y 100, ¿qu\'e sucede con la sucesi\'on? Grafica los t\'erminos de la sucesi\'on desde 2 hasta 100. Explica detalladamente el por qu\'e del comportamiento que tiene la computadora al calcular estos t\'erminos.
-		\end{enumerate}
-		\begin{mdframed}[
-			linecolor=darkgray,
-			backgroundcolor=pearl]
-			\begin{proof}[\textbf{Demostraci\'on.}]
-				Para eficientizar los calculos, guardamos el \'ultimo valor de la sucesi\'on y algunas otras constantes que consisten de una operaci\'on b\'asica. 
-        Notemos que adem\'as, podemos reescribir el t\'ermino para evitar restas. Esto nos permite reducir los errores acumulados.
-				\lstinputlisting[caption=Calcular epsilon de la m\'aquina, language=C, style=VS2017]{p2.c}
-			\end{proof}
-		\end{mdframed}
-		
-		
-		\item Al n\'umero representable inmediatamente despu\'es de la unidad se le conoce como el epsil\'on de la computadora
-		machine el cual nos permite calcular el n\'umero real representable inmediatamente posterior; \'esto se obtiene
-		al multiplicar el epsil\'on por el real y sumarlo a ese real. Utilizando el siguiente algoritmo, crea un c\'odigo
-		que calcule el machine de tu computadora, s\'olo hace falta indicar el tipo de variable que es "epsilon" (float o
-		doble). El \'ultimo valor impreso corresponde al epsilon de la computadora. (2 pts)
-		\begin{mdframed}[
-			linecolor=darkgray,
-			backgroundcolor=pearl]
-			\begin{proof}[\textbf{Demostraci\'on.}]
-				Despu\'es de 52 iteraciones, obtenemos que $$\epsilon = 0.0000000000000002220446 = 2.22046\times10^{-16} \approx 2^{-52}$$.
-				\lstinputlisting[caption=Calcular epsilon de la m\'aquina, language=C, style=VS2017]{p3.c}
-			\end{proof}
-		\end{mdframed}
-		
-	\end{enumerate}
->>>>>>> e754a4e (notes)
 \end{document}

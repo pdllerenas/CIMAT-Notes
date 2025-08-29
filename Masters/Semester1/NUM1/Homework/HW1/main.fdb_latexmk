@@ -1,12 +1,7 @@
 # Fdb version 4
-<<<<<<< HEAD
-["pdflatex"] 1756340140.77947 "main.tex" "main.pdf" "main" 1756340141.93295 0
-  "/etc/texmf/web2c/texmf.cnf" 1755728201.00949 475 c0e671620eb5563b2130f56340a5fde8 ""
-=======
-["pdflatex"] 1756315650.70198 "main.tex" "main.pdf" "main" 1756315651.75119 0
+["pdflatex"] 1756486991.4818 "main.tex" "main.pdf" "main" 1756486992.90598 0
   "/etc/texmf/web2c/texmf.cnf" 1756085686.62432 475 c0e671620eb5563b2130f56340a5fde8 ""
   "/home/pllerenas/.texlive2023/texmf-var/fonts/pk/ljfour/jknappen/ec/tcrm1000.600pk" 1756314319.21135 11524 c081fd178430b7834f281df43fc37b74 ""
->>>>>>> e754a4e (notes)
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/jknappen/ec/tcrm1000.tfm" 1136768653 1536 e07581a4bb3136ece9eeb4c3ffab8233 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm" 1246382020 1004 54797486969f23fa377b128694d548df ""
@@ -18,11 +13,8 @@
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm7.tfm" 1246382020 940 228d6584342e91276bf566bcf9716b83 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmbxti10.tfm" 1136768653 1532 9162035f4e7176612125649e348e2195 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmti10.tfm" 1136768653 1480 aa8e34af0eb6a2941b776984cf1dfdc4 ""
-<<<<<<< HEAD
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmtt10.tfm" 1136768653 768 1321e9409b4137d6fb428ac9dc956269 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmtt8.tfm" 1136768653 768 d7b9a2629a0c353102ad947dc9221d49 ""
-=======
->>>>>>> e754a4e (notes)
   "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbxti10.pfb" 1248133631 36554 b67dc2cfa451409e100b3fcf5f506509 ""
   "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb" 1248133631 30251 6afa5cb1d0204815a708a080681d4674 ""
   "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb" 1248133631 36299 5f9df58c2139e7edcf37c8fca4bd384d ""
@@ -32,10 +24,7 @@
   "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb" 1248133631 32762 224316ccc9ad3ca0423a14971cfa7fc1 ""
   "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb" 1248133631 32569 5e5ddc8df908dea60932f3c484a54c0d ""
   "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb" 1248133631 32716 08e384dc442464e7285e891af9f45947 ""
-<<<<<<< HEAD
   "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb" 1248133631 31099 c85edf1dd5b9e826d67c9c7293b6786c ""
-=======
->>>>>>> e754a4e (notes)
   "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb" 1248133631 34694 ad62b13721ee8eda1dcc8993c8bd7041 ""
   "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm7.pfb" 1248133631 35309 940e81a5b9e04201a07e8b33a3ae6e64 ""
   "/usr/share/texlive/texmf-dist/tex/context/base/mkii/supp-pdf.mkii" 1461363279 71627 94eb9990bed73c364d7f53f960cc8c5b ""
@@ -170,10 +159,7 @@
   "/usr/share/texlive/texmf-dist/tex/latex/epstopdf-pkg/epstopdf-base.sty" 1579991033 13886 d1306dcf79a944f6988e688c1785f9ce ""
   "/usr/share/texlive/texmf-dist/tex/latex/etoolbox/etoolbox.sty" 1601931149 46845 3b58f70c6e861a13d927bff09d35ecbc ""
   "/usr/share/texlive/texmf-dist/tex/latex/fancyhdr/fancyhdr.sty" 1668028059 18450 88279bf67c81e69f8e3f1c1bad1a26c5 ""
-<<<<<<< HEAD
   "/usr/share/texlive/texmf-dist/tex/latex/float/float.sty" 1137110151 6749 16d2656a1984957e674b149555f1ea1d ""
-=======
->>>>>>> e754a4e (notes)
   "/usr/share/texlive/texmf-dist/tex/latex/fmtcount/fc-english.def" 1580337424 14353 f66b7dd28616119c2519cd5cc4dcae14 ""
   "/usr/share/texlive/texmf-dist/tex/latex/fmtcount/fcnumparser.sty" 1580337424 12389 43a81443714469abac77ce09f44ad2e2 ""
   "/usr/share/texlive/texmf-dist/tex/latex/fmtcount/fcprefix.sty" 1580337424 12098 5c732241af77b5f0e56e640b7d538395 ""
@@ -221,28 +207,16 @@
   "/usr/share/texlive/texmf-dist/tex/latex/zref/zref-abspage.sty" 1694723124 2269 4fe6fb3396214c91f164d45faf9bec45 ""
   "/usr/share/texlive/texmf-dist/tex/latex/zref/zref-base.sty" 1694723124 20785 f7d1133a287929598a897c93f8f4c44b ""
   "/usr/share/texlive/texmf-dist/web2c/texmf.cnf" 1707919699 40399 f2c302f7d2af602abb742093540a5834 ""
-<<<<<<< HEAD
-  "/usr/share/texmf/fonts/enc/dvips/cm-super/cm-super-ts1.enc" 1636152094 2900 1537cc8184ad1792082cd229ecc269f4 ""
-  "/usr/share/texmf/fonts/type1/public/cm-super/sfrm1000.pfb" 1636152094 138258 6525c253f16cededa14c7fd0da7f67b2 ""
-  "/usr/share/texmf/web2c/texmf.cnf" 1707919699 40399 f2c302f7d2af602abb742093540a5834 ""
-  "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1755731056.5779 5472669 54eaf61a88b6b7896ebd0dac973cb29c ""
-  "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1755731161 8211422 8d1c1e18edcfbee81c6804f1510d4e27 ""
-  "images/naive_pi_approx.png" 1756337048.27288 56560 06c41369ba2fe2ac08605358a2e45940 ""
-  "images/pi_approx.png" 1756337166.6723 58514 32755d58e02e8cebe6dbe9f582de4b4a ""
-  "main.aux" 1756340141.83867 742 de9497bb21d6d5df4c2d6ef38d70d7b0 "pdflatex"
-  "main.tex" 1756340137.90412 9662 b361fd8d0c2e75477fcd8905f76f492e ""
-  "p1.c" 1756312552.62353 1523 04dbd74ff0e6a6c7abf33f5407238cd8 ""
-  "p2.c" 1756337825.13875 1883 ee7ddf4f1158853e4ba87d47afe21b09 ""
-  "p3.c" 1756338561.9769 137 ed4def6e1ac3a25eccb5d646427ea524 ""
-=======
   "/usr/share/texmf/web2c/texmf.cnf" 1707919699 40399 f2c302f7d2af602abb742093540a5834 ""
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1756085697.03511 128028 f533b797fba58d231669ea19e894e23e ""
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1756085751 6800789 5ff514857075d181cf1fed371e60d32f ""
-  "main.aux" 1756315651.61403 313 07d0da0388429644936a01bb1d62d35b "pdflatex"
-  "main.tex" 1756315648.70036 5392 75024231be87a1b939fa64a523d3ed61 ""
-  "p2.c" 1756216588.98009 612 139c34de2ff03a46f3a68c2441c9661e ""
-  "p3.c" 1756216588.98009 190 334f1625fef96234ce759e031a36301c ""
->>>>>>> e754a4e (notes)
+  "images/naive_pi_approx.png" 1756483999.0902 56560 06c41369ba2fe2ac08605358a2e45940 ""
+  "images/pi_approx.png" 1756483999.09092 58514 32755d58e02e8cebe6dbe9f582de4b4a ""
+  "main.aux" 1756486992.76659 742 71bef94d6e584f79e7a09b3aa37d5be0 "pdflatex"
+  "main.tex" 1756486991.19755 9659 aa900390e35d814437a7cb08cb99dfd1 ""
+  "p1.c" 1756483999.09391 1523 04dbd74ff0e6a6c7abf33f5407238cd8 ""
+  "p2.c" 1756485290.54913 2067 e04ac78b097d6cc048d4775097966f89 ""
+  "p3.c" 1756483999.09391 137 ed4def6e1ac3a25eccb5d646427ea524 ""
   (generated)
   "main.aux"
   "main.log"
