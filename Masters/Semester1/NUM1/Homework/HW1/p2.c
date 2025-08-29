@@ -16,7 +16,7 @@ convergence point for longer.
 
  */
 
-double non_naive(int n) {
+double find_x(int n) {
   FILE *file;
   file = fopen("p2.csv", "w+");
   double x = 2.0; // first term
@@ -38,7 +38,7 @@ This leads to the sequence diverging due to floating point precision
 at the term 29, which then spirals into infinity.
 
  */
-double naive(int n) {
+double xn(int n) {
   double x = 2.0; // first term
   double two_pow_n_minus_one = SQRT2; // term 2^{n-1/2}, multiplied by 2 each iteration
   double four_pow_one_minus_n = 1.0; // term 4^{1-n}, divided by 4 each iteration
@@ -55,24 +55,13 @@ double naive(int n) {
   return x;
 }
 
-/*
-
-This code calculates the convergence of a sequence.
-Two separate files are created with the term output.
-To compile and run, use
-
-gcc p2.c -lm -o p2
-./p2 (terms)
-
- */
-
 int main(int argc, char *argv[]) {
   if (argc != 2) {
     fprintf(stderr, "Invalid arguments. Usage: ./p2 (terms)");
     exit(1);
   }
   int terms = atoi(argv[1]);
-  non_naive(terms);
-  naive(terms);
+  find_x(terms);
+  xn(terms);
   return 0;
 }

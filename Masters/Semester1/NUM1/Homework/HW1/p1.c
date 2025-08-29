@@ -1,5 +1,5 @@
 #include <stdio.h>
-#define lsb 0.0002441406
+#define lsb 0.000244140625
 
 void print_binary(FILE *file, int n) {
   for (int i = 11; i >= 0; i--) { // 6 bits are enough for numbers up to 63
@@ -18,10 +18,11 @@ void print_binary(FILE *file, int n) {
 
 sgn * 2^exp * mantissa
 max. number represented:
-0111111111111111 = (2^(12) - 1) * 2^7 = 4095 * 2^7 = 32768
+0111111111111111 = (2^(12) - 1) * 2^7 = 4095 * 2^7 = 524160
 
 min. number represented:
-111111111111111 = -32768
+111111111111111 = -524160
+
 
 impossible to represent the number 2^12 + 1 = 4097
 
@@ -32,7 +33,6 @@ impossible to represent the number 2^12 + 1 = 4097
 print_representation() writes to a csv file "binary.csv"
 all possible number representations in decimal format.
 we then confirm that 4097 is not present.
-
 */
 void print_representation() {
   int curr = 0x0;
@@ -61,11 +61,11 @@ void print_representation() {
 void print_fractions() {
   FILE *file;
   file = fopen("fractions.csv", "w+");
-  fprintf(file, "zero,one,two,three,four,five,six,seven\n");
+  fprintf(file, "binary, 2^{0},2^{1},2^{2},2^{3},2^{4},2^{5},2^{6},2^{7}\n");
   int curr;
-  float i;
+  double i;
 
-  for (i = lsb, curr = 0; i < 1; i += lsb, curr++) {
+  for (i = lsb, curr = 0; i <= 1; i += lsb, curr++) {
     print_binary(file, curr);
     for (int j = 0; j < 1 << 3; j++) {
 
