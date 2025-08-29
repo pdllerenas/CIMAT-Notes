@@ -27,3 +27,14 @@ $$
 $$
 P(D_1\cap D_2) \leq \max\{P(D_1), P(D_2)\} = 10^{-6}
 $$
+
+
+C: tener covid
+N: prueba negativa
+
+$$
+P(N^c|C) = 0.99 \qquad P(N|C^c) = 0.99 \qquad P(C) = 0.01
+$$
+$$
+P(C|N^c) = \frac{P(C)}{P(N^c)} P(N^c|C) = \frac{(0.01)(.99)}{} 
+$$

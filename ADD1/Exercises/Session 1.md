@@ -24,16 +24,17 @@ el valor mas grande y el mas chico. Si tienes que apostar a un resultado
 >$$
 
 
-3. El senado de EE.UU consiste de 100 senadores, 2 por cada estado. Se decide formar una comisión. Para eso se eligen 50 senadores al azar. Calcula la probabilidad que Texas est'e representado.
+3. El senado de EE.UU consiste de 100 senadores, 2 por cada estado. Se decide formar una comisión. Para eso se eligen 50 senadores al azar. Calcula la probabilidad que Texas este representado.
 
 > [!note]- Solution
 > We look at the inverse problem: what is the probability 0 TX senators are chosen:
 >$$
- P(TX = 0) = \frac{98}{100} \cdot \frac{97}{99} \cdots \frac{48}{50} = \frac{1}{100} \cdot \frac{1}{99} \cdot 49 \cdot 48 = \frac{48 \cdot 49}{99\cdot 100}
+>P(TX = 0) = \frac{{98 \choose 50}}{{100 \choose 50}}\\
+ P(TX = 0) = \frac{98}{100} \cdot \frac{97}{99} \cdots \frac{49}{51} = \frac{1}{100} \cdot \frac{1}{99} \cdot 50 \cdot 49 = \frac{50 \cdot 49}{99\cdot 100}
 >$$
 > Therefore,
 >$$
-  P(TX >= 1) = 1 - P(TX = 0) = 0.762 
+  P(TX >= 1) = 1 - P(TX = 0) = 0.7525 
 >$$
 
 
@@ -59,7 +60,7 @@ el valor mas grande y el mas chico. Si tienes que apostar a un resultado
 >$$
 > where there are exactly $\alpha \coloneqq w-x$ occurrences of East (E) and $\beta \coloneqq z-y$ occurrences of North (N). Thus,
 >$$
- \frac{(\alpha + \beta)!}{\alpha! \cdot \beta!}
+ \frac{(\alpha + \beta)!}{\alpha! \beta!}
 >$$
 >possible ways of getting from A to B. Thus, in this particular case, there are
 >$$
