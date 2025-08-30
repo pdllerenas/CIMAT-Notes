@@ -20,13 +20,13 @@ def plot(method):
 
 
 def main():
-    if len(sys.argv) != 3:
+    if len(sys.argv) != 2:
         print("Invalid arguments.\n Correct usage: python[3] p2.py [naive | non-naive]")
         sys.exit(1)
-    if sys.argv[2] == "naive":
-        plot("naive_p2.csv")
-    if sys.argv[2] == "non-naive":
-        plot("p2.csv")
+    if sys.argv[1] == "naive":
+        plot("naive_p2")
+    if sys.argv[1] == "non-naive":
+        plot("p2")
     else:
         print("Invalid method.\n Correct usage: python[3] p2.py [naive | non-naive]")
         sys.exit(1)
