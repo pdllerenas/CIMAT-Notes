@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2025.8.20)  29 AUG 2025 16:32
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2025.8.20)  30 AUG 2025 07:51
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -745,56 +745,68 @@ LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <10> not available
 )
 Package mdframed Info: Box was splittet wrong
  starting loop to iterate the splitting point
-(mdframed)              on input line 135.
+(mdframed)              on input line 145.
  [1{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}
 
 {/usr/share/texmf/fonts/enc/dvips/cm-super/cm-super-ts1.enc}] [2]
+Package mdframed Info: Box was splittet wrong
+ starting loop to iterate the splitting point
+(mdframed)              on input line 145.
+ [3]
 Package mdframed Info: mdframed detected package amsthm 
  changed the theorem header of amsthm
-(mdframed)              on input line 149.
+(mdframed)              on input line 159.
 
-Overfull \hbox (7.85312pt too wide) in paragraph at lines 151--153
+Overfull \hbox (7.85312pt too wide) in paragraph at lines 161--163
 []\OT1/cmr/m/n/10 Primero mostraremos que uti-lizar di-rec-ta-mente la se-cuen-cia re-sulta en los t^^Serminos
  []
 
 (./p2.c)
-<./images/naive_pi_approx.png, id=18, 1339.8858pt x 697.4055pt>
+<./images/naive_pi_approx.png, id=25, 1339.8858pt x 697.4055pt>
 File: ./images/naive_pi_approx.png Graphic file (type png)
 <use ./images/naive_pi_approx.png>
-Package pdftex.def Info: ./images/naive_pi_approx.png  used on input line 164.
+Package pdftex.def Info: ./images/naive_pi_approx.png  used on input line 174.
 (pdftex.def)             Requested size: 423.955pt x 220.66292pt.
-<./images/pi_approx.png, id=20, 1339.8858pt x 697.4055pt>
+<./images/pi_approx.png, id=27, 1339.8858pt x 697.4055pt>
 File: ./images/pi_approx.png Graphic file (type png)
 <use ./images/pi_approx.png>
-Package pdftex.def Info: ./images/pi_approx.png  used on input line 169.
+Package pdftex.def Info: ./images/pi_approx.png  used on input line 179.
 (pdftex.def)             Requested size: 423.955pt x 220.66292pt.
- [3]
-Package mdframed Info: Not enough space on this page on input line 174.
- [4] [5]
+ [4]
+Package mdframed Info: Box was splittet wrong
+ starting loop to iterate the splitting point
+(mdframed)              on input line 227.
+ [5] [6 <./images/naive_pi_approx.png>] [7 <./images/pi_approx.png>]
 Package mdframed Info: mdframed detected package amsthm 
  changed the theorem header of amsthm
-(mdframed)              on input line 184.
- (./p3.c) [6 <./images/naive_pi_approx.png> <./images/pi_approx.png>]
-Package mdframed Info: Not enough space on this page on input line 248.
- [7] [8] (./main.aux)
+(mdframed)              on input line 237.
+ (./p3.c)
+Package mdframed Info: Box was splittet wrong
+ starting loop to iterate the splitting point
+(mdframed)              on input line 301.
+ [8]
+Package mdframed Info: Box was splittet wrong
+ starting loop to iterate the splitting point
+(mdframed)              on input line 301.
+ [9] [10] (./main.aux)
  ***********
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-01-22>
  ***********
  ) 
 Here is how much of TeX's memory you used:
- 29373 strings out of 474222
- 709299 string characters out of 5748733
- 2592975 words of memory out of 5000000
- 51103 multiletter control sequences out of 15000+600000
+ 29377 strings out of 474222
+ 709358 string characters out of 5748733
+ 2652975 words of memory out of 5000000
+ 51107 multiletter control sequences out of 15000+600000
  561620 words of font info for 51 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  102i,12n,107p,1020b,1923s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbxti10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr5.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm7.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfrm1000.pfb>
-Output written on main.pdf (8 pages, 238973 bytes).
+Output written on main.pdf (10 pages, 243052 bytes).
 PDF statistics:
- 110 PDF objects out of 1000 (max. 8388607)
- 67 compressed objects within 1 object stream
+ 116 PDF objects out of 1000 (max. 8388607)
+ 71 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  23 words of extra memory for PDF output out of 10000 (max. 10000000)
 

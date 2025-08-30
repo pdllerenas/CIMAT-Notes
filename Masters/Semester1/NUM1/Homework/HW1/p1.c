@@ -2,7 +2,7 @@
 #define lsb 0.000244140625
 
 void print_binary(FILE *file, int n) {
-  for (int i = 11; i >= 0; i--) { // 6 bits are enough for numbers up to 63
+  for (int i = 11; i >= 0; i--) {
     int bit = (n >> i) & 1;
     fprintf(file, "%d", bit);
   }
@@ -35,7 +35,6 @@ all possible number representations in decimal format.
 we then confirm that 4097 is not present.
 */
 void print_representation() {
-  int curr = 0x0;
   FILE *file;
   file = fopen("binary.csv", "w+");
   /*
@@ -50,7 +49,7 @@ void print_representation() {
     print_binary(file, i);
     for (int j = 0; j < 1 << 3; j++) { // loop from j = 0 up to 2^3 - 1
       if (j == 7) {
-        fprintf(file, "%d\n", i * (1 << j));
+        fprintf(file, "%d\n", i * (1 << j)); // mantissa * 2^j
       } else {
         fprintf(file, "%d,", i * (1 << j));
       }
@@ -61,18 +60,29 @@ void print_representation() {
 void print_fractions() {
   FILE *file;
   file = fopen("fractions.csv", "w+");
-  fprintf(file, "binary, 2^{0},2^{1},2^{2},2^{3},2^{4},2^{5},2^{6},2^{7}\n");
+  fprintf(file, "binary, 2^{-2},2^{-2},2^{-1},2^{0},2^{1},2^{2},2^{3}\n");
   int curr;
   double i;
+  double mantissa;
+  float exp;
 
-  for (i = lsb, curr = 0; i <= 1; i += lsb, curr++) {
+  for (i = lsb, curr = 1; i < 1; i += lsb, curr++) {
     print_binary(file, curr);
-    for (int j = 0; j < 1 << 3; j++) {
+    for (int j = 0; j < 7; j++) {
+      if (j == 0) {
+        exp = 1.0/4; // 2^{-2}
+        mantissa = i; // implicit bit is 0
+      }
+      else {
+        exp = (j >= 3) ? (1 << (j-3)) : 1.0 / (1 << (3 - j)); // using 2^{j-3} = 1/2^{3-j}
+        mantissa = 1 + i; // implicit bit is 1
+      }
 
-      if (j == 7) {
-        fprintf(file, "%f\n", i * (1 << j));
+
+      if (j == 6) {
+        fprintf(file, "%f\n", mantissa * exp);
       } else {
-        fprintf(file, "%f,", i * (1 << j));
+        fprintf(file, "%f,", mantissa * exp);
       }
     }
   }

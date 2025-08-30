@@ -52,7 +52,7 @@
 
 % Make header with name and date etc.
 \usepackage{fancyhdr}
-\lhead{Pedro D. Llerenas\\M\'etodos Numericos}
+\lhead{Pedro D. Llerenas\\M\'etodos Numericos I}
 \rhead{\today\\Tarea I}
 \thispagestyle{fancy}
 
@@ -77,10 +77,11 @@
 			      Usaremos 16 bits en total. 1 para el signo, 3 para el exponente, 12 para la mantisa. Esto nos genera n\'umeros en el rango
 			      \[ [-1*2^7*(2^{12} - 1), 2^7*(2^{12} - 1)] = [-524160, 524160] \]
 
+			      Un n\'umero que no podemos representar es el $ 2^{12} + 1 $, debido a que no es un m\'ultiplo de dos y es mayor a $ 2^{12} - 1 $, el mayor numero que podemos representar con la mantisa.
 			      \lstinputlisting[caption=Generaci\'on de n\'umeros posibles con el sistema elegido. Fraccionario y entero., language=C, style=VS2017]{p1.c}
 
 
-			      el c\'odigo anterior genera un csv con todos los valores (positivos) posibles de la representaci\'on elegida. En la siguiente tabla, presentamos algunos valores. La columna representa el exponente por que se multiplica el binario. 
+			      El c\'odigo anterior genera dos archivos csv, uno con todos los valores (positivos) posibles de la representaci\'on elegida, y otro con los valores fraccionarios, que describimos m\'as adelante. En la siguiente tabla, presentamos algunos valores enteros representables por nuestro sistema. El encabezado de la columna representa el exponente que multiplica la mantisa.
 
 			      \begin{center}
 				      \begin{tabular}{c|cccccccc}
@@ -97,9 +98,7 @@
 					      111111111111    & 4095    & 8190    & 16380   & 32760   & 65520   & 131040  & 262080  & 524160
 				      \end{tabular}
 			      \end{center}
-
 			      Para el sistema fraccionario, definimos el bit implicito como
-
 			      $$
 				      \begin{cases}
 					      \texttt{b}_{imp}= 1   & \texttt{if } 0 <\texttt{exp} < 7                           \\
@@ -109,28 +108,39 @@
 			      y
 			      $$
 				      \begin{cases}
-					      \texttt{exp}=\texttt{exp}-3 & \texttt{if } 0 <\texttt{exp} < 7 \\
-					      \texttt{exp} = 2            & \texttt{if } \texttt{exp} = 0
+					      \texttt{exp}=\texttt{exp}-3 & \text{if } 0 <\texttt{exp} < 7, \\
+					      \texttt{exp} = -2           & \text{if } \texttt{exp} = 0,
 				      \end{cases}
 			      $$
-			      de esta manera, obtenemos los valores
+			      y finalmente, cuando $ \texttt{exp} = 7 $,
+			      $$
+				      \begin{cases}
+					      \pm \infty   & \text{if } \texttt{mantissa } = 0,    \\
+					      \texttt{NaN} & \text{if } \texttt{mantissa } \neq 0.
+				      \end{cases}
+			      $$
+			      De esta manera, obtenemos los valores (truncados para una mejor presentaci\'on)
 			      \begin{center}
 				      \resizebox{\textwidth}{!}{
-					      \begin{tabular}{c|cccccccc}
-						      \textbf{binary} & $2^{0}$  & $2^{1}$  & $2^{2}$  & $2^{3}$  & $2^{4}$   & $2^{5}$   & $2^{6}$   & $2^{7}$    \\ \hline
-						      000000000000    & 0.000244 & 0.000488 & 0.000977 & 0.001953 & 0.003906  & 0.007812  & 0.015625  & 0.031250   \\
-						      000000000001    & 0.000488 & 0.000977 & 0.001953 & 0.003906 & 0.007812  & 0.015625  & 0.031250  & 0.062500   \\
-						      000000000010    & 0.000732 & 0.001465 & 0.002930 & 0.005859 & 0.011719  & 0.023437  & 0.046875  & 0.093750   \\
-						      000000000011    & 0.000977 & 0.001953 & 0.003906 & 0.007812 & 0.015625  & 0.031250  & 0.062500  & 0.125000   \\
-						      000000000100    & 0.001221 & 0.002441 & 0.004883 & 0.009766 & 0.019531  & 0.039062  & 0.078125  & 0.156250   \\
-						      000000000101    & 0.001465 & 0.002930 & 0.005859 & 0.011719 & 0.023437  & 0.046875  & 0.093750  & 0.187500   \\
-						      000000000110    & 0.001709 & 0.003418 & 0.006836 & 0.013672 & 0.027344  & 0.054687  & 0.109375  & 0.218750   \\
-						      000000000111    & 0.001953 & 0.003906 & 0.007812 & 0.015625 & 0.031250  & 0.062500  & 0.125000  & 0.250000   \\
-						      \vdots          & \vdots   & \vdots   & \vdots   & \vdots   & \vdots    & \vdots    & \vdots    & \vdots     \\
-						      111111111111    & 1.000000 & 2.000000 & 4.000000 & 8.000000 & 15.000000 & 32.000000 & 64.000000 & 128.000000\\
+					      \begin{tabular}{c|ccccccc}
+						      \textbf{binary} & $2^{-2}$ & $2^{-2}$ & $2^{-1}$ & $2^{0}$  & $2^{1}$  & $2^{2}$  & $2^{3}$   \\ \hline
+						      000000000001    & 0.000061 & 0.250061 & 0.500122 & 1.000244 & 2.000488 & 4.000977 & 8.001953  \\
+						      000000000010    & 0.000122 & 0.250122 & 0.500244 & 1.000488 & 2.000977 & 4.001953 & 8.003906  \\
+						      000000000011    & 0.000183 & 0.250183 & 0.500366 & 1.000732 & 2.001465 & 4.002930 & 8.005859  \\
+						      000000000100    & 0.000244 & 0.250244 & 0.500488 & 1.000977 & 2.001953 & 4.003906 & 8.007812  \\
+						      000000000101    & 0.000305 & 0.250305 & 0.500610 & 1.001221 & 2.002441 & 4.004883 & 8.009766  \\
+						      000000000110    & 0.000366 & 0.250366 & 0.500732 & 1.001465 & 2.002930 & 4.005859 & 8.011719  \\
+						      000000000111    & 0.000427 & 0.250427 & 0.500854 & 1.001709 & 2.003418 & 4.006836 & 8.013672  \\
+						      \vdots          & \vdots   & \vdots   & \vdots   & \vdots   & \vdots   & \vdots   & \vdots    \\
+						      111111111111    & 0.249939 & 0.499939 & 0.999878 & 1.999756 & 3.999512 & 7.999023 & 15.998047 \\
 					      \end{tabular}
 				      }
 			      \end{center}
+			      De manera an\'aloga, podemos obtener los valores negativos. Entonces, el n\'umero m\'aximo (finito) de la representaci\'on fraccionaria es
+			      \[
+				      2^3 \displaystyle\sum_{i = 1}^{6} 2^{-i} = 15.998046875
+			      \]
+			      mientras que el m\'inimos es el negativo del m\'aximo. El m\'as cercano a 0 es $ \pm2^{-12} = 0.000244140625 $.
 		      \end{proof}
 	      \end{mdframed}
 
@@ -149,7 +159,7 @@
 		      ]
 		      \begin{proof}[\textbf{Demostraci\'on.}]
 			      Primero mostraremos que utilizar directamente la secuencia resulta en los t\'erminos divergiendo a infinito debido a los errores de precisi\'on de punto flotante.
-			      Podemos notar que la secuencia puede ser reescrita de tal manera que la cantidad de restas (2) se puede reducir a 1.
+			      Podemos notar que la secuencia puede ser reescrita de tal manera que la cantidad de restas se puede reducir a 1.
 			      \begin{align*}
 				      x_{n+1} & = 2^{n-1/2} \sqrt{1-\sqrt{1-4^{1-n}x^2_n}}                                                                            \\
 				              & = 2^{n-1/2} \sqrt{1-\sqrt{1-4^{1-n}x^2_n}} \cdot\frac{\sqrt{1-\sqrt{1+4^{1-n}x^2_n}}}{\sqrt{1+\sqrt{1-4^{1-n}x^2_n}}} \\
@@ -168,8 +178,51 @@
 				      \caption{Secuencia usando algoritmo reduciendo restas}
 				      \includegraphics[width=\textwidth]{pi_approx}
 			      \end{figure}
+			      En el algoritmo ingenuo,
+			      \begin{align*}
+				      x_5= 3.1214451524539055          \\
+				      x_6= 3.1365484908043393          \\
+				      x_7= 3.1403311572738355          \\
+				      x_8= 3.1412772513118705          \\
+				      x_9= 3.1415138015831676          \\
+				      x_{10}= 3.1415729408653790       \\
+				      x_{11}= 3.1415877258399871       \\
+				      x_{12}= 3.1415914221202459       \\
+				      x_{13}= 3.1415923462637427       \\
+				      x_{14}= 3.1415925771976707       \\
+				      x_{15}= 3.1415926358946096       \\
+				      x_{16}= 3.1415926548673574       \\
+				      x_{17}= 3.1415926833264782       \\
+				      x_{18}= 3.1415927592174677       \\
+				      x_{19}= 3.1415929109994405       \\
+				      x_{20}= 3.1415941252549588       \\
+				      x_{50}= 4194304.0000797957181931 \\
+				      x_{100} = 4722366482959487205376
+			      \end{align*}
+			      mientras que en el otro, tenemos
+			      \begin{align*}
+				      x_5= 3.1214451524539042     \\
+				      x_6= 3.1365484908043384     \\
+				      x_7= 3.1403311572738337     \\
+				      x_8= 3.1412772513119043     \\
+				      x_9= 3.1415138015832844     \\
+				      x_{10}= 3.1415729408658670  \\
+				      x_{11}= 3.1415877258357106  \\
+				      x_{12}= 3.1415914221295211  \\
+				      x_{13}= 3.1415923462482072  \\
+				      x_{14}= 3.1415925773227302  \\
+				      x_{15}= 3.1415926351361882  \\
+				      x_{16}= 3.1415926496343785  \\
+				      x_{17}= 3.1415926533037521  \\
+				      x_{18}= 3.1415926542659216  \\
+				      x_{19}= 3.1415926545512902  \\
+				      x_{20}= 3.1415926546674577  \\
+				      x_{50} = 3.1415926564792924 \\
+				      x_{100} = 3.1415926594676811
+			      \end{align*}
 
-			      Como podemos observar, el segundo algoritmo (que reduce el numero de restas), se mantiene cerca de $\pi$, mientras que el ingenuo explota y diverge a infinito.
+
+			      Como podemos observar, el segundo algoritmo (que reduce el numero de restas), se mantiene cerca de $\pi$, mientras que el ingenuo explota y diverge a infinito debido a las aproximaciones que se deben hacer con las restas de punto flotante.
 		      \end{proof}
 	      \end{mdframed}
 
@@ -248,5 +301,5 @@
 	      \end{mdframed}
 
 \end{enumerate}
-	
+
 \end{document}
