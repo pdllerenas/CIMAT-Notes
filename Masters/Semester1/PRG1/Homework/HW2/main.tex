@@ -1,0 +1,196 @@
+\documentclass{article}
+\usepackage[yyyymmdd]{datetime}
+\usepackage[shortlabels]{enumitem}
+\usepackage[nottoc]{tocbibind}
+\usepackage{url}
+\usepackage{array}
+\usepackage{hhline}
+\usepackage{multirow}
+\usepackage{geometry}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{colortbl}
+\usepackage[framemethod=TikZ]{mdframed}
+\usepackage{amsfonts}
+\usepackage{tikz}
+\usepackage{amsthm}
+\newtheoremstyle{problemstyle}{3pt}{3pt}{\normalfont}{}{\bfseries}{\normalfont\bfseries:}{.5em}{}
+\theoremstyle{problemstyle}
+\newmdtheoremenv[
+  linewidth=1pt,
+  linecolor=RoyalBlue,
+  backgroundcolor=RoyalBlue!10,
+  roundcorner=5pt,
+  innertopmargin=6pt,
+  innerbottommargin=6pt,
+  innerleftmargin=6pt,
+  innerrightmargin=6pt,
+  nobreak=true
+]{problem}{Problem}
+
+% Example
+\newmdtheoremenv[
+  linewidth=1pt,
+  linecolor=ForestGreen,
+  backgroundcolor=ForestGreen!10,
+  roundcorner=5pt,
+  nobreak=true
+]{example}{Example}
+
+% Theorem
+\newmdtheoremenv[
+  linewidth=1pt,
+  linecolor=BrickRed,
+  backgroundcolor=BrickRed!10,
+  roundcorner=5pt,
+  nobreak=true
+]{theorem}{Theorem}
+
+% Remark
+\newmdtheoremenv[
+  linewidth=1pt,
+  linecolor=Goldenrod,
+  backgroundcolor=Goldenrod!10,
+  roundcorner=5pt,
+  nobreak=true
+]{remark}{Remark}
+
+% Solution
+\newenvironment{solution}{%
+  \begin{mdframed}[linewidth=0.8pt,linecolor=Gray,backgroundcolor=Gray!5,roundcorner=5pt, nobreak=true]%
+  \noindent\textbf{Solution.}%
+}{%
+\hfill $ \diamond $ 
+  \end{mdframed}%
+}
+
+\usepackage{listings}
+
+
+% Make header with name and date etc.
+\usepackage{fancyhdr}
+\lhead{Pedro D. Llerenas\\Programaci\'on y Algoritmos I}
+\rhead{\today\\Tarea II}
+\thispagestyle{fancy}
+
+\usepackage[utf8]{inputenc}
+\setlength{\parindent}{0pt} % Don't indent new paragraphs
+\setlength{\headheight}{24pt} 
+
+\newcommand{\Z}{\mathbb Z}
+\newcommand{\Q}{\mathbb Q}
+\newcommand{\R}{\mathbb R}
+\newcommand{\C}{\mathbb C}
+\newcommand{\N}{\mathbb N}
+
+
+\begin{document}
+\section*{Strings}\label{sec:strings} % (fold)
+
+\begin{problem}
+(20\%) Escriba un programa que realice las siguientes operaciones sobre cadenas de caracteres (strings); no usar memoria din\'amica:
+\begin{enumerate}[a)]
+	\item \textbf{int longitud\_str(str)}: Funci\'on que regrese la longitud de un string \texttt{str} (sin contar el caracter nulo);
+	\item \textbf{char *copia\_str(dst, src)}: copia el string \texttt{src} a \texttt{dst}, incluyendo el caracter nulo $\backslash$\texttt{0}; regresa un apuntador a \texttt{dst}.
+	      \textbf{Nota:} La funci\'on debe verificar que los strings no est\'en superpuestos y si hay suficiente espacio en \texttt{dst} para copiar \texttt{src}; en caso que no, incluir solo hasta donde sea posible almacenar en \texttt{dst};
+	\item \textbf{int compara\_str(str1, str2)}: Funci\'on que concatene tres strings (en el orden dado) separados por un espacio y los almacene en \texttt{str1}; debe regresar la nueva longitud de \texttt{str1};
+	\item \textbf{int concatena\_str(str1, str2, str3)}: Funci\'on que concatene tres strings (en el orden dado) separados por un espacio y alamacene en \texttt{str1}; debe regresar la nueva longitud de \texttt{str1};
+	      \textbf{Nota}: La funci\'on debe verificar que los strings no est\'en superpuestos y si hay suficiente espacio en \texttt{str1} para almacenar todos los strings; en caso que no, incluir solo hasta donde sea posible almacenar en \texttt{str1};
+	\item \textbf{int encuentra\_str(str1, str2)}: Funci\'on que busque un sub-string \texttt{str1} en \texttt{str2} y regrese el n\'umero de veces que lo encuentra.
+	\item \textbf{int **frecuencia(str)}: Encuentre la frecuencia de cada elemento de \texttt{str}, y regrese un arreglo bidimensional donde se almacene la letra (1er columna) y frecuencia (2da columna).
+	      \textbf{Salida}: w --- 1, r --- 5, s --- 4, etc\dots
+	      \textbf{Nota}: En este ejercicio puede usar memora est\'atica o din\'amica.
+
+	\item \textbf{char *sin\_repetir(str)}: Funci\'on que encuentre las palabras en \texttt{str} que no tengan letras repetidas y las imprima (dentro de la misma funci\'on por simplicidad).
+\end{enumerate}
+\end{problem}
+\begin{solution}
+
+\end{solution}
+% section Strings (end)
+
+
+\section*{Arreglos Bidimensionales}\label{sec:arreglos_bidimensionales} % (fold)
+\begin{problem}
+  (10\%) Escribir un programa que genere una caminata aleatoria en una matriz de 10x10. El arreglo debe contener inicialmente puntos `.', y debe recorrerse basado en el residuo de un n\'umero aleatoria (usar \textbf{srand()} y \textbf{rand()}) cuyos resultado puede ser {0 (arriba), 1 (abajo), 2 (izq), 3 (der)}, que indican la direcci\'on a moverse. A) Verificar que el movimiento no se salga del arreglo de la matriz, y B) No se puede visitar el mismo lugar más de una vez. Si alguna de estas condiciones se presenta, intentar moverse hacia otra direcci\'on definida; si todas las posiciones están ocupadas, finalizar el programa e imprimir el resultado.
+\end{problem}
+
+\begin{solution}
+
+\end{solution}
+
+\begin{problem}
+(10\%)
+\begin{enumerate}[a)]
+	\item Dado un arreglo bidimensional de enteros $ M\times N $, encontrar el m\'aximo valor para cada columna y cada rengl\'on:
+	      \setlength\doublerulesep{0.5pt}\doublerulesepcolor{black}
+	      \begin{center}
+		      \begin{tabular}[c]{|c||c|c|c|c|}
+			      \hline
+			        & 9 & 6 & 8 & 1 \\
+			      \hhline{|=#=|=|=|=|}
+			      8 & 3 & 6 & 8 & 1 \\
+			      \hline
+			      4 & 2 & 4 & 3 & 1 \\
+			      \hline
+			      9 & 9 & 5 & 2 & 1 \\
+			      \hline
+		      \end{tabular}
+	      \end{center}
+	      \textbf{Nota}: Recorre el arreglo (columnas y renglones) en forma eficiente.
+
+	\item Cuente el n\'umero de bytes del arreglo bidimensional con valor 0 (recuerde que cada entero est\'a representado por 4 bytes).
+\end{enumerate}
+
+\end{problem}
+\begin{solution}
+
+\end{solution}
+% section Arreglos Bidimensionales (end)
+
+
+\section*{Memoria Din\'amica}\label{sec:memoria_din_amica} % (fold)
+\begin{problem}
+(20\%) Dado una lista de nombres (string) de $ N $ personas (apellido\_paterno, apellido\_materno, nombre(s)), escribir una funci\'on que ordene los nombres alfab\'eticamente usando un arreglo de apuntadores:
+\begin{center}
+  char **crea\_arreglo(char **arr, \dots)\\
+  char **ordena(char **arr,\dots)
+\end{center}
+Los nombres pueden tener distinta longitud, pero la memoria que ocupan debe ser la justa (sin desperdicio); cuando un nombre sea prefijo de otro, considerar al nombre m\'as corto como menor. El ordenamiento debe ser a trav\'es de una funci\'on que reciba el arreglo de apuntadores.
+\end{problem}
+\begin{solution}
+  
+\end{solution}
+
+\begin{problem}
+  (20\%) Separe un string en tokens de acuerdo a un caracter especial dado como entrada (puede ser espacio, /, \%, etc.) y que regrese un arreglo que apunte a cada uno de los tokens esperados:
+\begin{center}
+  char **tokens(char *str, char ch)
+\end{center}
+ o NULL en caso de no encontrar alg\'un token.
+  
+\end{problem}
+
+\begin{solution}
+  
+\end{solution}
+
+\begin{problem}
+ Escriba una funci\'on que reciba $ N $ arreglos de enteros ordenados de menor a mayor, y mezcle los arreglos en un solo arreglo ordenado de igual forma. 
+
+Prototipo de la funci\'on:
+\textbf{int *merge(int **arr, int N, int *dim)}
+donde \textbf{arr} tiene la siguiente estructura:
+
+\textbf{N} es el n\'umero total de arreglos y \textbf{dim} es un arreglo de enteroscon la dimensi\'on de cada uno de los arreglos de entrada. La funci\'on regresa un apuntados hacia el arreglo mezclado y generado din\'amicamente dentro de la funci\'on \textbf{merge()}.
+
+\textbf{Nota}: Generar din\'amicamente todos los arreglos necesarios, e inicialice cada arreglo con valores aleatorios mediante la funci\'on \textbf{rand()}.
+\end{problem}
+\begin{solution}
+  
+\end{solution}
+% section Memoria Din\'amica (end)
+
+\bibliographystyle{plain}
+\bibliography{references}
+
+\end{document}
