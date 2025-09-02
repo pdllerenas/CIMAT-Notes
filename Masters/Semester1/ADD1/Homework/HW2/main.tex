@@ -1,0 +1,204 @@
+\documentclass{article}
+\usepackage[yyyymmdd]{datetime}
+\usepackage[nottoc]{tocbibind}
+\usepackage{xurl}
+\usepackage{array}
+\usepackage[inline,shortlabels]{enumitem}
+\usepackage{hhline}
+\usepackage{multirow}
+\usepackage{geometry}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{colortbl}
+\usepackage[framemethod=TikZ]{mdframed}
+\usepackage{amsfonts}
+\usepackage{tikz}
+\usepackage{amsthm}
+\usepackage{amsmath}
+\newtheoremstyle{problemstyle}{3pt}{3pt}{\normalfont}{}{\bfseries}{\normalfont\bfseries:}{.5em}{}
+\theoremstyle{problemstyle}
+\newmdtheoremenv[
+  linewidth=1pt,
+  linecolor=RoyalBlue,
+  backgroundcolor=RoyalBlue!10,
+  roundcorner=5pt,
+  innertopmargin=6pt,
+  innerbottommargin=6pt,
+  innerleftmargin=6pt,
+  innerrightmargin=6pt,
+  nobreak=true
+]{problem}{Problem}
+
+% Example
+\newmdtheoremenv[
+  linewidth=1pt,
+  linecolor=ForestGreen,
+  backgroundcolor=ForestGreen!10,
+  roundcorner=5pt,
+  nobreak=true
+]{example}{Example}
+
+% Theorem
+\newmdtheoremenv[
+  linewidth=1pt,
+  linecolor=BrickRed,
+  backgroundcolor=BrickRed!10,
+  roundcorner=5pt,
+  nobreak=true
+]{theorem}{Theorem}
+
+% Remark
+\newmdtheoremenv[
+  linewidth=1pt,
+  linecolor=Goldenrod,
+  backgroundcolor=Goldenrod!10,
+  roundcorner=5pt,
+  nobreak=true
+]{remark}{Remark}
+
+% Solution
+\newenvironment{solution}{%
+  \begin{mdframed}[linewidth=0.8pt,linecolor=Gray,backgroundcolor=Gray!5,roundcorner=5pt, nobreak=true]%
+  \noindent\textbf{Solution.}%
+}{%
+\hfill $ \diamond $ 
+  \end{mdframed}%
+}
+
+\usepackage{listings}
+
+
+% Make header with name and date etc.
+\usepackage{fancyhdr}
+\lhead{Pedro D. Llerenas\\M\'etodos Num\'ericos I}
+\rhead{\today\\Tarea II}
+\thispagestyle{fancy}
+
+\usepackage[utf8]{inputenc}
+\setlength{\parindent}{0pt} % Don't indent new paragraphs
+\setlength{\headheight}{24pt} 
+
+\newcommand{\Z}{\mathbb Z}
+\newcommand{\Q}{\mathbb Q}
+\newcommand{\R}{\mathbb R}
+\newcommand{\C}{\mathbb C}
+\newcommand{\N}{\mathbb N}
+\newcommand{\abs}[1]{\lvert #1 \rvert}
+\DeclareMathOperator{\Var}{\mathbf{Var}}
+\DeclareMathOperator{\E}{\mathbf{E}}
+
+
+\begin{document}
+
+%begin problel 1
+\begin{problem}
+Lee los detalles sobre la paradoja del fiscal (prosecutor’s fallacy) que se
+present\'o en Inglaterra: \url{https://forensicstats.org/blog/2018/02/16/misuse-statistics-courtroom-sally-clark-case} y \url{https://tomrocksmaths.com/2021/09/08/the-prosecutors-fallacy/}
+Describe algunas situaciones en Ciencias de la Computaci\''on donde se podr\'ia presentar el problema. La respuesta debe ser menos de una hoja.
+
+Ilustra que el fen\'omeno se presenta m\'as si la probabilidad de ocurencia
+del evento de inter\'es es chica.
+
+\end{problem}
+%end problem 1
+
+%begin solution 1
+\begin{solution}
+
+\end{solution}
+%end solution 1
+
+\begin{problem}
+Abajo los datos de mayo 2020 sobre el porcentaje de fallecimientos por COVID en Italia y China, desglosado por edad y tambi\'en un total. Se observa que por edad, China es siempre arriba de Italia pero en el total, es al rev\'es. Trata de encontrar una explicaci\'on para esta paradoja usando los conceptos vistos en clase.
+\end{problem}
+\begin{solution}
+
+\end{solution}
+
+\begin{problem}
+Supongamos que te contrataron como cient\'ifico de datos en una base aerea
+durante la segunda guerra mundial. Cada dia salen aviones para misiones
+de bombardeo. Estudias cada noche el da\~no en los aviones que regresan
+de su misi\'on. Aplicas tu algoritmo favorito de aprendizaje m\'aquina y
+reconocimiento de patrones para buscar cu\'ales partes se da\~nan m\'as y por
+ende valen la pena reforzar en los aviones. ¿Qu\'e sera una limitante muy
+fuerte para poder llegar a conclusiones contundentes?
+\end{problem}
+\begin{solution}
+
+\end{solution}
+
+\begin{problem}
+En la universidad \texttt{Nievrants} se inscribieron 200 alumnos. De una manera
+arbitraria, estos alumnos son divididos en 10 grupos de 10 alumnos y 1
+grupo de 100 alumnos. Tomamos un estudiante particular. Define $ X $ como
+el n\'umero de estudiantes en su grupo. Calcula $\E[X]$.
+
+Por otro lado, hay 11 maestros, cada uno es asignado arbitrariamente a
+un grupo. Tomamos un maestro en particular. Define $ Y $ como el n\'umero
+de estudiantes en su grupo. Calcula $ \E[Y] $.
+
+Compara $\E[X]$ con $\E[Y]$ , ¿qu\'e resulta? ¿por qu\'e?
+\end{problem}
+\begin{solution}
+	Tenemos dos formas de calcular $ \E[X] $. La m\'as simple consiste en notar que elegir al azar de manera uniforme nos da 10 la mitad de las veces, mientras que la otra mitad obtenemos 100. Es decir, el valor esperado es
+	\[
+		\frac{10}{2} + \frac{100}{2} = \frac{110}{2} = 55.
+	\]
+	Tambi\'en podemos obtener este resultado usando la definici\'on de valor esperado desde el primer paso. Notemos que hay 10 eventos en los cuales obtenemos $ X = 10 $, pero solo 1 con $ X = 100 $. Es decir,
+  \begin{align*}
+    \E[X] &= \sum_{x\in X} x P(X=x) \\ 
+          &= 100 P(X=100) + \sum_{i = 1}^{10} 10 P(X = 10)\\
+          &= 100 (P(X=100) + P(X = 10))\\
+          &= 100\left(\frac{100}{200} + \frac{10}{200}\right) \\
+          &= \frac{11000}{200} \\
+          &= 55.
+  \end{align*}
+\end{solution}
+
+\begin{problem}
+Tomamos dos v.a. discretas $ X $ y $ Y $. Alguien se pregunta cuando
+\[
+	\E[X/Y]\stackrel{?}{=}\frac{\E[X]}{\E[Y]}.
+\]
+Busca ejemplos cuando es cierto y cuando no es cierto.
+\end{problem}
+\begin{solution}
+
+\end{solution}
+
+\begin{problem}
+Una carta est\'a en uno de los 3 archiveros con igual probailidad. Llama $ q_i $ la probailidad de encontrarla buscando r\'apidamente en el archivero $ i $, si la carta se encuntra en $ i $ $ (i \in \{1,2,3\}) $. Buscaste r\'apidamente en el archivero 1 y no encontraste la carta. ¿Cu\'al es la probabilidad de que est\'e en este archivero?
+
+\end{problem}
+
+\begin{solution}
+
+\end{solution}
+
+\begin{problem}
+Sea $ X $ una v.a. con al siguiente distribuci\'on:
+\begin{center}
+	\begin{tabular}{c|c c c c}
+		         & 1   & 2   & 3   & 4   \\
+		\hline
+		$P(X=x)$ & 0.2 & 0.1 & 0.4 & 0.3
+	\end{tabular}
+\end{center}
+Calcula $ \E[X^2] $, $ \E[\abs{X-\E[X]}] $ y $ \Var(X + 1) $.
+Sean $ X_1, X_2 \sim X $ e independientes. Calcula $ P(X_1\neq X_2) $ y $ \Var(X_1X_2) $.
+
+\end{problem}
+
+\begin{solution}
+
+\end{solution}
+
+\begin{problem}
+Verifica que $ \Var(X) = \E[X_1-X_2]^2/2 $ si $ X_1,X_2\sim X $ e independientes. Lo anterior permite dar otra interpretacion a la varianza de $ X $: $ \Var(X) $ es proporcional a la esperanza de la distancia al cuadrado entre dos observaciones elegidas de $ X $.
+
+\end{problem}
+
+\bibliographystyle{plain}
+\bibliography{references}
+
+\end{document}
