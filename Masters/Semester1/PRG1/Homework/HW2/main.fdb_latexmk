@@ -1,5 +1,5 @@
 # Fdb version 4
-["bibtex main"] 0 "main.aux" "main.bbl" "main" 1756680577.75877 0
+["bibtex main"] 0 "main.aux" "main.bbl" "main" 1756870519.84138 0
   "/usr/share/texlive/texmf-dist/bibtex/bst/base/plain.bst" 1292289607 20613 bd3fbfa9f64872b81ac57a0dd2ed855f ""
   "main.aux" 0 -1 0 "pdflatex"
   "references.bib" 0 -1 0 ""
@@ -7,7 +7,7 @@
   "main.bbl"
   "main.blg"
   (rewritten before read)
-["pdflatex"] 1756680576.64018 "main.tex" "main.pdf" "main" 1756680577.75897 0
+["pdflatex"] 1756870518.76377 "main.tex" "main.pdf" "main" 1756870519.84156 0
   "/etc/texmf/web2c/texmf.cnf" 1755728201.00949 475 c0e671620eb5563b2130f56340a5fde8 ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm" 1246382020 1004 54797486969f23fa377b128694d548df ""
@@ -158,9 +158,9 @@
   "/usr/share/texmf/web2c/texmf.cnf" 1707919699 40399 f2c302f7d2af602abb742093540a5834 ""
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1755731056.5779 5472669 54eaf61a88b6b7896ebd0dac973cb29c ""
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1755731161 8211422 8d1c1e18edcfbee81c6804f1510d4e27 ""
-  "main.aux" 1756680577.47026 758 51a513e652a1415a9c29b33e3b18362d "pdflatex"
+  "main.aux" 1756870519.56019 758 274deddfd8558b1875ff3186f91bb231 "pdflatex"
   "main.bbl" 0 -1 0 "bibtex main"
-  "main.tex" 1756680576.00248 7785 0057070aaaf0dc10edc53efacb392cc8 ""
+  "main.tex" 1756870516.67091 7880 9a4ba0f0b8672aa73f675dcc2e2bd8c0 ""
   (generated)
   "main.aux"
   "main.log"

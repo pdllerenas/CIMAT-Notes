@@ -92,7 +92,7 @@
 	\item \textbf{int longitud\_str(str)}: Funci\'on que regrese la longitud de un string \texttt{str} (sin contar el caracter nulo);
 	\item \textbf{char *copia\_str(dst, src)}: copia el string \texttt{src} a \texttt{dst}, incluyendo el caracter nulo $\backslash$\texttt{0}; regresa un apuntador a \texttt{dst}.
 	      \textbf{Nota:} La funci\'on debe verificar que los strings no est\'en superpuestos y si hay suficiente espacio en \texttt{dst} para copiar \texttt{src}; en caso que no, incluir solo hasta donde sea posible almacenar en \texttt{dst};
-	\item \textbf{int compara\_str(str1, str2)}: Funci\'on que concatene tres strings (en el orden dado) separados por un espacio y los almacene en \texttt{str1}; debe regresar la nueva longitud de \texttt{str1};
+	\item \textbf{int compara\_str(str1, str2)}: Funci\'on que compare lexicogr\'aficamente dos strings y regrese un n\'umero mayor que, igual a o menor que cero, si \texttt{str1} es mayor que, igual a o menor que \texttt{str2}. El valor que regrese debe coincidir con la diferencia en magnitud del caracter actual comparado;
 	\item \textbf{int concatena\_str(str1, str2, str3)}: Funci\'on que concatene tres strings (en el orden dado) separados por un espacio y alamacene en \texttt{str1}; debe regresar la nueva longitud de \texttt{str1};
 	      \textbf{Nota}: La funci\'on debe verificar que los strings no est\'en superpuestos y si hay suficiente espacio en \texttt{str1} para almacenar todos los strings; en caso que no, incluir solo hasta donde sea posible almacenar en \texttt{str1};
 	\item \textbf{int encuentra\_str(str1, str2)}: Funci\'on que busque un sub-string \texttt{str1} en \texttt{str2} y regrese el n\'umero de veces que lo encuentra.
@@ -111,7 +111,7 @@
 
 \section*{Arreglos Bidimensionales}\label{sec:arreglos_bidimensionales} % (fold)
 \begin{problem}
-  (10\%) Escribir un programa que genere una caminata aleatoria en una matriz de 10x10. El arreglo debe contener inicialmente puntos `.', y debe recorrerse basado en el residuo de un n\'umero aleatoria (usar \textbf{srand()} y \textbf{rand()}) cuyos resultado puede ser {0 (arriba), 1 (abajo), 2 (izq), 3 (der)}, que indican la direcci\'on a moverse. A) Verificar que el movimiento no se salga del arreglo de la matriz, y B) No se puede visitar el mismo lugar más de una vez. Si alguna de estas condiciones se presenta, intentar moverse hacia otra direcci\'on definida; si todas las posiciones están ocupadas, finalizar el programa e imprimir el resultado.
+(10\%) Escribir un programa que genere una caminata aleatoria en una matriz de 10x10. El arreglo debe contener inicialmente puntos `.', y debe recorrerse basado en el residuo de un n\'umero aleatoria (usar \textbf{srand()} y \textbf{rand()}) cuyos resultado puede ser {0 (arriba), 1 (abajo), 2 (izq), 3 (der)}, que indican la direcci\'on a moverse. A) Verificar que el movimiento no se salga del arreglo de la matriz, y B) No se puede visitar el mismo lugar más de una vez. Si alguna de estas condiciones se presenta, intentar moverse hacia otra direcci\'on definida; si todas las posiciones están ocupadas, finalizar el programa e imprimir el resultado.
 \end{problem}
 
 \begin{solution}
@@ -152,30 +152,30 @@
 \begin{problem}
 (20\%) Dado una lista de nombres (string) de $ N $ personas (apellido\_paterno, apellido\_materno, nombre(s)), escribir una funci\'on que ordene los nombres alfab\'eticamente usando un arreglo de apuntadores:
 \begin{center}
-  char **crea\_arreglo(char **arr, \dots)\\
-  char **ordena(char **arr,\dots)
+	char **crea\_arreglo(char **arr, \dots)\\
+	char **ordena(char **arr,\dots)
 \end{center}
 Los nombres pueden tener distinta longitud, pero la memoria que ocupan debe ser la justa (sin desperdicio); cuando un nombre sea prefijo de otro, considerar al nombre m\'as corto como menor. El ordenamiento debe ser a trav\'es de una funci\'on que reciba el arreglo de apuntadores.
 \end{problem}
 \begin{solution}
-  
+
 \end{solution}
 
 \begin{problem}
-  (20\%) Separe un string en tokens de acuerdo a un caracter especial dado como entrada (puede ser espacio, /, \%, etc.) y que regrese un arreglo que apunte a cada uno de los tokens esperados:
+(20\%) Separe un string en tokens de acuerdo a un caracter especial dado como entrada (puede ser espacio, /, \%, etc.) y que regrese un arreglo que apunte a cada uno de los tokens esperados:
 \begin{center}
-  char **tokens(char *str, char ch)
+	char **tokens(char *str, char ch)
 \end{center}
- o NULL en caso de no encontrar alg\'un token.
-  
+o NULL en caso de no encontrar alg\'un token.
+
 \end{problem}
 
 \begin{solution}
-  
+
 \end{solution}
 
 \begin{problem}
- Escriba una funci\'on que reciba $ N $ arreglos de enteros ordenados de menor a mayor, y mezcle los arreglos en un solo arreglo ordenado de igual forma. 
+Escriba una funci\'on que reciba $ N $ arreglos de enteros ordenados de menor a mayor, y mezcle los arreglos en un solo arreglo ordenado de igual forma.
 
 Prototipo de la funci\'on:
 \textbf{int *merge(int **arr, int N, int *dim)}
@@ -186,7 +186,7 @@ donde \textbf{arr} tiene la siguiente estructura:
 \textbf{Nota}: Generar din\'amicamente todos los arreglos necesarios, e inicialice cada arreglo con valores aleatorios mediante la funci\'on \textbf{rand()}.
 \end{problem}
 \begin{solution}
-  
+
 \end{solution}
 % section Memoria Din\'amica (end)
 
