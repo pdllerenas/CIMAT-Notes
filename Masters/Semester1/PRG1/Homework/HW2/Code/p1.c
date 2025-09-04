@@ -26,12 +26,16 @@ int main() {
   // printf("%d\n", encuentra_str(str_find, str_src));
   const char *str_freq = "adslfalksfjlqwerqwr";
 
-  int(*freq)[2] = frecuencia(str_freq);
+  int(*freq)[2] = frecuencia(str_src);
+
   for (int j = 0; j < 26; j++) {
     if (freq[j][1] == 0)
       continue;
     printf("%c - %d\n", freq[j][0], freq[j][1]);
   }
+  free(freq);
+
+  sin_repetir(str_src);
   return 0;
 }
 
@@ -134,7 +138,7 @@ int **frecuencia(const char *str) {
   if (*str == '\0')
     return 0;
   int(*freq)[2] =
-      malloc(26 * sizeof(int)); // assuming 26 lower-case letters a-z (no ~n)
+      malloc(26 * sizeof(*freq)); // assuming 26 lower-case letters a-z (no ~n)
 
   for (int i = 0; i < 26; i++) {
     freq[i][0] = 'a' + i;
@@ -146,7 +150,31 @@ int **frecuencia(const char *str) {
       freq[*str - 'a'][1] += 1;
     str++;
   }
-  printf("%c - %d\n", freq[0][0], freq[0][1]);
 
   return freq;
+}
+
+char *sin_repetir(const char *str) {
+  char word[30];
+  char *ptr = word;
+
+  while (*str) {
+    *ptr = *str;
+    ptr++;
+    str++;
+    if (*str == ' ' || *str == '\0') {
+      *ptr = '\0';
+      ptr = word;
+      int(*freq)[2] = frecuencia(ptr);
+      for (int i = 0; i < 26; i++) {
+        if (freq[i][1] > 1)
+          break;
+        if (i == 25) {
+          printf("%s\n", word);
+        }
+      }
+      ptr = word;
+    }
+  }
+  return ptr;
 }
