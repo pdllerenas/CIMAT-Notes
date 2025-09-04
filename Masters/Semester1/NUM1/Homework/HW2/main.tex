@@ -11,6 +11,7 @@
 \usepackage{colortbl}
 \usepackage[framemethod=TikZ]{mdframed}
 \usepackage{amsfonts}
+\usepackage{amsmath}
 \usepackage{tikz}
 \usepackage{amsthm}
 \newtheoremstyle{problemstyle}{3pt}{3pt}{\normalfont}{}{\bfseries}{\normalfont\bfseries:}{.5em}{}
@@ -56,7 +57,7 @@
 
 % Solution
 \newenvironment{solution}{%
-  \begin{mdframed}[linewidth=0.8pt,linecolor=Gray,backgroundcolor=Gray!5,roundcorner=5pt, nobreak=true]%
+  \begin{mdframed}[linewidth=0.8pt,linecolor=Gray,backgroundcolor=Gray!5,roundcorner=5pt]%
   \noindent\textbf{Solution.}%
 }{%
 \hfill $ \diamond $ 
@@ -89,52 +90,77 @@
 
 % chapter M\'etodos iterativos para ecuaciones no lineales (end)
 \begin{problem}
-  Escribe un programa para calcular la constante matem\'atica $ e $, considerando la definici\'on
-  \[
-    e = \lim_{n\to\infty} \left(1+\frac{1}{n}\right)^{n},
-  \]
-  es decir, calcula $ (1+1/n)^n $ para $ n = 10^k $, $ k = 1, 2,\dots, 20. $ Determina el error relativo y absoluto de las aproximaciones compar\'andolas con $ \exp(1) $. \textbf{(1 punto)}
+Escribe un programa para calcular la constante matem\'atica $ e $, considerando la definici\'on
+\[
+	e = \lim_{n\to\infty} \left(1+\frac{1}{n}\right)^{n},
+\]
+es decir, calcula $ (1+1/n)^n $ para $ n = 10^k $, $ k = 1, 2,\dots, 20. $ Determina el error relativo y absoluto de las aproximaciones compar\'andolas con $ \exp(1) $. \textbf{(1 punto)}
 \end{problem}
 \begin{solution}
+	\lstinputlisting[caption=Calcula el n-\'esimo t\'ermino del l\'imite de e, language=C, breaklines=true]{./Code/p1.c}
 
+	Este nos genera la list
+	\begin{align*}
+    e_{10^{1}} &= 2.593742460100002\\
+    e_{10^{2}} &= 2.704813829421528\\
+    e_{10^{3}} &= 2.716923932235594\\
+    e_{10^{4}} &= 2.718145926824926\\
+    e_{10^{5}} &= 2.718268237192297\\
+    e_{10^{6}} &= 2.718280469095753\\
+    e_{10^{7}} &= 2.718281694132082\\
+    e_{10^{8}} &= 2.718281798347358\\
+    e_{10^{9}} &= 2.718282052011560\\
+    e_{10^{10}} &= 2.718282053234788\\
+    e_{10^{11}} &= 2.718282053357110\\
+    e_{10^{12}} &= 2.718523496037238\\
+    e_{10^{13}} &= 2.716110034086901\\
+    e_{10^{14}} &= 2.716110034087023\\
+    e_{10^{15}} &= 3.035035206549262\\
+    e_{10^{16}} &= 1.000000000000000\\
+    e_{10^{17}} &= 1.000000000000000\\
+    e_{10^{18}} &= 1.000000000000000\\
+    e_{10^{19}} &= 1.000000000000000\\
+    e_{10^{20}} &= 1.000000000000000
+	\end{align*}
+  Notemos que en el t\'ermino 15, la computadora deja de producir un valor prudente. Esto se debe a que un doble tiene precision de 15 digitos. Para este punto, $1/10^{15}$ tiene el decimal en el \'ultimo punto de precisi\'on. Entonces, al elevar a este mismo t\'ermino, quedamos con algo que ser\'a impreciso. Para el t\'ermino 16, $1/10^{16}$ ya es redondeado a 0 por el sistema. Entonces, solamente nos queda $ 1^{10^k} = 1 $.
 \end{solution}
 
 \begin{problem}
-  La ecuaci\'on $ x^3+x = 6 $ tiene una ra\'iz en el intervalo $ [1.55, 1.75] $, ¿cu\'antas iteracions se necesitan para obtner una aproximaci\'on de la raiz con error menor a 0.0001 con el m\'etodo de bisecci\'on? Verifica con el m\'etodo de bisecci\'on tu predicci\'on de la ra\'iz. \textbf{(2 puntos)}
+La ecuaci\'on $ x^3+x = 6 $ tiene una ra\'iz en el intervalo $ [1.55, 1.75] $, ¿cu\'antas iteracions se necesitan para obtener una aproximaci\'on de la raiz con error menor a 0.0001 con el m\'etodo de bisecci\'on? Verifica con el m\'etodo de bisecci\'on tu predicci\'on de la ra\'iz. \textbf{(2 puntos)}
 \end{problem}
 \begin{solution}
   
 \end{solution}
 
 \begin{problem}
-  Hallar una ra\'iz de $ f(x) = x^4 + 3x^2 - 2 $ por medio de las siguientes 4 formulaciones de punto fijo utilizando $ p_0 = 1 $:
+Hallar una ra\'iz de $ f(x) = x^4 + 3x^2 - 2 $ por medio de las siguientes 4 formulaciones de punto fijo utilizando $ p_0 = 1 $:
 \begin{center}
-  \begin{enumerate*}[label=\alph*),itemjoin=\qquad]
-    
-    \item $\displaystyle x = \sqrt{\frac{2-x^4}{3}} $,
-    \item $\displaystyle x = (2-3x^2)^{\frac{1}{4}}$,
-    \item $\displaystyle x = \frac{2-x^4}{3x} $,
-    \item $\displaystyle x = \left(\frac{2-3x^2}{x}\right)^{\frac{1}{3}}$ 
-  \end{enumerate*}
+	\begin{enumerate*}[label=\alph*),itemjoin=\qquad]
+
+		\item $\displaystyle x = \sqrt{\frac{2-x^4}{3}} $,
+		\item $\displaystyle x = (2-3x^2)^{\frac{1}{4}}$,
+		\item $\displaystyle x = \frac{2-x^4}{3x} $,
+		\item $\displaystyle x = \left(\frac{2-3x^2}{x}\right)^{\frac{1}{3}}$
+	\end{enumerate*}
 \end{center}
 
-  \begin{enumerate}
-    \item Las ra\'ices de $ f(x) $ deben de coincidir con las ra\'ices de $ x-g(x) $. Grafica $ f(x) $ y $ x-g(x) $. Comenta lo observado. \textbf{(1 punto)}
-      
-    \item Crea una talba comparativa para comparar el resultado de las raices de $f(x) $ con la raiz alcanzada con cada una de las formulaciones. Usa maximo 20 iteraciones y tol = 0.0001. Explica lo sucedido. \textbf{(2 puntos)}
-  \end{enumerate}
+\begin{enumerate}
+	\item Las ra\'ices de $ f(x) $ deben de coincidir con las ra\'ices de $ x-g(x) $. Grafica $ f(x) $ y $ x-g(x) $. Comenta lo observado. \textbf{(1 punto)}
+
+	\item Crea una talba comparativa para comparar el resultado de las raices de $f(x) $ con la raiz alcanzada con cada una de las formulaciones. Usa maximo 20 iteraciones y tol = 0.0001. Explica lo sucedido. \textbf{(2 puntos)}
+\end{enumerate}
 \end{problem}
 \begin{solution}
-  
+
 \end{solution}
 
 \begin{problem}
-  Utiliza el m\'etodo de bisecci\'on, m\'etodo de Newton, m\'etodo de la secante y m\'etodo de al falsa posici\'on para comparar los resultados de los siguientes problemas:
-  Encontrar $ \lambda $ con una presici\'on de $ 10^{-4} $ y $ N_{iter, max} = 100 $, para a ecuaci\'on de la poblaci\'on en t\'erminos de la tasa de natalidad $ \lambda $,
-  \[
-    P(\lambda) = 1,000,000 e^{\lambda} + \frac{435,000}{\lambda}(e^{\lambda} - 1)
-  \]
-  para $ P(\lambda) = 1,564,000 $ individuos por a\~nos. Usa $ \lambda_0 = 0.01 $. (Sugerencia: graficar $ P(\lambda) - N $) \textbf{(4 puntos)}
+Utiliza el m\'etodo de bisecci\'on, m\'etodo de Newton, m\'etodo de la secante y m\'etodo de al falsa posici\'on para comparar los resultados de los siguientes problemas:
+Encontrar $ \lambda $ con una presici\'on de $ 10^{-4} $ y $ N_{iter, max} = 100 $, para a ecuaci\'on de la poblaci\'on en t\'erminos de la tasa de natalidad $ \lambda $,
+\[
+	P(\lambda) = 1,000,000 e^{\lambda} + \frac{435,000}{\lambda}(e^{\lambda} - 1)
+\]
+para $ P(\lambda) = 1,564,000 $ individuos por a\~nos. Usa $ \lambda_0 = 0.01 $. (Sugerencia: graficar $ P(\lambda) - N $) \textbf{(4 puntos)}
 \end{problem}
 
 
