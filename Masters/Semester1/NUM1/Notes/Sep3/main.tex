@@ -1,0 +1,178 @@
+\documentclass{article} 
+\usepackage[yyyymmdd]{datetime}
+\usepackage[nottoc]{tocbibind}
+\usepackage{xurl}
+\usepackage{array}
+\usepackage[inline,shortlabels]{enumitem}
+\usepackage{hhline}
+\usepackage{multirow}
+\usepackage{geometry}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{colortbl}
+\usepackage[framemethod=TikZ]{mdframed}
+\usepackage{amsfonts}
+\usepackage{mathtools}
+\usepackage{tikz}
+\usepackage{amsthm}
+\usepackage{amsmath}
+\newtheoremstyle{problemstyle}{3pt}{3pt}{\normalfont}{}{\bfseries}{\normalfont\bfseries:}{.5em}{}
+\theoremstyle{problemstyle}
+\newmdtheoremenv[
+  linewidth=1pt,
+  linecolor=RoyalBlue,
+  backgroundcolor=RoyalBlue!10,
+  roundcorner=5pt,
+  innertopmargin=6pt,
+  innerbottommargin=6pt,
+  innerleftmargin=6pt,
+  innerrightmargin=6pt,
+  nobreak=true
+]{problem}{Problem}
+
+% Example
+\newmdtheoremenv[
+  linewidth=1pt,
+  linecolor=ForestGreen,
+  backgroundcolor=ForestGreen!10,
+  roundcorner=5pt,
+  nobreak=true
+]{example}{Example}
+
+% Theorem
+\newmdtheoremenv[
+  linewidth=1pt,
+  linecolor=BrickRed,
+  backgroundcolor=BrickRed!10,
+  roundcorner=5pt,
+  nobreak=true
+]{theorem}{Theorem}
+
+% Remark
+\newmdtheoremenv[
+  linewidth=1pt,
+  linecolor=Goldenrod,
+  backgroundcolor=Goldenrod!10,
+  roundcorner=5pt,
+  nobreak=true
+]{remark}{Remark}
+
+\newmdtheoremenv[
+  linewidth=1pt,
+  linecolor=Goldenrod,
+  backgroundcolor=Goldenrod!10,
+  roundcorner=5pt,
+  nobreak=true
+  ]{definition}{Definition}
+
+% Solution
+\newenvironment{solution}{%
+  \begin{mdframed}[linewidth=0.8pt,linecolor=Gray,backgroundcolor=Gray!5,roundcorner=5pt, nobreak=true]%
+  \noindent\textbf{Solution.}%
+}{%
+\hfill $ \diamond $ 
+  \end{mdframed}%
+}
+
+\usepackage{listings}
+\usepackage[utf8]{inputenc}
+\setlength{\parindent}{0pt} % Don't indent new paragraphs
+\setlength{\headheight}{24pt} 
+% Make header with name and date etc.
+\usepackage{fancyhdr}
+\lhead{Pedro D. Llerenas\\M\'etodos Num\'ericos I}
+\rhead{\today\\Tarea II}
+\thispagestyle{fancy}
+
+\newcommand{\Z}{\mathbb Z}
+\newcommand{\Q}{\mathbb Q}
+\newcommand{\R}{\mathbb R}
+\newcommand{\C}{\mathbb C}
+\newcommand{\N}{\mathbb N}
+\newcommand{\abs}[1]{\lvert #1 \rvert}
+\DeclareMathOperator{\Var}{\mathbf{Var}}
+\DeclareMathOperator{\E}{\mathbf{E}}
+\newcommand{\A}{\mathbf A}
+\newcommand{\x}{\mathbf x}
+\newcommand{\bv}{\mathbf b}
+
+\begin{document}
+  \section{Problemas Lineales}\label{sec:problemas_lineales} % (fold)
+  
+  Queremos estudiar problemas del tipo
+  \[
+    \A \x = \bv,
+  \]
+  donde 
+  \[
+    \A = [a_{i j}]_{i, j = 1}^{n}
+  \]
+  \begin{itemize}
+    \item Solucion de matriz diagonal con 
+      \[
+        a_{ii} \neq 0\qquad a_{ij} = 0 \quad \forall i\neq j
+      \]
+      Entonces,
+      \[
+        \A\x = \bv
+      \]
+      tiene soluciones $ x_i =b_{i}/a_{ii} $.
+    \item Soluciones de matriz triangular inferior
+      % \begin{cases*}
+      %   a_{ij} = l_{ij} & i\leq j\\
+      %   a_{ij} = 0 & i> j
+      % \end{cases*}
+  
+      resolvemos de arriba hacia abajo:
+      \begin{align*}
+        x_1 &= b_{1}/l_{11},\\
+        x_2 &= \frac{b_2 - l_{11}x_1}{l_{22}}\\
+        x_k &= \frac{b_{k} - \sum l_{ii}x_i}{l_{kk}}
+      \end{align*}
+    \item Solcionces de matriz triangular superior
+      % \begin{cases}
+      %   a_{ij} = l_{ij} & i\geq j\\
+      %   a_{ij} = 0 & i< j
+      % \end{cases}
+
+
+  \end{itemize}
+  \subsection{Gauss-Jordan}
+  Este algoritmo consiste en traingulizar la matriz. \textbf{INSERTAR FORMULA:}
+  Como este m'etodo es costoso, hacemos \textit{pivoteo}, que consiste en cambiar columnas y filas, de tal manera que ponemos el mayor valor de la matriz en la diagonal, luego continuamos el proceso. Esto se hace para que las divisiones sean entre n\'umeros grandes, y tener un algoritmo consistente. 
+
+  \subsection{Calcular inversas}
+  Para encontrar la matriz inversa mediante Gauss-Jordan aumentado, estamos solucionando el sistema de ecuaciones $ n $ veces. Entonces, con los algoritmos vistos para resolver el sistema de ecuaciones, podemos hacerlo para $ \bv = e_i $, donde $ e_i = (0,\dots, 1, \dots, 0) $. 
+  \subsection{Descomposicion LU}
+
+  \begin{align*}
+    \begin{bmatrix}
+      a_{11} & a_{12} & \dots & a_{1n}\\
+      a_{21} & a_{22} &\dots & a_{2n}\\
+      \vdots & & &\vdots\\
+      a_{n1} & a_{n2} & \dots & a_{nn}
+    \end{bmatrix} = 
+    \begin{bmatrix}
+      l_{11} & 0 & \dots & 0\\
+      l_{21} & l_{22} &\dots & 0\\
+      \vdots & & &\vdots\\
+      l_{n1} & l_{n2} & \dots & l_{nn}
+    \end{bmatrix}  
+    \begin{bmatrix}
+      1 & u_{12} & \dots & u_{1n}\\
+      0 & 1&\dots & u_{2n}\\
+      \vdots & & &\vdots\\
+      0 & 0 & \dots & 1
+    \end{bmatrix}  
+  \end{align*}
+
+  We can calculate 
+\begin{align*}
+  a_{11} &= l_{11}\\
+  a_{21} &= l_{21}\\
+  a_{12} &= l_{11}u_{12} \implies u_{12} = \displaystyle\frac{a_{12}}{l_{11}}
+  a_{ik} &= Pending
+\end{align*}
+  % section Problemas Lineales (end)
+
+  
+\end{document}
