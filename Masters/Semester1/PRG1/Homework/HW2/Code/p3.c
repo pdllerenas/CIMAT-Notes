@@ -46,17 +46,27 @@ That is, the number of bytes occupied by the number 0 in the array a.
  */
 
 int zeros(int *a, int n, int m) {
-  int zeros = 0, *p;
-  for (p = a; p < a + n * m; p++) {
-    if (*p == 0)
-      zeros += sizeof(int);
+  int byte_zero = 0;
+  // the following pointers can also be signed
+  unsigned char *ptr = (unsigned char *)a; // ptr points to a
+
+  // END pointer is our limiter
+  unsigned char *END = (unsigned char *)(a + n * m);
+  for (; ptr < END; ptr++) {
+    printf("%d\n", *ptr);
+    if (*ptr == 0) // since pointer is 1 byte long, we only need to check if
+                   // this char is 0
+      byte_zero++;
   }
-  return zeros;
+  return byte_zero;
 }
 
 int main() {
   unsigned int N, M;
-  scanf("%ud, %ud", &N, &M);
+
+  printf("Enter row and columns formatted as 'N,M':\n");
+  scanf("%d,%d", &N, &M);
+  printf("N = %d, M = %d\n", N, M);
   int row_max[N]; // array to store the max of each row
   int col_max[M]; // array to store the max of each column
   for (int k = 0; k < N; k++) {
@@ -67,9 +77,6 @@ int main() {
     col_max[k] =
         INT_MIN; // initialize col_max to negative inf (minimum integer)
   }
-
-  printf("Enter row and columns formatted as 'N,M':\n");
-  printf("N = %d, M = %d\n", N, M);
 
   // array which will be used to store the values entered by the user
 
@@ -84,14 +91,14 @@ int main() {
     scanf("%d", p++); // assign scanned value to whatever p is pointing to, then
                       // increment it by 1 (that is, sizeof(int))
   }
-  max_col_row((int *)a, N, M, row_max,
-              col_max); // calculate row and col max, which will be stored in
-                        // row_max and col_max.
+  // max_col_row((int *)a, N, M, row_max,
+  //             col_max); // calculate row and col max, which will be stored in
+  //                       // row_max and col_max.
+  //
+  // print_array(row_max, 1, N); // print row_max values
+  // print_array(col_max, 1, M); // print col_max values
 
-  print_array(row_max, 1, N); // print row_max values
-  print_array(col_max, 1, M); // print col_max values
-
-  printf("0's used %d bytes of array a\n",
+  printf("number of zero bytes in array a is %d\n",
          zeros((int *)a, N, M)); // print number of bytes used by the zeros
                                  // entered into the array a
 }
