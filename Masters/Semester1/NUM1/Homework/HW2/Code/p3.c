@@ -11,10 +11,10 @@ double g3(float x) { return (2 - x * x * x * x) / (3 * x); }
 double g4(float x) { return pow((2 - 3 * x * x) / x, 1.0 / 3); }
 
 double fixed_point_iteration(double p0, double TOLERANCE,
-                             unsigned int MAX_ITER) {
+                             unsigned int MAX_ITER, double(*f)(float)) {
   unsigned int N = 1;
   while (N <= MAX_ITER) {
-    double p = g4(p0);
+    double p = f(p0);
     if (fabs(p - p0) < TOLERANCE) {
       return p;
     }
@@ -22,10 +22,13 @@ double fixed_point_iteration(double p0, double TOLERANCE,
     p0 = p;
   }
   fprintf(stderr, "Method failed after %d iterations.\n", N);
-  exit(1);
+  return 0;
 }
 
 int main() {
-  printf("root = %lf\n", fixed_point_iteration(1, 0.0001, 20));
+  printf("g1: root = %lf\n", fixed_point_iteration(1, 0.0001, 20, g1));
+  printf("g2: root = %lf\n", fixed_point_iteration(1, 0.0001, 20, g2));
+  printf("g3: root = %lf\n", fixed_point_iteration(1, 0.0001, 20, g3));
+  printf("g4: root = %lf\n", fixed_point_iteration(1, 0.0001, 20, g4));
   return 0;
 }
