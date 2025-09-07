@@ -2,11 +2,10 @@
 \usepackage[yyyymmdd]{datetime}
 \usepackage[shortlabels]{enumitem}
 \usepackage[nottoc]{tocbibind}
-\usepackage{url}
 \usepackage{array}
 \usepackage{hhline}
 \usepackage{multirow}
-\usepackage{geometry}
+\usepackage[margin=1in]{geometry}
 \usepackage[dvipsnames]{xcolor}
 \usepackage{colortbl}
 \usepackage[framemethod=TikZ]{mdframed}
@@ -55,15 +54,17 @@
 ]{remark}{Remark}
 
 % Solution
-\newenvironment{solution}{%
-  \begin{mdframed}[linewidth=0.8pt,linecolor=Gray,backgroundcolor=Gray!5,roundcorner=5pt, nobreak=true]%
-  \noindent\textbf{Solution.}%
+\newenvironment{solution}[2]{%
+  \begin{mdframed}[linewidth=0.8pt,linecolor=Gray,backgroundcolor=Gray!5,roundcorner=5pt, nobreak=#2]%
+    \noindent\textbf{Solution\if\relax\detokenize{#1}\relax\else~(#1)\fi.}%
 }{%
 \hfill $ \diamond $ 
   \end{mdframed}%
 }
 
 \usepackage{listings}
+
+\lstset{breaklines=true}
 
 
 % Make header with name and date etc.
@@ -99,12 +100,29 @@
 	\item \textbf{int **frecuencia(str)}: Encuentre la frecuencia de cada elemento de \texttt{str}, y regrese un arreglo bidimensional donde se almacene la letra (1er columna) y frecuencia (2da columna).
 	      \textbf{Salida}: w --- 1, r --- 5, s --- 4, etc\dots
 	      \textbf{Nota}: En este ejercicio puede usar memora est\'atica o din\'amica.
-
 	\item \textbf{char *sin\_repetir(str)}: Funci\'on que encuentre las palabras en \texttt{str} que no tengan letras repetidas y las imprima (dentro de la misma funci\'on por simplicidad).
 \end{enumerate}
 \end{problem}
-\begin{solution}
-
+\begin{solution}{a}{true}
+  \lstinputlisting[language=C, caption=Programa que regresa la longitud de un string., firstline=5, lastline=11]{./Code/string.c}
+\end{solution}
+\begin{solution}{b}{true}
+  \lstinputlisting[language=C, caption=Programa que regresa la longitud de un string., firstline=13, lastline=44]{./Code/string.c}
+\end{solution}
+\begin{solution}{c}{true}
+  \lstinputlisting[language=C, caption=Programa que regresa la longitud de un string., firstline=46, lastline=61]{./Code/string.c}
+\end{solution}
+\begin{solution}{d}{true}
+  \lstinputlisting[language=C, caption=Programa que regresa la longitud de un string., firstline=63, lastline=91]{./Code/string.c}
+\end{solution}
+\begin{solution}{e}{true}
+  \lstinputlisting[language=C, caption=Programa que regresa la longitud de un string., firstline=93, lastline=124]{./Code/string.c}
+\end{solution}
+\begin{solution}{f}{true}
+  \lstinputlisting[language=C, caption=Programa que regresa la longitud de un string., firstline=126, lastline=148]{./Code/string.c}
+\end{solution}
+\begin{solution}{g}{true}
+  \lstinputlisting[language=C, caption=Programa que regresa la longitud de un string., firstline=150, lastline=180]{./Code/string.c}
 \end{solution}
 % section Strings (end)
 
@@ -114,8 +132,8 @@
 (10\%) Escribir un programa que genere una caminata aleatoria en una matriz de 10x10. El arreglo debe contener inicialmente puntos `.', y debe recorrerse basado en el residuo de un n\'umero aleatoria (usar \textbf{srand()} y \textbf{rand()}) cuyos resultado puede ser {0 (arriba), 1 (abajo), 2 (izq), 3 (der)}, que indican la direcci\'on a moverse. A) Verificar que el movimiento no se salga del arreglo de la matriz, y B) No se puede visitar el mismo lugar más de una vez. Si alguna de estas condiciones se presenta, intentar moverse hacia otra direcci\'on definida; si todas las posiciones están ocupadas, finalizar el programa e imprimir el resultado.
 \end{problem}
 
-\begin{solution}
-
+\begin{solution}{}{false}
+  \lstinputlisting[language=C, caption=Programa que regresa la longitud de un string.]{./Code/p2.c}
 \end{solution}
 
 \begin{problem}
@@ -142,7 +160,7 @@
 \end{enumerate}
 
 \end{problem}
-\begin{solution}
+\begin{solution}{}{true}
 
 \end{solution}
 % section Arreglos Bidimensionales (end)
@@ -150,14 +168,14 @@
 
 \section*{Memoria Din\'amica}\label{sec:memoria_din_amica} % (fold)
 \begin{problem}
-(20\%) Dado una lista de nombres (string) de $ N $ personas (apellido\_paterno, apellido\_materno, nombre(s)), escribir una funci\'on que ordene los nombres alfab\'eticamente usando un arreglo de apuntadores:
+(20\%) Dado una lista de nombres (string) de $ N $ personas (apellido\_paterno, apellido\_materno y nombre(s)), escribir una funci\'on que ordene los nombres alfab\'eticamente usando un arreglo de apuntadores:
 \begin{center}
 	char **crea\_arreglo(char **arr, \dots)\\
 	char **ordena(char **arr,\dots)
 \end{center}
 Los nombres pueden tener distinta longitud, pero la memoria que ocupan debe ser la justa (sin desperdicio); cuando un nombre sea prefijo de otro, considerar al nombre m\'as corto como menor. El ordenamiento debe ser a trav\'es de una funci\'on que reciba el arreglo de apuntadores.
 \end{problem}
-\begin{solution}
+\begin{solution}{}{true}
 
 \end{solution}
 
@@ -170,7 +188,7 @@ o NULL en caso de no encontrar alg\'un token.
 
 \end{problem}
 
-\begin{solution}
+\begin{solution}{}{true}
 
 \end{solution}
 
@@ -185,7 +203,7 @@ donde \textbf{arr} tiene la siguiente estructura:
 
 \textbf{Nota}: Generar din\'amicamente todos los arreglos necesarios, e inicialice cada arreglo con valores aleatorios mediante la funci\'on \textbf{rand()}.
 \end{problem}
-\begin{solution}
+\begin{solution}{}{true}
 
 \end{solution}
 % section Memoria Din\'amica (end)
