@@ -65,6 +65,32 @@
 \usepackage{listings}
 
 \lstset{breaklines=true}
+\definecolor{vscode-blue}{RGB}{64, 116, 160}   % Keywords
+\definecolor{vscode-green}{RGB}{95, 203, 114}   % Strings
+\definecolor{vscode-gray}{RGB}{128, 128, 128}   % Comments
+\definecolor{vscode-orange}{RGB}{206, 145, 120} % Numbers/Constants
+\definecolor{vscode-purple}{RGB}{204, 124, 255} % Functions/Types
+\definecolor{vscode-cyan}{RGB}{155, 199, 217}   % Preprocessor
+
+\lstdefinestyle{visual-studio}{
+    language=C,
+    backgroundcolor=\color{Gray!5},
+    commentstyle=\color{vscode-gray}\ttfamily,
+    keywordstyle=\color{vscode-blue}\ttfamily,
+    stringstyle=\color{vscode-green}\ttfamily,
+    numberstyle=\color{vscode-orange}\ttfamily,
+    identifierstyle=\color{black}\ttfamily,
+    breaklines=true,
+    showstringspaces=false,
+    tabsize=4,
+    % Additional settings for more Visual Studio feel
+    emph=[1]{void, int, double, float, char, bool, short, long, signed, unsigned, class, struct, enum, union, typedef, template}, % Common types
+    emphstyle=[1]\color{vscode-purple},
+    emph=[2]{printf, scanf, cin, cout, return, new, delete, if, else, while, do, for, switch, case, default, break, continue, goto, throw, try, catch, const, static, extern, volatile, register, restrict, inline, explicit, virtual, friend, namespace, using, private, protected, public, operator}, % Standard keywords
+    emphstyle=[2]\color{vscode-blue},
+            keywordstyle=[2]\color{vscode-cyan}\ttfamily\bfseries,
+    morekeywords={\#include, \#define, \#ifdef, \#ifndef, \#endif, \#pragma}
+}
 
 
 % Make header with name and date etc.
@@ -104,25 +130,26 @@
 \end{enumerate}
 \end{problem}
 \begin{solution}{a}{true}
-  \lstinputlisting[language=C, caption=Programa que regresa la longitud de un string., firstline=5, lastline=11]{./Code/string.c}
+  El siguiente program, al igual que los otros incisos, se encuentran en el archivo de cabecera \texttt{string.h}. Las implementaciones se encuentran en \texttt{string.c}. Para ver ejemplos de su uso, compilar mediante \texttt{gcc p1.c string.c -o p1}. Ejecutar usando \texttt{./p1}.
+	\lstinputlisting[language=C, style=visual-studio,caption=Programa que calcula la longitu de un string., firstline=5, lastline=11]{./Code/string.c}
 \end{solution}
 \begin{solution}{b}{true}
-  \lstinputlisting[language=C, caption=Programa que regresa la longitud de un string., firstline=13, lastline=44]{./Code/string.c}
+	\lstinputlisting[language=C, style=visual-studio,caption=Programa que copia el string src al string dst., firstline=13, lastline=44]{./Code/string.c}
 \end{solution}
 \begin{solution}{c}{true}
-  \lstinputlisting[language=C, caption=Programa que regresa la longitud de un string., firstline=46, lastline=61]{./Code/string.c}
+	\lstinputlisting[language=C, style=visual-studio,caption=Programa que compare el primer caracter de diferencia entre dos strings., firstline=46, lastline=61]{./Code/string.c}
 \end{solution}
 \begin{solution}{d}{true}
-  \lstinputlisting[language=C, caption=Programa que regresa la longitud de un string., firstline=63, lastline=91]{./Code/string.c}
+	\lstinputlisting[language=C, style=visual-studio,caption=Programa que concatena tres strings., firstline=63, lastline=91]{./Code/string.c}
 \end{solution}
 \begin{solution}{e}{true}
-  \lstinputlisting[language=C, caption=Programa que regresa la longitud de un string., firstline=93, lastline=124]{./Code/string.c}
+	\lstinputlisting[language=C, style=visual-studio,caption=Programa que encuentra la cantidad de ocurrencias del string str1 en str2., firstline=93, lastline=128]{./Code/string.c}
 \end{solution}
 \begin{solution}{f}{true}
-  \lstinputlisting[language=C, caption=Programa que regresa la longitud de un string., firstline=126, lastline=148]{./Code/string.c}
+	\lstinputlisting[language=C, style=visual-studio,caption=Programa que enlista la frecuencia de todos los caracteres del string str., firstline=130, lastline=152]{./Code/string.c}
 \end{solution}
 \begin{solution}{g}{true}
-  \lstinputlisting[language=C, caption=Programa que regresa la longitud de un string., firstline=150, lastline=180]{./Code/string.c}
+	\lstinputlisting[language=C, style=visual-studio, caption=Programa que imprime las palabras de un string que no tienen caracteres repetidos., firstline=154, lastline=189]{./Code/string.c}
 \end{solution}
 % section Strings (end)
 
@@ -133,7 +160,7 @@
 \end{problem}
 
 \begin{solution}{}{false}
-  \lstinputlisting[language=C, caption=Programa que regresa la longitud de un string.]{./Code/p2.c}
+	\lstinputlisting[language=C, style=visual-studio, caption=Programa que realiza una caminata aleatoria en una matriz.]{./Code/p2.c}
 \end{solution}
 
 \begin{problem}
@@ -160,8 +187,8 @@
 \end{enumerate}
 
 \end{problem}
-\begin{solution}{}{true}
-
+\begin{solution}{}{false}
+	\lstinputlisting[language=C, style=visual-studio, caption=Programa que toma un arreglo e imprime los valores maximos de rengl\'on y columna.]{./Code/p5.c}
 \end{solution}
 % section Arreglos Bidimensionales (end)
 
@@ -175,8 +202,9 @@
 \end{center}
 Los nombres pueden tener distinta longitud, pero la memoria que ocupan debe ser la justa (sin desperdicio); cuando un nombre sea prefijo de otro, considerar al nombre m\'as corto como menor. El ordenamiento debe ser a trav\'es de una funci\'on que reciba el arreglo de apuntadores.
 \end{problem}
-\begin{solution}{}{true}
+\begin{solution}{}{false}
 
+	\lstinputlisting[language=C, style=visual-studio, caption=Programa que ordena una lista de nombres.]{./Code/p4.c}
 \end{solution}
 
 \begin{problem}
@@ -188,8 +216,9 @@ o NULL en caso de no encontrar alg\'un token.
 
 \end{problem}
 
-\begin{solution}{}{true}
+\begin{solution}{}{false}
 
+	\lstinputlisting[language=C, style=visual-studio, caption=Programa que tokeniza un string.]{./Code/p5.c}
 \end{solution}
 
 \begin{problem}
@@ -199,12 +228,13 @@ Prototipo de la funci\'on:
 \textbf{int *merge(int **arr, int N, int *dim)}
 donde \textbf{arr} tiene la siguiente estructura:
 
-\textbf{N} es el n\'umero total de arreglos y \textbf{dim} es un arreglo de enteroscon la dimensi\'on de cada uno de los arreglos de entrada. La funci\'on regresa un apuntados hacia el arreglo mezclado y generado din\'amicamente dentro de la funci\'on \textbf{merge()}.
+\textbf{N} es el n\'umero total de arreglos y \textbf{dim} es un arreglo de enteros con la dimensi\'on de cada uno de los arreglos de entrada. La funci\'on regresa un apuntador hacia el arreglo mezclado y generado din\'amicamente dentro de la funci\'on \textbf{merge()}.
+
 
 \textbf{Nota}: Generar din\'amicamente todos los arreglos necesarios, e inicialice cada arreglo con valores aleatorios mediante la funci\'on \textbf{rand()}.
 \end{problem}
-\begin{solution}{}{true}
-
+\begin{solution}{}{false}
+	\lstinputlisting[language=C, style=visual-studio, caption=Programa que ordena N arreglos dimensiones distintas.]{./Code/p6.c}
 \end{solution}
 % section Memoria Din\'amica (end)
 
