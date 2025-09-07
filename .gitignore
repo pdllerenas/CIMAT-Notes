@@ -5,5 +5,10 @@ lib64/
 share/
 bin/
 pyvenv.cfg
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*synctex.gz
 
 
