@@ -102,12 +102,14 @@ int encuentra_str(const char *str1, const char *str2) {
   while (*str2) {
     // while str2 does not point to the null terminating
     // character, we continue searching for occurrences of str1
+    printf("b4 %p\n", str2);
 
     // this initializes a loop once we find that the first
     // character of str1 matches some character of str2
     while (*str1 == *str2) {
       str1++;
       str2++;
+      if (*str1 != '\0' && *str2 == '\0') return occurrences;
       // if we reach the end of str1, we have found one occurrence
       if (*str1 == '\0') {
         occurrences++;
@@ -115,6 +117,8 @@ int encuentra_str(const char *str1, const char *str2) {
                 // exiting this loop
         str1 = cpy_str1; // reset str1 pointer position for next possible
                          // character match
+        if (*str2 == '\0')
+          return occurrences;
         break;
       }
     }
@@ -174,6 +178,10 @@ char *sin_repetir(const char *str) {
           printf("%s\n", word);
         }
       }
+      for (int i = 0; i < 26; i++) {
+        free(freq[i]);
+      }
+      free(freq);
     }
   }
   return ptr;
