@@ -66,6 +66,34 @@
 
 \usepackage{listings}
 
+\lstset{breaklines=true}
+\definecolor{vscode-blue}{RGB}{64, 116, 160}   % Keywords
+\definecolor{vscode-green}{RGB}{95, 203, 114}   % Strings
+\definecolor{vscode-gray}{RGB}{128, 128, 128}   % Comments
+\definecolor{vscode-orange}{RGB}{206, 145, 120} % Numbers/Constants
+\definecolor{vscode-purple}{RGB}{204, 124, 255} % Functions/Types
+\definecolor{vscode-cyan}{RGB}{155, 199, 217}   % Preprocessor
+
+\lstdefinestyle{visual-studio}{
+    language=C,
+    backgroundcolor=\color{Gray!5},
+    commentstyle=\color{vscode-gray}\ttfamily,
+    keywordstyle=\color{vscode-blue}\ttfamily,
+    stringstyle=\color{vscode-green}\ttfamily,
+    numberstyle=\color{vscode-orange}\ttfamily,
+    identifierstyle=\color{black}\ttfamily,
+    breaklines=true,
+    showstringspaces=false,
+    tabsize=4,
+    % Additional settings for more Visual Studio feel
+    emph=[1]{void, int, double, float, char, bool, short, long, signed, unsigned, class, struct, enum, union, typedef, template}, % Common types
+    emphstyle=[1]\color{vscode-purple},
+    emph=[2]{printf, scanf, cin, cout, return, new, delete, if, else, while, do, for, switch, case, default, break, continue, goto, throw, try, catch, const, static, extern, volatile, register, restrict, inline, explicit, virtual, friend, namespace, using, private, protected, public, operator}, % Standard keywords
+    emphstyle=[2]\color{vscode-blue},
+            keywordstyle=[2]\color{vscode-cyan}\ttfamily\bfseries,
+    morekeywords={\#include, \#define, \#ifdef, \#ifndef, \#endif, \#pragma},
+    basicstyle=\small
+}
 
 % Make header with name and date etc.
 \usepackage{fancyhdr}
@@ -97,7 +125,7 @@ Escribe un programa para calcular la constante matem\'atica $ e $, considerando 
 es decir, calcula $ (1+1/n)^n $ para $ n = 10^k $, $ k = 1, 2,\dots, 20. $ Determina el error relativo y absoluto de las aproximaciones compar\'andolas con $ \exp(1) $. \textbf{(1 punto)}
 \end{problem}
 \begin{solution}
-	\lstinputlisting[caption=Calcula el n-\'esimo t\'ermino del l\'imite de e, language=C, breaklines=true]{./Code/p1.c}
+	\lstinputlisting[style=visual-studio, caption=Calcula el n-\'esimo t\'ermino del l\'imite de e, language=C, breaklines=true]{./Code/p1.c}
 
 	Este nos genera la list
 	\begin{align*}
@@ -129,7 +157,7 @@ es decir, calcula $ (1+1/n)^n $ para $ n = 10^k $, $ k = 1, 2,\dots, 20. $ Deter
 La ecuaci\'on $ x^3+x = 6 $ tiene una ra\'iz en el intervalo $ [1.55, 1.75] $, ¿cu\'antas iteracions se necesitan para obtener una aproximaci\'on de la raiz con error menor a 0.0001 con el m\'etodo de bisecci\'on? Verifica con el m\'etodo de bisecci\'on tu predicci\'on de la ra\'iz. \textbf{(2 puntos)}
 \end{problem}
 \begin{solution}
-  
+	\lstinputlisting[style=visual-studio, caption=Programa que encuentra la raiz de un polinomio en un intervalo, language=C]{./Code/p2.c}
 \end{solution}
 
 \begin{problem}
@@ -147,11 +175,11 @@ Hallar una ra\'iz de $ f(x) = x^4 + 3x^2 - 2 $ por medio de las siguientes 4 for
 \begin{enumerate}
 	\item Las ra\'ices de $ f(x) $ deben de coincidir con las ra\'ices de $ x-g(x) $. Grafica $ f(x) $ y $ x-g(x) $. Comenta lo observado. \textbf{(1 punto)}
 
-	\item Crea una talba comparativa para comparar el resultado de las raices de $f(x) $ con la raiz alcanzada con cada una de las formulaciones. Usa maximo 20 iteraciones y tol = 0.0001. Explica lo sucedido. \textbf{(2 puntos)}
+  \item Crea una tabla comparativa para comparar el resultado de las ra\'ices de $f(x) $ con la ra\'iz alcanzada con cada una de las formulaciones. Usa m\'aximo 20 iteraciones y tol = 0.0001. Explica lo sucedido. \textbf{(2 puntos)}
 \end{enumerate}
 \end{problem}
 \begin{solution}
-
+	\lstinputlisting[style=visual-studio, caption=Programa que encuentra la raiz de un polinomio mediante la iteracion de punto fijo, language=C]{./Code/p3.c}
 \end{solution}
 
 \begin{problem}
@@ -163,6 +191,9 @@ Encontrar $ \lambda $ con una presici\'on de $ 10^{-4} $ y $ N_{iter, max} = 100
 para $ P(\lambda) = 1,564,000 $ individuos por a\~nos. Usa $ \lambda_0 = 0.01 $. (Sugerencia: graficar $ P(\lambda) - N $) \textbf{(4 puntos)}
 \end{problem}
 
+\begin{solution}
+	\lstinputlisting[style=visual-studio, caption=Programa que encuentra la raiz de $P(\lambda)$, language=C]{./Code/p4.c}
+\end{solution}
 
 \bibliographystyle{plain}
 \bibliography{references}
