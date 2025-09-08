@@ -143,14 +143,14 @@
   \subsection{Calcular inversas}
   Para encontrar la matriz inversa mediante Gauss-Jordan aumentado, estamos solucionando el sistema de ecuaciones $ n $ veces. Entonces, con los algoritmos vistos para resolver el sistema de ecuaciones, podemos hacerlo para $ \bv = e_i $, donde $ e_i = (0,\dots, 1, \dots, 0) $. 
   \subsection{Descomposicion LU}
-
+  El m\'etodo de Grouth consiste en descomponer la matriz en un producto de matrices triangulares inferiores y superiores.
   \begin{align*}
     \begin{bmatrix}
       a_{11} & a_{12} & \dots & a_{1n}\\
       a_{21} & a_{22} &\dots & a_{2n}\\
       \vdots & & &\vdots\\
       a_{n1} & a_{n2} & \dots & a_{nn}
-    \end{bmatrix} = 
+    \end{bmatrix} &=
     \begin{bmatrix}
       l_{11} & 0 & \dots & 0\\
       l_{21} & l_{22} &\dots & 0\\
@@ -161,18 +161,104 @@
       1 & u_{12} & \dots & u_{1n}\\
       0 & 1&\dots & u_{2n}\\
       \vdots & & &\vdots\\
-      0 & 0 & \dots & 1
-    \end{bmatrix}  
+      0 & 0 & \dots & 1 
+    \end{bmatrix}  \\
+    (n = 3)&=
+    \begin{bmatrix}
+      l_{11} & l_{11} u_{12} & l_{11}u_{12}\\
+      l_{21} & l_{21}u_{12} + l_{22} & l_{21}a_{13} + l_{22}a_{23}\\
+      l_{31} & l_{31}u_{12} + l_{32} & l_{31}u_{13}+ l_{32}u_{23}+l_{33}
+    \end{bmatrix}
   \end{align*}
-
-  We can calculate 
+  Podemos calcular de manera expl\'icita:
 \begin{align*}
   a_{11} &= l_{11}\\
   a_{21} &= l_{21}\\
   a_{12} &= l_{11}u_{12} \implies u_{12} = \displaystyle\frac{a_{12}}{l_{11}}
   a_{ik} &= Pending
 \end{align*}
-  % section Problemas Lineales (end)
 
+Tenemos
+
+\begin{align*}
+  l_{ij} &= a_{ij} - \sum_{k = 1}^{j-1}l_{ik}u_{kj}\\
+  u_{ij}&= a_{ij} - \sum_{k=1}^{j-1}l_{ik}u_{kj}\\
+  l_{ii} &= a_{ii} - \sum_{k=1}^{n-1}l_{ik}u_{ki}
+\end{align*}
+
+\subsection{Descomposicion de Cholevsky}
+Consiste en descomponer la matriz Hermitian $ \A $ de forma $ LL^T $. Notemos que para la resolucio\'on de sistemas de ecuaciones, $ \A $ debe ser definida positiva.
+
+  \begin{align*}
+    \begin{bmatrix}
+      a_{11} & a_{12} & \dots & a_{1n}\\
+      a_{21} & a_{22} &\dots & a_{2n}\\
+      \vdots & & &\vdots\\
+      a_{n1} & a_{n2} & \dots & a_{nn}
+    \end{bmatrix} &=
+    \begin{bmatrix}
+      l_{11} & 0 & \dots & 0\\
+      l_{21} & l_{22} &\dots & 0\\
+      \vdots & & &\vdots\\
+      l_{n1} & l_{n2} & \dots & l_{nn}
+    \end{bmatrix}  
+    \begin{bmatrix}
+      l_{11} & l_{12} & \dots & l_{1n}\\
+      0 & l_{22}&\dots & l_{2n}\\
+      \vdots & & &\vdots\\
+      0 & 0 & \dots & l_{nn} 
+    \end{bmatrix}  \\
+    (n = 3)&=
+    \begin{bmatrix}
+      l^2_{11} & l_{11} l_{21} & l_{11}u_{31}\\
+               &  l_{11}^2 + l_{22}^2& l_{21}l_{31} + l_{22}l_{12} \\
+       & & l_{11}^2+l_{22}^2+l_{33}^2
+    \end{bmatrix}
+  \end{align*}
+
+  \begin{align*}
+    l_{ij} = a_{ij} - \sum_{k=1}^{j-1} l_{ik}l_{jk}
+    l_{ii} = \sqrt{a_{ii} - \sum_{k=1}^{j-1}l_{ik}^2}
+  \end{align*}
+
+  % section Problemas Lineales (end)
+  \section{Ecuacion de calor}\label{sec:ecuacion_de_calor} % (fold)
+  \subsection{Ecuacion de calor en 1D}
+  Definida por $ q = -K \frac{dQ}{dx} $, esta ecuaci\'on describe el flujo de calor en una dimensi\'on. Es decir, si aplicamos una fuente de calor a una vara, esta nos dice la temperatura en cada punto de la vara.
+  
+  \[
+    K \frac{\partial \phi}{\partial x^2} + Q = 0.
+  \]
+  La derivada puede ser calculada de manera discreta:
+
+  \[
+    \frac{d\phi}{dx} = \frac{\phi_i-\phi_{i+1}}{\Delta x}
+  \]
+  \begin{align*}
+    \frac{d^2\phi}{dx^2} = \frac{\phi_{i-1}-2\phi_{i}+\phi_{i+1}}{\Delta x^2}
+  \end{align*}
+
+  
+  \begin{align*}
+    K\frac{\phi_{i-1}-2\phi_{i}+\phi_{i+1}}{\Delta x} +Q\Delta x = 0.
+  \end{align*}
+  Es decir, 
+  \begin{align*}
+    \frac{K}{dx^2}\begin{pmatrix}
+      -1 & 2 & -1
+    \end{pmatrix}\begin{bmatrix}
+    \phi_{i-1}\\
+    \phi_{i}\\
+    \phi_{i+1}
+    \end{bmatrix} = Q.
+  \end{align*}
+   \begin{align*}
+    \begin{bmatrix}
+      2 & -1 & & & &\\
+      -1 & 2 & -1 & & &\\
+    \end{bmatrix}
+   \end{align*}
+  
+  % section Ecuacion de calor (end)
   
 \end{document}
