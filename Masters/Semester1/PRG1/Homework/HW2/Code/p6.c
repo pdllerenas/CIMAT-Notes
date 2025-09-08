@@ -3,8 +3,8 @@
 #include <stdlib.h>
 #include <time.h>
 
-#define MAX_ROW_SIZE 100
-#define MAX_COL_SIZE 20
+// #define MAX_ROW_SIZE 100
+// #define MAX_COL_SIZE 20
 
 void print(int **arr, int N, int *dim) {
   for (int i = 0; i < N; i++) {
@@ -63,6 +63,9 @@ int *merge(int **arr, int N, int *dim) {
 }
 
 int main() {
+  int MAX_ROW_SIZE, MAX_COL_SIZE;
+  printf("Enter max row size and max col size. Format: 'N,M'\n");
+  scanf("%d,%d", &MAX_ROW_SIZE, &MAX_COL_SIZE);
   srand(time(NULL));
   float sTime = (float)clock() / CLOCKS_PER_SEC;
   unsigned int rand_dim = 1 + rand() % MAX_ROW_SIZE; // random number of rows.
