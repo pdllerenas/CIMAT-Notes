@@ -40,10 +40,16 @@ char **tokenize(char *str, char ch) {
 }
 
 int main() {
-  char *str = "Hello one two three four five! dd?";
-  char tkn = ' ';
+  char tkn;
+  char str[256];
+
+  printf("Enter string to tokenize. (max 256)\n");
+  fgets(str, sizeof(str), stdin);
+  printf("Enter separating token. (Must be a char)\n");
+  scanf("%c", &tkn);
   char **tokenized = tokenize(str, tkn);
   int rep = repetitions(str, tkn);
+  printf("Tokenized list:\n");
   for (int i = 0; i < rep + 1; i++) {
     printf("%s\n", *(tokenized + i));
   }
