@@ -34,5 +34,4 @@ double bisection_method(double a, double b, double TOLERANCE, int MAX_ITER) {
 
 int main() {
   printf("root at x = %lf\n", bisection_method(1.55, 1.75, 0.0001, 100));
-
 }
