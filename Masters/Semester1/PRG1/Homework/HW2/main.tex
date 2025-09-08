@@ -89,7 +89,8 @@
     emph=[2]{printf, scanf, cin, cout, return, new, delete, if, else, while, do, for, switch, case, default, break, continue, goto, throw, try, catch, const, static, extern, volatile, register, restrict, inline, explicit, virtual, friend, namespace, using, private, protected, public, operator}, % Standard keywords
     emphstyle=[2]\color{vscode-blue},
             keywordstyle=[2]\color{vscode-cyan}\ttfamily\bfseries,
-    morekeywords={\#include, \#define, \#ifdef, \#ifndef, \#endif, \#pragma}
+    morekeywords={\#include, \#define, \#ifdef, \#ifndef, \#endif, \#pragma},
+    basicstyle=\small
 }
 
 
@@ -160,6 +161,7 @@
 \end{problem}
 
 \begin{solution}{}{false}
+  El siguiente programa se compila mediante \texttt{gcc p2.c -o p2}, y se corre mediante \texttt{./p2}. El resultado es un tablero que se actualiza mientras se vaya generando el camino aleatorio. Correrlo de nuevo (con suficiente tiempo de separaci\'on) genera una caminata nueva.
 	\lstinputlisting[language=C, style=visual-studio, caption=Programa que realiza una caminata aleatoria en una matriz.]{./Code/p2.c}
 \end{solution}
 
@@ -188,7 +190,8 @@
 
 \end{problem}
 \begin{solution}{}{false}
-	\lstinputlisting[language=C, style=visual-studio, caption=Programa que toma un arreglo e imprime los valores maximos de rengl\'on y columna.]{./Code/p5.c}
+  El siguiente programa se compila mediante \texttt{gcc p3.c -o p3}, y se corre con \texttt{./p3}. Luego, se piden 2 enteros en formato \texttt{n,m}. Despu\'es, los valores que tomar\'a la matriz, separados por un espacio.
+	\lstinputlisting[language=C, style=visual-studio, caption=Programa que toma un arreglo e imprime los valores maximos de rengl\'on y columna.]{./Code/p3.c}
 \end{solution}
 % section Arreglos Bidimensionales (end)
 
@@ -203,7 +206,7 @@
 Los nombres pueden tener distinta longitud, pero la memoria que ocupan debe ser la justa (sin desperdicio); cuando un nombre sea prefijo de otro, considerar al nombre m\'as corto como menor. El ordenamiento debe ser a trav\'es de una funci\'on que reciba el arreglo de apuntadores.
 \end{problem}
 \begin{solution}{}{false}
-
+  Para compilar el programa, use \texttt{gcc p4.c -o p4} y ejecute con \texttt{./p4}. El programa busca el archivo \texttt{names.csv}, que contiene una lista de nombres. Luego, se imprime esta misma lista ordenada.
 	\lstinputlisting[language=C, style=visual-studio, caption=Programa que ordena una lista de nombres.]{./Code/p4.c}
 \end{solution}
 
@@ -217,7 +220,7 @@ o NULL en caso de no encontrar alg\'un token.
 \end{problem}
 
 \begin{solution}{}{false}
-
+  Este programa se compila mediante \texttt{gcc p5.c -o p5} y se ejecuta con \texttt{./p5}. Luego, se le pide al usuario que inserte un string de a lo m\'as 256 caracteres. Luego, un caracter que ser\'a el token para la tokenizaci\'on.
 	\lstinputlisting[language=C, style=visual-studio, caption=Programa que tokeniza un string.]{./Code/p5.c}
 \end{solution}
 
@@ -234,6 +237,7 @@ donde \textbf{arr} tiene la siguiente estructura:
 \textbf{Nota}: Generar din\'amicamente todos los arreglos necesarios, e inicialice cada arreglo con valores aleatorios mediante la funci\'on \textbf{rand()}.
 \end{problem}
 \begin{solution}{}{false}
+  El siguiente programa se compila mediante \texttt{gcc p6.c -o p6} y se ejecuta mediante \texttt{./p6}. El programa le pide al usuario insertar el n\'umero m\'aximo de filas y columnas que puede tener el arreglo semi-aleatorio ordenado que se generar\'a. Luego, se imprime el arreglo generado, y despu\'es de alg\'un tiempo, se imprime el arreglo fusionado, ya ordenado.
 	\lstinputlisting[language=C, style=visual-studio, caption=Programa que ordena N arreglos dimensiones distintas.]{./Code/p6.c}
 \end{solution}
 % section Memoria Din\'amica (end)
