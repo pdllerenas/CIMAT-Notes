@@ -1,22 +1,16 @@
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 
-double f(double x) {
-  return x*x*x+x-6;
-}
+double f(double x) { return x * x * x + x - 6; }
 
 double bisection_method(double a, double b, double TOLERANCE, int MAX_ITER) {
   if (a > b) {
     return bisection_method(b, a, TOLERANCE, MAX_ITER);
   }
-  // if ((fa < 0 && fb < 0) || (fa > 0 && fb > 0))  {
-  //   fprintf(stderr, "Failed to apply method.\n");
-  //   exit(1);
-  // }
   int N = 1;
   while (N <= MAX_ITER) {
-    double c = (a+b)/2;
-    if (f(c) == 0 || (b-a)/2<TOLERANCE) {
+    double c = (a + b) / 2;
+    if (f(c) == 0 || (b - a) / 2 < TOLERANCE) {
       printf("Root found at iter = %d\n", N);
 
       return c;
@@ -24,7 +18,7 @@ double bisection_method(double a, double b, double TOLERANCE, int MAX_ITER) {
     N++;
     if ((f(c) < 0 && f(a) < 0) || (f(c) > 0 && f(a) > 0)) {
       a = c;
-    } else{
+    } else {
       b = c;
     }
   }
