@@ -2,33 +2,35 @@
 #include <stdlib.h>
 #include <string.h>
 
-int get_dim(FILE *file) {
-  int c, dim;
+void get_dim(FILE *file, int *cols, int *rows) {
+  int c;
+  *cols = 0;
+  *rows = 0;
   while ((c = fgetc(file)) != EOF) {
-    printf("%c\n", c);
     if (c == '\n') {
-      return dim;
+      *rows += 1;
     }
-    if (c == ' ') {
-      dim++;
+    if (c == ' ' && *rows == 0) {
+      *cols += 1;
     }
   }
   rewind(file);
-  return 0;
 }
 
-double **create_array_from_file(FILE *file) {
-  int c, dim = get_dim(file), row_cnt = 0;
+double **create_lower_from_file(FILE *file, int *cols, int *rows) {
+  *rows = *cols = 0;
+  int c, row_cnt;
+  get_dim(file, cols, rows);
   char line[1024];
-  double **matrix = malloc(dim * sizeof(double *));
+  double **matrix = malloc(*rows * sizeof(double *));
   if (matrix == NULL) {
     fprintf(stderr, "Could not allocate memory for matrix.\n");
     fclose(file);
     exit(1);
   }
-  int row_index = 0, col_index = 0;
-  while (fgets(line, sizeof line, file) && row_index < dim) {
-    matrix[row_index] = malloc(dim * sizeof(double));
+  int row_index, col_index;
+  while (fgets(line, sizeof line, file) && row_index < *rows) {
+    matrix[row_index] = malloc(*cols * sizeof(double));
     if (matrix[row_index] == NULL) {
       fprintf(stderr, "Could not allocate memory for matrix row %d.\n",
               row_index);
@@ -41,7 +43,7 @@ double **create_array_from_file(FILE *file) {
     }
     col_index = 0;
     char *token = strtok(line, " ");
-    while (token != NULL && col_index < dim) {
+    while (token != NULL && col_index < *cols) {
       matrix[row_index][col_index] = atof(token);
       token = strtok(NULL, " ");
       col_index++;
@@ -53,7 +55,47 @@ double **create_array_from_file(FILE *file) {
   return matrix;
 }
 
-double *create_diagonal_from_file(FILE *file) {}
+
+double **create_array_from_file(FILE *file, int *cols, int *rows) {
+  *rows = *cols = 0;
+  int c, row_cnt;
+  get_dim(file, cols, rows);
+  printf("%d, %d\n", *cols, *rows);
+  char line[1024];
+  double **matrix = malloc(*rows * sizeof(double *));
+  if (matrix == NULL) {
+    fprintf(stderr, "Could not allocate memory for matrix.\n");
+    fclose(file);
+    exit(1);
+  }
+  int row_index, col_index;
+  while (fgets(line, sizeof line, file) && row_index < *rows) {
+    matrix[row_index] = malloc(*cols * sizeof(double));
+    if (matrix[row_index] == NULL) {
+      fprintf(stderr, "Could not allocate memory for matrix row %d.\n",
+              row_index);
+      for (int i = 0; i < row_index; i++) {
+        free(matrix[i]);
+      }
+      free(matrix);
+      fclose(file);
+      exit(1);
+    }
+    col_index = 0;
+    char *token = strtok(line, " ");
+    while (token != NULL && col_index < *cols) {
+      matrix[row_index][col_index] = atof(token);
+      token = strtok(NULL, " ");
+      col_index++;
+    }
+    row_index++;
+  }
+  printf("%d, %d\n", row_index, col_index);
+  fclose(file);
+  return matrix;
+}
+
+double *create_diagonal_from_file(FILE *file, int *cols, int *rows) {}
 
 double *ls_diagonal(double *D, double *b, int dim) {
   double *x = malloc(dim * sizeof(double));
@@ -79,30 +121,31 @@ int main(int argc, char *argv[]) {
 
   double **matrix;
   double *diag_matrix;
-  int dim = 15;
+  int cols, rows;
 
   if (argc == 3) {
     switch (atoi(argv[2])) {
     case 'D':
       printf("Creating matrix...\n");
-      diag_matrix = create_diagonal_from_file(file);
+      diag_matrix = create_diagonal_from_file(file, &cols, &rows);
     default:
       printf("Creating matrix...\n");
-      matrix = create_array_from_file(file);
+      matrix = create_array_from_file(file, &cols, &rows);
     }
   } else {
     printf("Creating matrix...\n");
-    matrix = create_array_from_file(file);
+    matrix = create_array_from_file(file, &cols, &rows);
   }
 
-  for (int i = 0; i < dim; i++) {
-    for (int j = 0; j < dim; j++) {
+  for (int i = 0; i < rows; i++) {
+    for (int j = 0; j < cols; j++) {
       printf("%lf ", matrix[i][j]);
     }
     printf("\n");
   }
+  printf("Done printing.\n");
 
-  for (int i = 0; i < dim; i++) {
+  for (int i = 0; i < rows; i++) {
     free(matrix[i]);
   }
   free(matrix);
