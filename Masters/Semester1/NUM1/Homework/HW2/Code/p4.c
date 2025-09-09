@@ -84,7 +84,7 @@ int main() {
   printf("secant found root at %lf\n", r_sec);
   printf("P(%lf) = %lf\n", r_sec, P(r_sec));
   double r_fp = false_position(0.01, 0.2, P, TOLERANCE, N_MAX_ITER);
-  printf("root at %lf\n", r_fp);
+  printf("false position found root at %lf\n", r_fp);
   printf("P(%lf) = %lf\n", r_fp, P(r_fp));
   return 0;
 }
