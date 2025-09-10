@@ -260,5 +260,14 @@ Consiste en descomponer la matriz Hermitian $ \A $ de forma $ LL^T $. Notemos qu
    \end{align*}
   
   % section Ecuacion de calor (end)
+
+  \section{Metodo de Jacobi}\label{sec:metodo_de_jacobi} % (fold)
+  Queremos resolver $ N^{-1}(Ax - b) = 0 $. Comenzamos por el caso $ N = D $, la diagonal de $ A $. Entonces, descomponemos $ A = L + D + U $, y tenemos
+  \begin{align*}
+    D^{-1} (L+D+U x - b) &= 0\\
+    (D^{-1} (L+U) x^{n-1} + x^{n} - D^{-1}b) = 0\\
+    \implies A_{ii} x^n = b_i - \sum_{j \neq i} A_{ij}x_j^{n-1}
+  \end{align*}
+  % section Metodo de Jacobi (end)
   
 \end{document}
