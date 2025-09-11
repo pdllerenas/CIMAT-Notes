@@ -70,7 +70,7 @@
 \usepackage{listings}
 
 \lstset{breaklines=true}
-\definecolor{vscode-blue}{RGB}{100, 116, 160}   % Keywords
+\definecolor{vscode-blue}{RGB}{64, 116, 160}   % Keywords
 \definecolor{vscode-green}{RGB}{95, 203, 114}   % Strings
 \definecolor{vscode-gray}{RGB}{128, 128, 128}   % Comments
 \definecolor{vscode-orange}{RGB}{206, 145, 120} % Numbers/Constants
@@ -119,27 +119,119 @@
 
 
 \begin{problem}
-  Desarrollar un programa que resuelva un sistema de ecuaciones de la forma $\mathbf{Dx} = \mathbf{b}$, donde $ \mathbf{D} $ es una matriz diagonal. (\textbf{1.5 puntos})
+Desarrollar un programa que resuelva un sistema de ecuaciones de la forma $\mathbf{Dx} = \mathbf{b}$, donde $ \mathbf{D} $ es una matriz diagonal. (\textbf{1.5 puntos})
 \end{problem}
 
 \begin{problem}
-  Desarrollar un programa que resuelva un sistema de ecuaciones de la forma $\mathbf{Ux} = \mathbf{b}$, donde $ \mathbf{U} $ es una matriz triangular superior. (\textbf{2.5 puntos})
+Desarrollar un programa que resuelva un sistema de ecuaciones de la forma $\mathbf{Ux} = \mathbf{b}$, donde $ \mathbf{U} $ es una matriz triangular superior. (\textbf{2.5 puntos})
 \end{problem}
 
 \begin{problem}
-  Desarrollar un programa que resuelva un sistema de ecuaciones de la forma $\mathbf{Lx} = \mathbf{b}$, donde $ \mathbf{L} $ es una matriz triangular inferior. (\textbf{2.5 puntos})
+Desarrollar un programa que resuelva un sistema de ecuaciones de la forma $\mathbf{Lx} = \mathbf{b}$, donde $ \mathbf{L} $ es una matriz triangular inferior. (\textbf{2.5 puntos})
 \end{problem}
 
 \begin{problem}
-  Describe el algoritmo de eliminaci\'on Gaussiana. (\textbf{0.5 puntos})
+Describe el algoritmo de eliminaci\'on Gaussiana. (\textbf{0.5 puntos})
 \end{problem}
 
+\begin{solution}
+	El algoritmo consiste en realizar operacions b\'asicas de matrices para convertir una matriz de la forma
+	\begin{align*}
+		\begin{bmatrix}
+			a_{11} & \cdots & a_{1n} \\
+			\vdots & \ddots & \vdots \\
+			a_{n1} & \cdots & a_{nn}
+		\end{bmatrix}
+	\end{align*}
+	en una matriz triangular superior
+	\begin{align*}
+		\begin{bmatrix}
+			u_{11} & \cdots & u_{1n} \\
+			\vdots & \ddots & \vdots \\
+			0      & \cdots & u_{nn}
+		\end{bmatrix}.
+	\end{align*}
+	Con operaciones b\'asicas, nos referimos a:
+	\begin{itemize}
+		\item Cambio de posici\'on de renglones,
+		\item Producto escalar no cero de un rengl\'on,
+		\item Sumarle un m\'ultiplo escalar de un rengl\'on a otro.
+	\end{itemize}
+	Espec\'ificamente, si tenemos un sistema de ecuaciones lineales
+	\begin{align*}
+    \arraycolsep=1pt
+		\begin{array}{cccc}
+      E_{1} : & a_{11}x_{1} + a_{12}x_{2} + \cdots + a_{1n}x_{n} &=& b_{1}, \\
+      E_{2} : & a_{21}x_{1} + a_{22}x_{2} + \cdots + a_{2n}x_{n} &=& b_{2}, \\
+              & \vdots & \vdots&                                                    \\
+      E_{n} : & a_{n1}x_{1} + a_{n2}x_{2} + \cdots + a_{nn}x_{n} &=& b_{n},
+		\end{array}
+	\end{align*}
+	consideramos la matriz aumentada
+	\begin{align*}
+		A_1 = [A,\mathbf{b}] =
+		\begin{bmatrix}
+			\begin{array}{cccc|c}
+				a_{11} & a_{12} & \cdots & a_{1n} & a_{1,n+1} \\
+				a_{21} & a_{22} & \cdots & a_{2n} & a_{2,n+1} \\
+				\vdots & \vdots & \ddots & \vdots & \vdots    \\
+				a_{n1} & a_{n2} & \cdots & a_{nn} & a_{n,n+1}
+			\end{array}
+		\end{bmatrix}
+	\end{align*}
+	donde $ a_{i, n+1} = b_{i} $.
+
+	Si $ a_{11} \neq 0 $, realizamos
+	\begin{align*}
+		(E_j - (a_{j1}/a_{11})E_1) \to (E_j)\quad \text{para cada } j = 2,3,\dots,n.
+	\end{align*}
+	Estas operaciones tiene el fin de eliminar el t\'ermino $ x_1 $ de todas las filas excepto la primera. Es decir, obtenemos la matriz
+	\begin{align*} A_2 =
+		\begin{bmatrix}
+			\begin{array}{cccc|c}
+				a_{11} & a_{12} & \cdots & a_{1n} & a_{1,n+1} \\
+				0      & a_{22} & \cdots & a_{2n} & a_{2,n+1} \\
+				\vdots & \vdots & \ddots & \vdots & \vdots    \\
+				0      & a_{n2} & \cdots & a_{nn} & a_{n,n+1}
+			\end{array}
+		\end{bmatrix},
+	\end{align*}
+	donde los $ a_{ij} $ son posiblemente diferentes a los escritos en la primer matriz. Secuencialmente para $ i = 2,3,\dots, n-1 $, realizamos las operaciones
+	\begin{align*}
+		(E_j - (a_{ji}/a_{ii})E_j) \to (E_j)\quad \text{para cada } j = i+1, i+2,\dots, n.
+	\end{align*}
+	mientras $ a_{ii}\neq 0 $. Si en alg\'un momento esta entrada es cero, buscamos una fila que pueda reemplazarla. Si no existe, el algoritmo se detiene y determinamos que al menos una columna (o fila) es linealmente dependiente de otra, por lo que el sistema no tiene soluci\'on \'unica. Si logramos continuar para todos los \'indices, obtenemos la matriz
+	\begin{align*} A_m =
+		\begin{bmatrix}
+			\begin{array}{cccc|c}
+				a_{11} & a_{12} & \cdots & a_{1n} & a_{1,n+1} \\
+				0      & a_{22} & \cdots & a_{2n} & a_{2,n+1} \\
+				\vdots & \vdots & \ddots & \vdots & \vdots    \\
+				0      & 0      & \cdots & a_{nn} & a_{n,n+1}
+			\end{array}
+		\end{bmatrix},
+	\end{align*}
+  donde nuevamente, los $ a_{ij} $ son posiblemente distintos a los originalmente dados. Entonces, tenemos un sistema lineal triangular
+	\begin{align*}
+    \arraycolsep=1pt
+		\begin{array}{rcr}
+      a_{11}x_{1} + a_{12}x_{2} + \cdots + a_{1n}x_{n} &= &b_{1}, \\
+      a_{22}x_{2} + \cdots + a_{2n}x_{n} &=& b_{2}, \\
+                                         &\vdots & \\
+              a_{nn}x_{n} &=& b_{n},
+		\end{array}.
+	\end{align*}
+\end{solution}
 \begin{problem}
-  Desarrollar un programa que resuelva un sistema de ecuaciones de la forma $ \mathbf{Ax} = \mathbf{b} $ mediante el m\'etodo de eliminaci\'on Gaussiana. Una vez que realices la eliminaci\'on Gaussiana puedes utilizar el m\'etodo anteriormente programado para resolver el sistema equivalente $ \mathbf{Ux} = \mathbf{b} $. (\textbf{3.0 puntos})
+Desarrollar un programa que resuelva un sistema de ecuaciones de la forma $ \mathbf{Ax} = \mathbf{b} $ mediante el m\'etodo de eliminaci\'on Gaussiana. Una vez que realices la eliminaci\'on Gaussiana puedes utilizar el m\'etodo anteriormente programado para resolver el sistema equivalente $ \mathbf{Ux} = \mathbf{b} $. (\textbf{3.0 puntos})
 \end{problem}
+\begin{solution}
+
+  
+\end{solution}
 
 \begin{problem}
-  Desarrollar un programa o modificar el anterior para resolver un sistema de ecuaciones de la forma $ \mathbf{Ax} = \mathbf{b} $ utilizando el m\'etodo de eliminaci\'on Gaussiana con pivoteo. (\textbf{Opcional})
+Desarrollar un programa o modificar el anterior para resolver un sistema de ecuaciones de la forma $ \mathbf{Ax} = \mathbf{b} $ utilizando el m\'etodo de eliminaci\'on Gaussiana con pivoteo. (\textbf{Opcional})
 \end{problem}
 
 % section Sistemas de ecuaciones lineales (end)
