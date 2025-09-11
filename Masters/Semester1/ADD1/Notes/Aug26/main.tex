@@ -312,6 +312,23 @@ and
 
 % section Aplications (end)
 
+\section{Continuous random variables}\label{sec:continuous_random_variables} % (fold)
+
+Let $ X:\Omega \to \R^n $. For $ A = [c,d]\subset [a,b] $, we define
+\begin{align*}
+  P(X\in A) &= P(X^{-1}(A))\\ 
+            &= \frac{d-c}{b-a}\\ 
+            &= \int_{A} f_X(x)dx,
+\end{align*}
+where 
+\begin{align*}
+  f_X(x) = \begin{cases}
+    \dfrac{1}{b-a}, &\text{ if }x\in[a,b]\\
+    0, &\text{otherwise}.
+  \end{cases}
+\end{align*}
+% section Continuous random variables (end)
+
 
 
 \end{document}
