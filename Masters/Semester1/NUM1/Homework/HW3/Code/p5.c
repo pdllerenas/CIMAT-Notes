@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "p2.h"
 #include "p1.h"
+#include "p2.h"
 #include "vectors.h"
 
 double *gaussian_elimination(double **A, double *b, int dim) {
@@ -45,30 +45,31 @@ double *gaussian_elimination(double **A, double *b, int dim) {
 
 int main(int argc, char *argv[]) {
   if (argc != 3) {
-    fprintf(stderr, "Invalid arguments. Usage: %s <matrix-file> <vector-file>.\n", argv[0]);
+    fprintf(stderr,
+            "Invalid arguments. Usage: %s <matrix-file> <vector-file>.\n",
+            argv[0]);
   }
-  FILE *matrix_file = fopen(argv[1], "r");
-  if (!matrix_file) {
-    perror(argv[1]);
+  int m_cols = 0, m_rows = 0, v_dim;
+
+  double **A = create_array_from_file(argv[1], &m_cols, &m_rows);
+  if (!A) {
     exit(1);
   }
-  FILE *vector_file = fopen(argv[2], "r");
-  if (!vector_file) {
-    perror(argv[1]);
-    exit(1);
+  double *b = file_to_vector(argv[2], &v_dim);
+  if (!b) {
+    for (int i = 0; i < m_rows; i++) {
+      free(A[i]);
+    }
+    free(A);
   }
-
-  int m_cols, m_rows, v_dim;
-
-  double **A = create_array_from_file(matrix_file, &m_cols, &m_rows);
-  double *b = file_to_vector(vector_file, &v_dim);
 
   if (m_cols != v_dim) {
-    fprintf(stderr, "Matrix and vector dimensions do not match: %d and %d\n", m_cols, v_dim);
+    fprintf(stderr, "Matrix and vector dimensions do not match: %d and %d\n",
+            m_cols, v_dim);
     exit(1);
   }
 
-gaussian_elimination(A, b, m_cols);
+  gaussian_elimination(A, b, m_cols);
   double *x = solve_upper(A, b, m_rows);
   print_upper_solution(A, b, x, m_rows, m_cols);
 
