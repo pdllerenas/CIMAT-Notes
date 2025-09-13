@@ -74,25 +74,26 @@ double *solve_lower(double **L, double *b, int dim) {
   }
   *x = *b / **L; // first element of solution
   for (int i = 1; i < dim; i++) {
-    // dot is the dot product of two vectors, and the third
-    // argument indicates the limiting index for the sum
     if (L[i][i] == 0) {
       fprintf(stderr, "System has no unique solution.\n");
       return NULL;
     }
-    *(x + i) = (*(b + i) - dot(x, *(L + i), i)) / L[i][i];
+    double sum = dot(x, L[i], i);
+    x[i] = (b[i] - sum) / L[i][i];
   }
   return x;
 }
 
 void print_lower_solution(double **L, double *x, double *b, int rows,
                           int cols) {
+  printf("= = = = = = = = = = = = = = = = = = = = MATRIX L = = = = = = = = = = "
+         "= = = = = = = = = = =  = x =      = b =\n");
   for (int i = 0; i < rows; i++) {
     for (int j = 0; j < cols; j++) {
-      printf("%lf ", L[i][j]);
+      printf("%05.2lf ", L[i][j]);
     }
-    printf("\t%lf", x[i]);
-    printf("\t%lf", b[i]);
+    printf("| %05.2lf |", x[i]);
+    printf(" | %05.2lf |", b[i]);
     printf("\n");
   }
 }

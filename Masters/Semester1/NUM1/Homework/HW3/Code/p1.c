@@ -4,7 +4,19 @@
 #include <stdlib.h>
 #include <string.h>
 
-double **create_array_from_file(FILE *file, int *cols, int *rows) {
+/*
+
+Reads and parses the given file. We assume it uses space as a separator, and \n
+as the end of line.
+Return a double pointer of doubles. Memory must be free'd after call.
+
+ */
+double **create_array_from_file(const char *filename, int *cols, int *rows) {
+  FILE *file = fopen(filename, "r");
+  if (!file) {
+    perror(filename);
+    return NULL;
+  }
   *rows = *cols = 0;
   int row_cnt;
   get_matrix_dims(file, cols, rows);
@@ -13,7 +25,7 @@ double **create_array_from_file(FILE *file, int *cols, int *rows) {
   if (matrix == NULL) {
     fprintf(stderr, "Could not allocate memory for matrix.\n");
     fclose(file);
-    exit(1);
+    return NULL;
   }
   int row_index = 0, col_index = 0;
   while (fgets(line, sizeof line, file) && row_index < *rows) {
@@ -26,7 +38,7 @@ double **create_array_from_file(FILE *file, int *cols, int *rows) {
       }
       free(matrix);
       fclose(file);
-      exit(1);
+      return NULL;
     }
     col_index = 0;
     char *token = strtok(line, " ");
@@ -41,7 +53,21 @@ double **create_array_from_file(FILE *file, int *cols, int *rows) {
   return matrix;
 }
 
-double *create_diagonal_from_file(FILE *file, int *cols, int *rows) {
+/*
+
+Reads the file and creates an array of doubles. We assume the file is of
+diagonal form; that the non-diagonal values are all zero. Thus, we ignore all
+other values and set them to zero automatically. Memory must be free'd after
+called.
+
+ */
+
+double *create_diagonal_from_file(const char *filename, int *cols, int *rows) {
+  FILE *file = fopen(filename, "r");
+  if (!file) {
+    perror(filename);
+    return NULL;
+  }
   *rows = *cols = 0;
   get_matrix_dims(file, cols, rows);
   char line[1024];
@@ -49,7 +75,7 @@ double *create_diagonal_from_file(FILE *file, int *cols, int *rows) {
   if (matrix == NULL) {
     fprintf(stderr, "Could not allocate memory for matrix.\n");
     fclose(file);
-    exit(1);
+    return NULL;
   }
   int row_index = 0, col_index = 0;
   while (fgets(line, sizeof line, file) && row_index < *rows) {
@@ -67,25 +93,46 @@ double *create_diagonal_from_file(FILE *file, int *cols, int *rows) {
   return matrix;
 }
 
+/*
+
+Solve the system assuming a diagonal matrix. Memory must be free'd after call.
+
+ */
+
 double *solve_diagonal(double *D, double *b, int dim) {
   double *x = malloc(dim * sizeof(double));
+  if (!x) {
+    perror("Could not allocate memory for solution vector.\n");
+    return NULL;
+  }
   for (int i = 0; i < dim; i++) {
-    *(x + i) = *(b + i) / *(D + i);
+    x[i] = b[i] / D[i];
   }
   return x;
 }
 
-void print_diagonal_solution(double rows, double cols, double* diag_matrix, double *x, double *b) {
+/*
+
+We print the diagonal matrix, the solution vector, and the resulting vector.
+Note that we assume that the input is a diagonal matrix, so we print all other
+values as 0.
+
+ */
+
+void print_diagonal_solution(int rows, int cols, double *diag_matrix,
+                             double *x, double *b) {
+  printf("= = = = = = = = = = = = = = = = = = = = MATRIX D = = = = = = = = = = = = = = = = = = = = =  = x =      = b =\n");
   for (int i = 0; i < rows; i++) {
     for (int j = 0; j < cols; j++) {
       if (i == j) {
-        printf("%lf ", diag_matrix[i]);
+        printf("%05.2lf ", diag_matrix[i]);
       } else {
-        printf("%lf ", 0.0);
+        printf("%05.2lf ", 0.0);
       }
     }
-    printf("\t%lf", x[i]);
-    printf("\t\t%lf", b[i]);
+    printf("| %05.2lf | ", x[i]);
+    printf(" | %05.2lf |", b[i]);
     printf("\n");
   }
+  printf("=============================================================================================================\n");
 }
