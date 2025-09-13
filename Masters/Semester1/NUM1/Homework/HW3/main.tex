@@ -121,14 +121,86 @@
 \begin{problem}
 Desarrollar un programa que resuelva un sistema de ecuaciones de la forma $\mathbf{Dx} = \mathbf{b}$, donde $ \mathbf{D} $ es una matriz diagonal. (\textbf{1.5 puntos})
 \end{problem}
+\begin{solution}
+	Sea $ \mathbf{D} $ la matriz diagonal con valores diagonales
+	\begin{align*}
+		4.48\quad 6.48\quad 9.65\quad 2.40\quad 8.62\quad 5.58\quad 9.01\quad 1.46\quad 5.96\quad 2.50\quad 8.63\quad 5.46\quad 4.78\quad 9.13\quad 5.90
+	\end{align*}
+	y sea
+	\begin{align*}
+		\mathbf{b} = \begin{bmatrix}
+			             29.68 \\ 31.59 \\ 47.36 \\ 13.02 \\ 31.68 \\ 32.97 \\ 78.34 \\ 12.80 \\ 14.56 \\ 2.88 \\ 62.87 \\ 50.29 \\ 6.40 \\ 32.57 \\ 45.27
+		             \end{bmatrix}
+	\end{align*}
+
+	Queremos solucionar el sistema
+	$$
+		\left[
+			\begin{array}{cccc}
+				4.48            &      &        & \mbox{\Large 0} \\
+				                & 6.48 &        &                 \\
+				                &      & \ddots &                 \\
+				\mbox{\Large 0} &      &        & 5.90            \\
+			\end{array}
+			\right]
+		\left[
+			\begin{array}{c}
+				x_1    \\
+				x_2    \\
+				\vdots \\
+				x_{15} \\
+			\end{array}
+			\right]
+		=
+		\left[
+			\begin{array}{c}
+				29.68  \\
+				31.59  \\
+				\vdots \\
+				45.27  \\
+			\end{array}
+			\right]
+	$$
+
+	Usando \texttt{make run ARGS="eq/D.txt eq/b\_d.txt D"} obtenemos el vector soluci\'on $ \mathbf{x} $:
+	\begin{align*}
+		\mathbf{x} = \begin{bmatrix}
+			             6.63 \\ 4.88 \\ 4.91 \\ 5.42 \\ 3.68 \\ 5.91 \\ 8.69 \\ 8.79 \\ 2.45 \\ 1.15 \\ 7.29 \\ 9.21 \\ 1.34 \\ 3.57 \\ 7.68
+		             \end{bmatrix}
+	\end{align*}
+
+\end{solution}
 
 \begin{problem}
 Desarrollar un programa que resuelva un sistema de ecuaciones de la forma $\mathbf{Ux} = \mathbf{b}$, donde $ \mathbf{U} $ es una matriz triangular superior. (\textbf{2.5 puntos})
 \end{problem}
+\begin{solution}
+	Con la matriz $ \mathbf{U} $ dada por el archivo \texttt{U.txt} (demsiada grande para mostrar aqu\'i) y el vector \texttt{b\_u.txt}, obtenemos que el $ \mathbf{x} $ tal que $ \mathbf{Ux} = \mathbf{b} $ es
+	\begin{align*}
+		\mathbf{x} =
+		\begin{bmatrix}
+			6.63 \\ 2.03 \\ 6.60 \\ 7.52 \\ 4.58 \\ 1.32 \\ 5.46 \\ 2.44 \\ 7.27 \\ 7.25 \\ 5.75 \\ 1.57 \\ 9.63 \\ 6.62 \\ 2.34
+		\end{bmatrix}.
+	\end{align*}
+	Para ejecutar el programa que lo soluciona, usar \texttt{make run ARGS="eq/U.txt eq/b\_u.txt U"}.
+
+\end{solution}
 
 \begin{problem}
 Desarrollar un programa que resuelva un sistema de ecuaciones de la forma $\mathbf{Lx} = \mathbf{b}$, donde $ \mathbf{L} $ es una matriz triangular inferior. (\textbf{2.5 puntos})
 \end{problem}
+
+\begin{solution}
+	Con la matriz $ \mathbf{L} $ dada por el archivo \texttt{L.txt} (demsiada grande para mostrar aqu\'i) y el vector \texttt{b\_l.txt}, obtenemos que el $ \mathbf{x} $ tal que $ \mathbf{Ux} = \mathbf{b} $ es
+	\begin{align*}
+		\mathbf{x} =
+		\begin{bmatrix}
+			6.63 \\ 4.92 \\ 7.00 \\ 9.72 \\ 7.10 \\ 3.45 \\ 7.80 \\ 3.70 \\ 2.82 \\ 8.90 \\ 3.07 \\ 1.95 \\ 2.14 \\ 2.83 \\ 2.20
+		\end{bmatrix}.
+	\end{align*}
+	Para ejecutar el programa que lo soluciona, usar \texttt{make run ARGS="eq/L.txt eq/b\_l.txt L"}.
+\end{solution}
+
 
 \begin{problem}
 Describe el algoritmo de eliminaci\'on Gaussiana. (\textbf{0.5 puntos})
@@ -159,12 +231,12 @@ Describe el algoritmo de eliminaci\'on Gaussiana. (\textbf{0.5 puntos})
 	\end{itemize}
 	Espec\'ificamente, si tenemos un sistema de ecuaciones lineales
 	\begin{align*}
-    \arraycolsep=1pt
+		\arraycolsep=1pt
 		\begin{array}{cccc}
-      E_{1} : & a_{11}x_{1} + a_{12}x_{2} + \cdots + a_{1n}x_{n} &=& b_{1}, \\
-      E_{2} : & a_{21}x_{1} + a_{22}x_{2} + \cdots + a_{2n}x_{n} &=& b_{2}, \\
-              & \vdots & \vdots&                                                    \\
-      E_{n} : & a_{n1}x_{1} + a_{n2}x_{2} + \cdots + a_{nn}x_{n} &=& b_{n},
+			E_{1} : & a_{11}x_{1} + a_{12}x_{2} + \cdots + a_{1n}x_{n} & =      & b_{1}, \\
+			E_{2} : & a_{21}x_{1} + a_{22}x_{2} + \cdots + a_{2n}x_{n} & =      & b_{2}, \\
+			        & \vdots                                           & \vdots &        \\
+			E_{n} : & a_{n1}x_{1} + a_{n2}x_{2} + \cdots + a_{nn}x_{n} & =      & b_{n},
 		\end{array}
 	\end{align*}
 	consideramos la matriz aumentada
@@ -185,6 +257,7 @@ Describe el algoritmo de eliminaci\'on Gaussiana. (\textbf{0.5 puntos})
 	\begin{align*}
 		(E_j - (a_{j1}/a_{11})E_1) \to (E_j)\quad \text{para cada } j = 2,3,\dots,n.
 	\end{align*}
+	Es decir, la ecuaci\'on $ j $ es reemplazada por la combinaci\'on lineal de ecuaciones del lado izquierdo.
 	Estas operaciones tiene el fin de eliminar el t\'ermino $ x_1 $ de todas las filas excepto la primera. Es decir, obtenemos la matriz
 	\begin{align*} A_2 =
 		\begin{bmatrix}
@@ -211,14 +284,14 @@ Describe el algoritmo de eliminaci\'on Gaussiana. (\textbf{0.5 puntos})
 			\end{array}
 		\end{bmatrix},
 	\end{align*}
-  donde nuevamente, los $ a_{ij} $ son posiblemente distintos a los originalmente dados. Entonces, tenemos un sistema lineal triangular
+	donde nuevamente, los $ a_{ij} $ son posiblemente distintos a los originalmente dados. Entonces, tenemos un sistema lineal triangular
 	\begin{align*}
-    \arraycolsep=1pt
+		\arraycolsep=1pt
 		\begin{array}{rcr}
-      a_{11}x_{1} + a_{12}x_{2} + \cdots + a_{1n}x_{n} &= &b_{1}, \\
-      a_{22}x_{2} + \cdots + a_{2n}x_{n} &=& b_{2}, \\
-                                         &\vdots & \\
-              a_{nn}x_{n} &=& b_{n},
+			a_{11}x_{1} + a_{12}x_{2} + \cdots + a_{1n}x_{n} & =      & b_{1}, \\
+			a_{22}x_{2} + \cdots + a_{2n}x_{n}               & =      & b_{2}, \\
+			                                                 & \vdots &        \\
+			a_{nn}x_{n}                                      & =      & b_{n},
 		\end{array}.
 	\end{align*}
 \end{solution}
@@ -226,8 +299,28 @@ Describe el algoritmo de eliminaci\'on Gaussiana. (\textbf{0.5 puntos})
 Desarrollar un programa que resuelva un sistema de ecuaciones de la forma $ \mathbf{Ax} = \mathbf{b} $ mediante el m\'etodo de eliminaci\'on Gaussiana. Una vez que realices la eliminaci\'on Gaussiana puedes utilizar el m\'etodo anteriormente programado para resolver el sistema equivalente $ \mathbf{Ux} = \mathbf{b} $. (\textbf{3.0 puntos})
 \end{problem}
 \begin{solution}
+  Utilizando $ \mathbf{A} $ como la matriz del archivo \texttt{A.txt} y $ \mathbf{b} $ como el vector del archivo \texttt{b.txt}, obtenemos que la soluci\'on a $ \mathbf{Ax} = \mathbf{b} $ corresponde a
+    \begin{align*}
+      \mathbf{x} =\begin{bmatrix}
+    423.72 \\
+    95.59 \\
+    154.56 \\
+    19.78 \\
+    190.43 \\
+    -243.85 \\
+    51.78 \\
+    60.59 \\
+    -77.99 \\
+    -157.03 \\
+    -157.78 \\
+    -51.55 \\
+    -48.22 \\
+    -29.28 \\
+    -161.45
+\end{bmatrix} 
+    \end{align*}
+  Para ejecutar el codigo, usar \texttt{make run\_gaussian ARGS="eq/A.txt eq/b.txt"}.
 
-  
 \end{solution}
 
 \begin{problem}
