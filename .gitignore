@@ -10,5 +10,6 @@ pyvenv.cfg
 *.fls
 *.log
 *.synctex.gz
-
-
+*.bin
+*.bbl
+*.blg
