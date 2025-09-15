@@ -7,46 +7,64 @@
 #include "vectors.h"
 
 double *gaussian_pivoting(double **A, double *b, int dim) {
-  int *row_indicator = malloc(dim * sizeof(int));
-  for (int i = 0; i < dim; i++) {
-    row_indicator[i] = i;
+  int *col_indicator = malloc(dim * sizeof(int));
+  if (!col_indicator) {
+    perror("Could not allocate memory.\n");
+    return NULL;
   }
-  double pivot = 0;
+  for (int i = 0; i < dim; i++) {
+    col_indicator[i] = i;
+  }
+  double max_val, temp;
+  int row_pivot, col_pivot;
 
-  for (int i = 0; i < dim - 1; i++) {
+  for (int i = 0; i < dim; i++) {
+    max_val = 0;
+    row_pivot = col_pivot = i;
     for (int p = i; p < dim; p++) {
-      // if a non-zero entry is found but it is not in the diagonal,
-      // swap the rows and break
-      // (we are looking for the smallest p that satisfies this)
-      if (fabs(A[row_indicator[p]][i]) > fabs(pivot) && row_indicator[p] != row_indicator[i]) {
-        int temp = row_indicator[i];
-        row_indicator[i] = row_indicator[p];
-        row_indicator[p] = temp;
-        break;
-      } else if (A[p][i]) { // if it is already in the diagonal, break
-        break;
+      for (int j = i; j < dim; j++) {
+        if (fabs(A[p][j]) > max_val) {
+          max_val = fabs(A[p][j]);
+          row_pivot = p;
+          col_pivot = j;
+        }
       }
-      // if we have arrived to the final p and no non-zero A[p][i] was found,
-      // may conclude that the system has no unique solution.
-      else if (p == dim - 1) {
-        fprintf(stderr, "Unique solution does not exist.\n");
+      if (max_val == 0) {
+        fprintf(stderr, "Unique solution not found.\n");
+        free(col_indicator);
         return NULL;
+      }
+      if (row_pivot != i) {
+        double *temp_row = A[i];
+        A[i] = A[row_pivot];
+        A[row_pivot] = temp_row;
+
+        temp = b[i];
+        b[i] = b[row_pivot];
+        b[row_pivot] = temp;
+      }
+
+      if (col_pivot != i) {
+        for (int m = 0; m < dim; m++) {
+          temp = A[m][i];
+          A[m][i] = A[m][col_pivot];
+          A[m][col_pivot] = temp;
+        }
+        int temp_col = col_indicator[i];
+        col_indicator[i] = col_indicator[col_pivot];
+        col_indicator[col_pivot] = temp_col;
       }
     }
     for (int j = i + 1; j < dim; j++) {
-      double m = A[j][i] / A[i][i];
-      for (int k = 0; k < dim; k++) {
-        A[j][k] = A[j][k] - m * A[i][k];
+      double factor = A[j][i] / A[i][i];
+      for (int k = i + 1; k < dim; k++) {
+        A[j][k] = A[j][k] - factor * A[i][k];
       }
-    }
-  }
-  for (int i = 0; i < dim; i++) {
-    if (A[i][i] == 0) {
-      fprintf(stderr, "Unique solution does not exist.\n");
-      exit(1);
+      b[j] = b[j] - factor * b[i];
     }
   }
   double *x = solve_upper(A, b, dim);
+  free(col_indicator);
   return x;
 }
 
@@ -56,21 +74,20 @@ int main(int argc, char *argv[]) {
             "Invalid arguments. Usage: %s <matrix-file> <vector-file>.\n",
             argv[0]);
   }
-  FILE *matrix_file = fopen(argv[1], "r");
-  if (!matrix_file) {
-    perror(argv[1]);
-    exit(1);
-  }
-  FILE *vector_file = fopen(argv[2], "r");
-  if (!vector_file) {
-    perror(argv[1]);
-    exit(1);
-  }
-
   int m_cols, m_rows, v_dim;
 
-  double **A = create_array_from_file(matrix_file, &m_cols, &m_rows);
-  double *b = file_to_vector(vector_file, &v_dim);
+  double **A = create_array_from_file(argv[1], &m_cols, &m_rows);
+  if (!A) {
+    exit(1);
+  }
+  double *b = file_to_vector(argv[2], &v_dim);
+  if (!b) {
+    for (int i = 0; i < m_rows; i++) {
+      free(A[i]);
+    }
+    free(A);
+    exit(1);
+  }
 
   if (m_cols != v_dim) {
     fprintf(stderr, "Matrix and vector dimensions do not match: %d and %d\n",
