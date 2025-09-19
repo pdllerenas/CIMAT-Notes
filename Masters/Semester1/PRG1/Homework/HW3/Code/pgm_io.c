@@ -78,6 +78,7 @@ unsigned char **pgmRead(char *fileName, int *rows, int *cols) {
 
   tempPtr = (unsigned char *)malloc((*rows) * (*cols) * sizeof(unsigned char));
   if (tempPtr == NULL) {
+    free(image);
     puts("\nFailure to allocate room for the array");
     return (NULL);
   }
