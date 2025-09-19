@@ -4,24 +4,51 @@
 
 /*
 
-calculate entry-wise product matrix
+calculate product of all N MxM matrices
 
  */
 
 double **multiply_3d_matrix(double ***pmatrix, int M, int N) {
-  double **result = malloc(M * sizeof(double));
-  double product = 1;
+  double **result = malloc(M * sizeof(double *));
+
+  // for storing result * next matrix and not alter result in the process
+  double **temp = malloc(M * sizeof(double *));
 
   for (int i = 0; i < M; i++) {
     result[i] = malloc(M * sizeof(double));
+    temp[i] = malloc(M * sizeof(double));
+  }
+
+  // 0th iteration of multiplication is simply our first matrix
+  for (int i = 0; i < M; i++) {
     for (int j = 0; j < M; j++) {
-      for (int k = 0; k < N; k++) {
-        product *= pmatrix[i][j][k];
-      }
-      result[i][j] = product;
-      product = 1;
+      result[i][j] = pmatrix[i][j][0];
     }
   }
+
+  // begin iterative process for other matrices
+  for (int n = 1; n < N; n++) {     // matrix index
+    for (int i = 0; i < M; i++) {   // row
+      for (int j = 0; j < M; j++) { // col
+        double sum = 0.0;
+        for (int k = 0; k < M; k++) {
+          sum += result[i][k] * pmatrix[k][j][n];
+        }
+        temp[i][j] = sum;
+      }
+    }
+    // swap pointers to update result with temp
+    double **swap = result;
+    result = temp;
+    temp = swap;
+  }
+
+  // Free the memory for the temporary matrix
+  for (int i = 0; i < M; i++) {
+    free(temp[i]);
+  }
+  free(temp);
+
   return result;
 }
 
@@ -39,7 +66,7 @@ double **sum_3d_matrix(double ***pmatrix, int M, int N) {
     result[i] = malloc(M * sizeof(double));
     for (int j = 0; j < M; j++) {
       for (int k = 0; k < N; k++) {
-        sum += pmatrix[i][j][k];
+        sum += pmatrix[i][j][k]; // sum all i,j in a single loop
       }
       result[i][j] = sum;
       sum = 0;
@@ -70,7 +97,6 @@ double **difference_3d_matrix(double ***pmatrix, int M, int N) {
   }
   return result;
 }
-
 
 /*
 
