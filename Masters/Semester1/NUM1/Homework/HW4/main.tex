@@ -1,0 +1,203 @@
+\documentclass{article}
+\usepackage[yyyymmdd]{datetime}
+\usepackage[nottoc]{tocbibind}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{url}
+\usepackage{array}
+\usepackage{float}
+\usepackage[inline,shortlabels]{enumitem}
+\usepackage{hhline}
+\usepackage{multirow}
+\usepackage{geometry}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{colortbl}
+\usepackage[framemethod=TikZ]{mdframed}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{tikz}
+\usepackage{amsthm}
+\newtheoremstyle{problemstyle}{3pt}{3pt}{\normalfont}{}{\bfseries}{\normalfont\bfseries:}{.5em}{}
+\theoremstyle{problemstyle}
+\newmdtheoremenv[
+  linewidth=1pt,
+  linecolor=RoyalBlue,
+  backgroundcolor=RoyalBlue!10,
+  roundcorner=5pt,
+  innertopmargin=6pt,
+  innerbottommargin=6pt,
+  innerleftmargin=6pt,
+  innerrightmargin=6pt,
+  nobreak=true
+]{problem}{Problem}
+
+% Example
+\newmdtheoremenv[
+  linewidth=1pt,
+  linecolor=ForestGreen,
+  backgroundcolor=ForestGreen!10,
+  roundcorner=5pt,
+  nobreak=true
+]{example}{Example}
+
+% Theorem
+\newmdtheoremenv[
+  linewidth=1pt,
+  linecolor=BrickRed,
+  backgroundcolor=BrickRed!10,
+  roundcorner=5pt,
+  nobreak=true
+]{theorem}{Theorem}
+
+% Remark
+\newmdtheoremenv[
+  linewidth=1pt,
+  linecolor=Goldenrod,
+  backgroundcolor=Goldenrod!10,
+  roundcorner=5pt,
+  nobreak=true
+]{remark}{Remark}
+
+% Solution
+\newenvironment{solution}{%
+  \begin{mdframed}[linewidth=0.8pt,linecolor=Gray,backgroundcolor=Gray!5,roundcorner=5pt]%
+  \noindent\textbf{Solution.}%
+}{%
+\hfill $ \diamond $ 
+  \end{mdframed}%
+}
+
+\usepackage{listings}
+
+\lstset{breaklines=true}
+\definecolor{vscode-blue}{RGB}{64, 116, 160}   % Keywords
+\definecolor{vscode-green}{RGB}{95, 203, 114}   % Strings
+\definecolor{vscode-gray}{RGB}{128, 128, 128}   % Comments
+\definecolor{vscode-orange}{RGB}{206, 145, 120} % Numbers/Constants
+\definecolor{vscode-purple}{RGB}{204, 124, 255} % Functions/Types
+\definecolor{vscode-cyan}{RGB}{155, 199, 217}   % Preprocessor
+
+\lstdefinestyle{visual-studio}{
+    language=C,
+    backgroundcolor=\color{Gray!10},
+    commentstyle=\color{vscode-gray}\ttfamily,
+    keywordstyle=\color{vscode-blue}\ttfamily,
+    stringstyle=\color{vscode-green}\ttfamily,
+    numberstyle=\color{vscode-orange}\ttfamily,
+    identifierstyle=\color{black}\ttfamily,
+    breaklines=true,
+    showstringspaces=false,
+    tabsize=4,
+    % Additional settings for more Visual Studio feel
+    emph=[1]{void, int, double, float, char, bool, short, long, signed, unsigned, class, struct, enum, union, typedef, template}, % Common types
+    emphstyle=[1]\color{vscode-purple},
+    emph=[2]{printf, scanf, cin, cout, return, new, delete, if, else, while, do, for, switch, case, default, break, continue, goto, throw, try, catch, const, static, extern, volatile, register, restrict, inline, explicit, virtual, friend, namespace, using, private, protected, public, operator}, % Standard keywords
+    emphstyle=[2]\color{vscode-blue},
+            keywordstyle=[2]\color{vscode-cyan}\ttfamily\bfseries,
+    morekeywords={\#include, \#define, \#ifdef, \#ifndef, \#endif, \#pragma},
+    basicstyle=\small
+}
+
+% Make header with name and date etc.
+\usepackage{fancyhdr}
+\lhead{Pedro D. Llerenas\\M\'etodos Num\'ericos I}
+\rhead{\today\\Tarea IV}
+\thispagestyle{fancy}
+
+\usepackage[utf8]{inputenc}
+\setlength{\parindent}{0pt} % Don't indent new paragraphs
+\setlength{\headheight}{24pt} 
+
+\newcommand{\Z}{\mathbb Z}
+\newcommand{\Q}{\mathbb Q}
+\newcommand{\R}{\mathbb R}
+\newcommand{\C}{\mathbb C}
+\newcommand{\N}{\mathbb N}
+
+\begin{document}
+\section*{Factoriazaci\'on de matrices y m\'etodos iterativos}\label{sec:factoriazaci_on_de_matrices_y_m_etodos_iterativos} % (fold)
+
+
+%begin problem 1
+\begin{problem}
+Desarrollar un programa para la soluci\'on a un sistema de ecuaciones utilizando factorizaci\'on $ \mathbf{A} = \mathbf{LU} $ usando el método de \textit{Crout} con $diag(\mathbf{U}) = \{1, 1, . . . , 1\}$. \textbf{(1.5 puntos)}
+\end{problem}
+%end problem 1
+
+%begin solution 1
+\begin{solution}
+\end{solution}
+%end solution 1
+
+%begin problem 2
+\begin{problem}
+  Desarrollar de forma escrita las expresiones para resolver el sistema de ecuaciones utilizando la factorizaci\'on $ \mathbf{A} = \mathbf{LU} $ usando el m\'etodo \textit{Doolittle} de la forma $ \mathbf{A} = \mathbf{LU} $, con $diag(\mathbf{L}) = \{1, 1, . . . , 1\}$. (No es necesario desarrollar el programa).\textbf{(0.5 puntos)}
+\end{problem}
+%end problem 2
+
+%begin solution 2
+\begin{solution}
+\end{solution}
+%end solution 2
+
+%begin problem 3
+\begin{problem}
+  Desarrollar un programa para la soluci\'on a un sistema de ecuaciones utilizando factorizaci\'on $ \mathbf{A} = \mathbf{LL^T} $ (M\'etodo de Cholesky). \textbf{(1.5 puntos)}
+\end{problem}
+%end problem 3
+
+%begin solution 3
+\begin{solution}
+\end{solution}
+%end solution 3
+
+%begin problem 4
+\begin{problem}
+  Resolver la ecuaci\'on de calor en 1D de la forma:
+  \begin{align*}
+    K \frac{\partial^2\phi}{\partial x^2} + Q = 0
+  \end{align*}
+  con las siguientes condiciones de contorno, en una l\'inea de longitud $ L$, $ K = 1 $, $ Q = 5 $
+  \begin{align*}
+    \phi_0 &= 0\\
+    \phi_n &= 100
+  \end{align*}
+  Para resolver el sistema de ecuaciones, deber\'a de usar el solver de una matriz tridiagonal sim\'etrica usando el m\'etodo de Cholesky. La matriz se guarda en 2 vectores. \textbf{(3.5 puntos)}
+
+\end{problem}
+%end problem 4
+
+%begin solution 4
+\begin{solution}
+\end{solution}
+%end solution 4
+
+%begin problem 5
+\begin{problem}
+  Desarrollar un programa que resuelva un sistema de ecuaciones de la forma $ \mathbf{Ax} = \mathbf{b} $ utilizando el método iterativo de \textit{Jacobi}. \textbf{(1.5 puntos)}
+\end{problem}
+%end problem 5
+
+%begin solution 5
+\begin{solution}
+\end{solution}
+%end solution 5
+
+%begin problem 6
+\begin{problem}
+  Desarrollar un programa que resuelva un sistema de ecuaciones de la forma $ \mathbf{Ax} = \mathbf{b} $ utilizando el método iterativo de \textit{Gauss-Seidel}. \textbf{(1.5 puntos)}
+\end{problem}
+%end problem 6
+
+%begin solution 6
+\begin{solution}
+\end{solution}
+%end solution 6
+% section Factoriazaci\'on de matrices y m\'etodos iterativos (end)
+
+
+\bibliographystyle{plain}
+\bibliography{main}
+
+\end{document}
+
