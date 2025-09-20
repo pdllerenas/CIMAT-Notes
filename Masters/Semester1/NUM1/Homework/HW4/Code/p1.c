@@ -1,33 +1,43 @@
+#include "matrix.h"
+#include "matrix_factorization.h"
+#include "matrix_io.h"
 #include <stdio.h>
 #include <stdlib.h>
 
-void crout(double const **A, double **L, double **U, int n) {
-	int i, j, k;
-	double sum = 0;
+int main(int argc, char *argv[]) {
+  if (argc != 3) {
+    fprintf(stderr,
+            "Invalid argument count. \nUsage: %s <file-input> <file-size>",
+            argv[0]);
+    exit(1);
+  }
+  int rows, cols;
+  rows = cols = atoi(argv[2]);
 
-	for (i = 0; i < n; i++) {
-		U[i][i] = 1;
-	}
+  Matrix *A = load_matrix_from_txt(argv[1], &rows, &cols);
+  A->element_size = sizeof(double);
 
-	for (j = 0; j < n; j++) {
-		for (i = j; i < n; i++) {
-			sum = 0;
-			for (k = 0; k < j; k++) {
-				sum = sum + L[i][k] * U[k][j];	
-			}
-			L[i][j] = A[i][j] - sum;
-		}
+  Matrix *U = matrix_create_double(rows, cols),
+         *L = matrix_create_double(rows, cols);
 
-		for (i = j; i < n; i++) {
-			sum = 0;
-			for(k = 0; k < j; k++) {
-				sum = sum + L[j][k] * U[k][i];
-			}
-			if (L[j][j] == 0) {
-				printf("det(L) close to 0!\n Can't divide by 0...\n");
-				exit(EXIT_FAILURE);
-			}
-			U[j][i] = (A[j][i] - sum) / L[j][j];
-		}
-	}
+  crout(A, L, U, A->rows);
+  for (int i = 0; i < A->rows; i++) {
+    for (int j = 0; j < A->cols; j++) {
+      printf("%lf ", ((double *)A->data)[i * rows + j]);
+    }
+    printf("\t");
+
+    for (int j = 0; j < A->cols; j++) {
+      printf("%lf ", ((double *)L->data)[i * rows + j]);
+    }
+    printf("\t");
+    for (int j = 0; j < A->cols; j++) {
+      printf("%lf ", ((double *)U->data)[i * rows + j]);
+    }
+    printf("\n");
+  }
+
+  free(A->data);
+  free(A);
+  return EXIT_SUCCESS;
 }
