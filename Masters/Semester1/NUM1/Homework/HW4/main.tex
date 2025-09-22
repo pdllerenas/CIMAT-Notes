@@ -5,6 +5,7 @@
 \pgfplotsset{compat=1.18}
 \usepackage{url}
 \usepackage{array}
+\usepackage{bm}
 \usepackage{float}
 \usepackage[inline,shortlabels]{enumitem}
 \usepackage{hhline}
@@ -89,9 +90,14 @@
     showstringspaces=false,
     tabsize=4,
     % Additional settings for more Visual Studio feel
-    emph=[1]{void, int, double, float, char, bool, short, long, signed, unsigned, class, struct, enum, union, typedef, template}, % Common types
+    emph=[1]{void, int, double, float, char, bool, short, long, signed,
+    unsigned, class, struct, enum, union, typedef, template}, % Common types
     emphstyle=[1]\color{vscode-purple},
-    emph=[2]{printf, scanf, cin, cout, return, new, delete, if, else, while, do, for, switch, case, default, break, continue, goto, throw, try, catch, const, static, extern, volatile, register, restrict, inline, explicit, virtual, friend, namespace, using, private, protected, public, operator}, % Standard keywords
+    emph=[2]{printf, scanf, cin, cout, return, new, delete, if, else, while,
+    do, for, switch, case, default, break, continue, goto, throw, try, catch,
+  const, static, extern, volatile, register, restrict, inline, explicit,
+virtual, friend, namespace, using, private, protected, public, operator}, %
+Standard keywords
     emphstyle=[2]\color{vscode-blue},
             keywordstyle=[2]\color{vscode-cyan}\ttfamily\bfseries,
     morekeywords={\#include, \#define, \#ifdef, \#ifndef, \#endif, \#pragma},
@@ -120,81 +126,241 @@
 
 %begin problem 1
 \begin{problem}
-Desarrollar un programa para la soluci\'on a un sistema de ecuaciones utilizando factorizaci\'on $ \mathbf{A} = \mathbf{LU} $ usando el método de \textit{Crout} con $diag(\mathbf{U}) = \{1, 1, . . . , 1\}$. \textbf{(1.5 puntos)}
+Desarrollar un programa para la soluci\'on a un sistema de ecuaciones
+utilizando factorizaci\'on $ \mathbf{A} = \mathbf{LU} $ usando el método de
+\textit{Crout} con $diag(\mathbf{U}) = \{1, 1, . . . , 1\}$. \textbf{(1.5
+	puntos)}
 \end{problem}
 %end problem 1
 
 %begin solution 1
 \begin{solution}
+	En este caso, utilizamos $ \mathbf{A} $ como \texttt{A.txt} y $ \mathbf{b} $ como \texttt{b.txt}. Para ejecutar el programa que resuelve este sistema usando el m\'etodo de Crout, usar
+
+	\begin{center}
+		\texttt{make run-p1 ARGS="lin\_sys/A.txt lin\_sys/b.txt"}
+	\end{center}
+	Esto nos genera 3 archivos en el directorio \texttt{lin\_sys}: \texttt{crout\_L.txt}, \texttt{crout\_U.txt} y \texttt{crout\_x.txt}, ese decir, la descomposici\'on de Crout y la soluci\'on del sistema.
 \end{solution}
 %end solution 1
 
 %begin problem 2
 \begin{problem}
-  Desarrollar de forma escrita las expresiones para resolver el sistema de ecuaciones utilizando la factorizaci\'on $ \mathbf{A} = \mathbf{LU} $ usando el m\'etodo \textit{Doolittle} de la forma $ \mathbf{A} = \mathbf{LU} $, con $diag(\mathbf{L}) = \{1, 1, . . . , 1\}$. (No es necesario desarrollar el programa).\textbf{(0.5 puntos)}
+Desarrollar de forma escrita las expresiones para resolver el sistema de
+ecuaciones utilizando la factorizaci\'on $ \mathbf{A} = \mathbf{LU} $ usando el
+m\'etodo \textit{Doolittle} de la forma $ \mathbf{A} = \mathbf{LU} $, con
+$diag(\mathbf{L}) = \{1, 1, . . . , 1\}$. (No es necesario desarrollar el
+programa).\textbf{(0.5 puntos)}
 \end{problem}
 %end problem 2
 
 %begin solution 2
 \begin{solution}
+	Para el m\'etodo de Doolittle comenzamos con
+	\begin{align*}
+		l_{ii} = 1.
+	\end{align*}
+	Entonces, los t\'erminos de $ \mathbf{U} $ est\'an dados por
+	\begin{align*}
+		u_{ij} =
+		\begin{cases}
+			a_{ij} - \sum_{k=0}^{i-1}l_{ik}u_{kj} & \text{ si } i>0,   \\
+			a_{ij}                                & \text{ si } i = 0.
+		\end{cases}
+	\end{align*}
+	Mientras que los de $ \mathbf{L} $ son dados por
+	\begin{align*}
+		l_{ij} =
+		\begin{cases}
+			\dfrac{a_{ij} - \sum_{k=0}^{i-1}l_{ik}u_{kj}}{u_{jj}} & \text{ si } i>0,   \\
+			\dfrac{a_{ij}}{u_{jj}}                                & \text{ si } i = 0.
+		\end{cases}
+	\end{align*}
 \end{solution}
 %end solution 2
-
+\pagebreak
 %begin problem 3
 \begin{problem}
-  Desarrollar un programa para la soluci\'on a un sistema de ecuaciones utilizando factorizaci\'on $ \mathbf{A} = \mathbf{LL^T} $ (M\'etodo de Cholesky). \textbf{(1.5 puntos)}
+Desarrollar un programa para la soluci\'on a un sistema de ecuaciones
+utilizando factorizaci\'on $ \mathbf{A} = \mathbf{LL^T} $ (M\'etodo de
+Cholesky). \textbf{(1.5 puntos)}
 \end{problem}
 %end problem 3
 
 %begin solution 3
 \begin{solution}
+	Consideremos la matriz sim\'etrica definida positiva $ \mathbf{A} $ dada por \texttt{SPD.txt}, y el vector $ \mathbf{b} $ dado por \texttt{b\_spd.txt}. Para ejecutar el programa que resuelve esto mediante la factorizaci\'on de Cholesky, usamos
+
+	\begin{center}
+		\texttt{make run-p3 ARGS="lin\_sys/SPD.txt lin\_sys/b\_spd.txt"}
+	\end{center}
+	Esto genera 3 archivos en \texttt{lin\_sys/}: \texttt{cholesky\_L.txt}, \texttt{cholesky\_LT.txt} y \texttt{cholesky\_x.txt}.
 \end{solution}
 %end solution 3
 
 %begin problem 4
 \begin{problem}
-  Resolver la ecuaci\'on de calor en 1D de la forma:
-  \begin{align*}
-    K \frac{\partial^2\phi}{\partial x^2} + Q = 0
-  \end{align*}
-  con las siguientes condiciones de contorno, en una l\'inea de longitud $ L$, $ K = 1 $, $ Q = 5 $
-  \begin{align*}
-    \phi_0 &= 0\\
-    \phi_n &= 100
-  \end{align*}
-  Para resolver el sistema de ecuaciones, deber\'a de usar el solver de una matriz tridiagonal sim\'etrica usando el m\'etodo de Cholesky. La matriz se guarda en 2 vectores. \textbf{(3.5 puntos)}
+Resolver la ecuaci\'on de calor en 1D de la forma:
+\begin{align*}
+	K \frac{\partial^2\phi}{\partial x^2} + Q = 0
+\end{align*}
+con las siguientes condiciones de contorno, en una l\'inea de longitud $ L$,
+$ K = 1 $, $ Q = 5 $
+\begin{align*}
+	\phi_0 & = 0   \\
+	\phi_n & = 100
+\end{align*}
+Para resolver el sistema de ecuaciones, deber\'a de usar el solver de una
+matriz tridiagonal sim\'etrica usando el m\'etodo de Cholesky. La matriz se
+guarda en 2 vectores. \textbf{(3.5 puntos)}
 
 \end{problem}
 %end problem 4
 
 %begin solution 4
 \begin{solution}
+	Para ejecutar el programa que resuelve la ecuaci\'on de calor, usamos
+
+	\begin{center}
+		\texttt{make run-p4 ARGS="1.0 1.0 5.0 0.0 100.0 100"}
+	\end{center}
+
+	donde los argumentos (en ese \'orden) son los siguientes:
+	\begin{enumerate}
+		\item $ L = 1.0 $,
+		\item $ K = 1.0 $,
+		\item $ Q = 1.0 $,
+		\item $ \phi_0 = 0.0 $,
+		\item $ \phi_{n} = 100.0 $,
+		\item $ n = 100 $.
+	\end{enumerate}
+	Esto nos genera un archivo \texttt{phi.txt}, conteniendo las $ n = 100 $ inc\'ognitas de la barra.
 \end{solution}
 %end solution 4
 
 %begin problem 5
 \begin{problem}
-  Desarrollar un programa que resuelva un sistema de ecuaciones de la forma $ \mathbf{Ax} = \mathbf{b} $ utilizando el método iterativo de \textit{Jacobi}. \textbf{(1.5 puntos)}
+Desarrollar un programa que resuelva un sistema de ecuaciones de la forma $
+	\mathbf{Ax} = \mathbf{b} $ utilizando el método iterativo de \textit{Jacobi}.
+\textbf{(1.5 puntos)}
 \end{problem}
 %end problem 5
 
 %begin solution 5
 \begin{solution}
+	Primero, probamos $ \mathbf{A} $ con valores \texttt{A\_small.txt} y $ \mathbf{b} $ con valores \texttt{b\_small.txt} y corremos el programa usando
+	\begin{center}
+    \texttt{make run-p5 ARGS="lin\_sys/A\_small.txt lin\_sys/b\_small.txt
+    lin\_sys/x0\_small.txt 0.00001 100"}
+	\end{center}
+	Esto nos genera el archivo del vector soluci\'on \texttt{jacobi\_x.txt}, que tiene valores
+	\begin{align*}
+		\mathbf{x} =
+		\begin{bmatrix}
+			3.0  \\
+			-2.5 \\
+			7.0
+		\end{bmatrix}
+	\end{align*}
+	La convergencia es la siguiente:
+	\begin{table}[H]
+		\begin{center}
+			\begin{tabular}[H]{c|c}
+				n & $ \lVert x_i - x_{i-1}\rVert $ \\
+				\hline
+				1 & 54.426089342403642             \\
+				2 & 0.153501234126984              \\
+				3 & 0.000104009711195              \\
+				4 & 0.000000375866745
+			\end{tabular}
+		\end{center}
+	\end{table}
+
+	Ahora, si consideramos \texttt{A\_big.txt} y \texttt{b\_big.txt} y lo ejecuramos usando
+	\begin{center}
+		\texttt{make run-p5 ARGS="lin\_sys/A\_big.txt lin\_sys/b\_big.txt lin\_sys/x0\_big.txt 0.00001 1000"}
+	\end{center}
+	obtenemos el mismo archivo, pero ahora con los valores soluci\'on al sistema
+	de $ 125\times 125 $, y la convergencia se ve de la siguiente manera:
+	\begin{table}[H]
+		\begin{center}
+			\begin{tabular}[H]{c|c}
+				n        & $ \lVert x_i - x_{i-1}\rVert $ \\
+				\hline
+				1        & 13.139842374895840             \\
+				2        & 0.275904211875408              \\
+				3        & 0.137594762031032              \\
+				$\vdots$ & $ \vdots $                     \\
+				373      & 0.000010143756020              \\
+				374      & 0.000010009285854              \\
+				375      & 0.000009876598130              \\
+			\end{tabular}
+		\end{center}
+	\end{table}
+
 \end{solution}
 %end solution 5
 
 %begin problem 6
 \begin{problem}
-  Desarrollar un programa que resuelva un sistema de ecuaciones de la forma $ \mathbf{Ax} = \mathbf{b} $ utilizando el método iterativo de \textit{Gauss-Seidel}. \textbf{(1.5 puntos)}
+Desarrollar un programa que resuelva un sistema de ecuaciones de la forma $
+	\mathbf{Ax} = \mathbf{b} $ utilizando el método iterativo de
+\textit{Gauss-Seidel}. \textbf{(1.5 puntos)}
 \end{problem}
 %end problem 6
 
 %begin solution 6
 \begin{solution}
+	Primero, probamos $ \mathbf{A} $ con valores \texttt{A\_small.txt} y $ \mathbf{b} $ con valores \texttt{b\_small.txt} y corremos el programa usando
+	\begin{center}
+		\texttt{make run-p6 ARGS="lin\_sys/A\_small.txt lin\_sys/b\_small.txt lin\_sys/x0\_small.txt 0.00001 100"}
+	\end{center}
+	Esto nos genera el archivo del vector soluci\'on \texttt{gauss\_seidel\_x.txt}, que tiene valores
+	\begin{align*}
+		\mathbf{x} =
+		\begin{bmatrix}
+			3.0  \\
+			-2.5 \\
+			7.0
+		\end{bmatrix}
+	\end{align*}
+	Con la siguiente convergencia:
+	\begin{table}[H]
+		\begin{center}
+			\begin{tabular}[H]{c|c}
+				n & $ \lVert x_i - x_{i-1}\rVert $ \\
+				\hline
+				1 & 53.073937274013616             \\
+				2 & 0.139895692236055              \\
+				3 & 0.000067908604963              \\
+				4 & 0.000000000748281
+			\end{tabular}
+		\end{center}
+	\end{table}
+
+	Ahora, si consideramos \texttt{A\_big.txt} y \texttt{b\_big.txt} y lo ejecuramos usando
+	\begin{center}
+		\texttt{make run-p6 ARGS="lin\_sys/A\_big.txt lin\_sys/b\_big.txt lin\_sys/x0\_big.txt 0.00001 1000"}
+	\end{center}
+	obtenemos el mismo archivo, pero ahora con los valores soluci\'on al sistema de $ 125\times 125 $.
+	\begin{table}[H]
+		\begin{center}
+			\begin{tabular}[H]{c|c}
+				n        & $ \lVert x_i - x_{i-1}\rVert $ \\
+				\hline
+        1& 13.713414633215809\\
+        2& 0.492334502610899\\
+        3& 0.223358458755092\\
+				$\vdots$ & $ \vdots $                     \\
+        238& 0.000010444020240\\
+        239& 0.000010169122768\\
+        240& 0.000009901460824
+			\end{tabular}
+		\end{center}
+	\end{table}
 \end{solution}
 %end solution 6
 % section Factoriazaci\'on de matrices y m\'etodos iterativos (end)
-
 
 \bibliographystyle{plain}
 \bibliography{main}
