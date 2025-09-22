@@ -149,3 +149,13 @@ Vector *matrix_times_vector(Matrix *M, Vector *x) {
   }
   return Mx;
 }
+
+void matrix_swap_rows(Matrix *M, const int i, const int j) {
+  int dim = M->cols;
+  double temp;
+  for (int k = 0; k < dim; k++) {
+    temp = ((double *)M->data)[i * dim + k];
+    ((double *)M->data)[i * dim + k] = ((double *)M->data)[j * dim + k];
+    ((double *)M->data)[j * dim + k] = temp;
+  }
+}

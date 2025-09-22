@@ -1,5 +1,6 @@
 #include "linear_system.h"
 #include "matrix.h"
+#include "matrix_operations.h"
 #include "vector.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -182,4 +183,57 @@ Vector *gauss_seidel_iterative(Matrix *A, Vector *b, Vector *x0, double TOL,
   }
   fprintf(stderr, "Method failed at %d iterations.\n", k);
   return NULL;
+}
+
+/*
+
+modifies the matrix A into row-echelon form via gaussian elimination,
+simultaneously changing b's rows, then solve the equivalent problem Ux = b'
+using upper solver
+
+ */
+Vector *gaussian_elimination(Matrix *A, Vector *b) {
+  int dim = A->rows;
+  for (int i = 0; i < dim - 1; i++) {
+    for (int p = i; p < dim; p++) {
+      // if a non-zero entry is found but it is not in the diagonal,
+      // swap the m_rows and break
+      // (we are looking for the smallest p that satisfies this)
+      if (((double *)A->data)[p * dim + i] && p != i) {
+        // swap matrix rows
+        matrix_swap_rows(A, p, i);
+
+        // swap b rows
+        vector_swap_rows(b, p, i);
+
+        break;
+      } else if (((double *)A->data)[p * dim + i]) { // if it is already in the
+                                                     // diagonal, break
+        break;
+      }
+      // if we have arrived to the final p and no non-zero A[p][i] was found,
+      // may conclude that the system has no unique solution.
+      else if (p == dim - 1) {
+        fprintf(stderr, "Unique solution does not exist.\n");
+        exit(1);
+      }
+    }
+    for (int j = i + 1; j < dim; j++) {
+      double m =
+          ((double *)A->data)[j * dim + i] / ((double *)A->data)[i * dim + i];
+      for (int k = 0; k < dim; k++) {
+        ((double *)A->data)[j * dim + k] = ((double *)A->data)[j * dim + k] -
+                                           m * ((double *)A->data)[i * dim + k];
+      }
+      ((double *)b->data)[j] -= m * ((double *)b->data)[i];
+    }
+  }
+  for (int i = 0; i < dim; i++) {
+    if (((double *)A->data)[i * dim + i] == 0) {
+      fprintf(stderr, "Unique solution does not exist.\n");
+      exit(1);
+    }
+  }
+  Vector *x = solve_upper(A, b);
+  return x;
 }

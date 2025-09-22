@@ -17,6 +17,7 @@ Vector *vector_sum(const Vector *, const Vector *);
 Vector *vector_diff(const Vector *, const Vector *);
 Vector *load_vector_from_txt(const char *);
 Vector *vector_fill(int, double);
+void vector_swap_rows(Vector *, int, int);
 void copy_data(Vector *, const Vector *);
 void print_vector(Vector *);
 void free_vector(Vector *);

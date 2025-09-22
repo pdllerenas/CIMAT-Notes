@@ -3,7 +3,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-
 /*
 
 initializes a vector object
@@ -175,6 +174,12 @@ void print_vector(Vector *v) {
     printf("%lf ", ((double *)v->data)[i]);
   }
   printf("\n");
+}
+
+void vector_swap_rows(Vector *v, const int i, const int j) {
+  double temp = ((double *)v->data)[i];
+  ((double *)v->data)[i] = ((double *)v->data)[j];
+  ((double *)v->data)[j] = temp;
 }
 
 void free_vector(Vector *v) {
