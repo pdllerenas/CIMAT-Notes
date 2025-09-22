@@ -6,8 +6,9 @@
 #define DEFINE_MATRIX_FUNCTIONS(TYPE, SUFFIX)                                  \
   Matrix *matrix_create_##SUFFIX(int rows, int cols) {                         \
     Matrix *m = malloc(sizeof(Matrix));                                        \
-    if (m == NULL)                                                             \
+    if (m == NULL) {                                                           \
       return NULL;                                                             \
+    }                                                                          \
                                                                                \
     m->rows = rows;                                                            \
     m->cols = cols;                                                            \
