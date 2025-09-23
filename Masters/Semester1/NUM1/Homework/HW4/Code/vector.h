@@ -21,3 +21,7 @@ void vector_swap_rows(Vector *, int, int);
 void copy_data(Vector *, const Vector *);
 void print_vector(Vector *);
 void free_vector(Vector *);
+int vector_arg_max(Vector *);
+void vector_scalar_product(Vector*, const double);
+double max_norm(const Vector *);
+double l2_norm(const Vector *);

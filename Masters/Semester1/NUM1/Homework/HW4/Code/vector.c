@@ -1,4 +1,5 @@
 #include "vector.h"
+#include <limits.h>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -185,4 +186,40 @@ void vector_swap_rows(Vector *v, const int i, const int j) {
 void free_vector(Vector *v) {
   free(v->data);
   free(v);
+}
+
+int vector_arg_max(Vector *v) {
+  int arg_max = 0;
+  double max_val = fabs(((double *)v->data)[arg_max]);
+  for (int i = 1; i < v->dim; i++) {
+    if (max_val < fabs(((double *)v->data)[i])) {
+      max_val = fabs(((double *)v->data)[i]);
+      arg_max = i;
+    }
+  }
+  return arg_max;
+}
+
+void vector_scalar_product(Vector *v, const double k) {
+  for (int i = 0; i < v->dim; i++) {
+    ((double *)v->data)[i] *= k;
+  }
+}
+
+double max_norm(const Vector *v) {
+  double norm = ((double *)v->data)[0];
+  for (int i = 1; i < v->dim; i++) {
+    if (norm < ((double *)v->data)[i]) {
+      norm = ((double *)v->data)[i];
+    }
+  }
+  return norm;
+}
+
+double l2_norm(const Vector *v) {
+  double norm = 0;
+  for (int i = 0; i < v->dim; i++) {
+    norm += ((double *)v->data)[i] * ((double *)v->data)[i];
+  }
+  return sqrt(norm);
 }
