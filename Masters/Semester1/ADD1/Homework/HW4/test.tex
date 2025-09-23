@@ -1,0 +1,33 @@
+\documentclass{article}
+\def\MinimumPaperHeight{12cm}
+\usepackage{geometry}
+\geometry{paperwidth=\MinimumPaperHeight,paperheight=\maxdimen,margin=1cm}
+\usepackage{lipsum}
+\usepackage{environ}
+
+\NewEnviron{MyBox}{
+    \setbox0=\vbox{\BODY}%
+}{%
+    \dimen0=\dp0%
+    \pdfpageheight=\dimexpr\ht0+2cm\relax%
+    \ifdim\pdfpageheight<\MinimumPaperHeight \pdfpageheight=\MinimumPaperHeight \fi%
+    \unvbox0\kern-\dimen0%
+}
+\usepackage{etoolbox}
+
+\AtBeginDocument{
+  \setbox0=\vbox\bgroup
+  \preto\enddocument{\egroup
+    \dimen0=\dp0
+    \pdfpageheight=\dimexpr\ht0+2cm\relax
+    \ifdim\pdfpageheight<\MinimumPaperHeight
+      \pdfpageheight=\MinimumPaperHeight
+    \fi
+    \unvbox0\kern-\dimen0 }
+}
+
+\begin{document}
+\lipsum[1-6]
+
+\lipsum[1-6]
+\end{document}

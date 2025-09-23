@@ -1,0 +1,278 @@
+\documentclass{article}
+\newcommand\numberthis{\addtocounter{equation}{1}\tag{\theequation}}
+\def\MinimumPaperHeight{210mm}
+\usepackage{geometry}
+\geometry{paperwidth=\MinimumPaperHeight,paperheight=\maxdimen,margin=1in}
+\usepackage{etoolbox}
+\usepackage{environ}
+\NewEnviron{MyBox}{
+    \setbox0=\vbox{\BODY}%
+}{%
+    \dimen0=\dp0%
+    \pdfpageheight=\dimexpr\ht0+2cm\relax%
+    \ifdim\pdfpageheight<\MinimumPaperHeight \pdfpageheight=\MinimumPaperHeight \fi%
+    \unvbox0\kern-\dimen0%
+}
+\usepackage{etoolbox}
+
+\AtBeginDocument{
+  \setbox0=\vbox\bgroup
+  \preto\enddocument{\egroup
+    \dimen0=\dp0
+    \pdfpageheight=\dimexpr\ht0+3.5cm\relax
+    \ifdim\pdfpageheight<\MinimumPaperHeight
+      \pdfpageheight=\MinimumPaperHeight
+    \fi
+    \unvbox0\kern-\dimen0 }
+}
+\usepackage[yyyymmdd]{datetime}
+\usepackage[inline,shortlabels]{enumitem}
+\usepackage{mathtools}
+\usepackage[dvipsnames]{xcolor}
+\usepackage[framemethod=TikZ]{mdframed}
+\usepackage{amsfonts}
+\usepackage{amsthm}
+\usepackage{amsmath}
+\newtheoremstyle{problemstyle}{3pt}{3pt}{\normalfont}{}{\bfseries}{\normalfont\bfseries:}{.5em}{}
+\theoremstyle{problemstyle}
+\newmdtheoremenv[
+  linewidth=1pt,
+  linecolor=RoyalBlue,
+  backgroundcolor=RoyalBlue!10,
+  roundcorner=5pt,
+  innertopmargin=6pt,
+  innerbottommargin=6pt,
+  innerleftmargin=6pt,
+  innerrightmargin=6pt,
+  nobreak=true
+]{problem}{Problem}
+
+% Example
+\newmdtheoremenv[
+  linewidth=1pt,
+  linecolor=ForestGreen,
+  backgroundcolor=ForestGreen!10,
+  roundcorner=5pt,
+  nobreak=true
+]{example}{Example}
+
+% Theorem
+\newmdtheoremenv[
+  linewidth=1pt,
+  linecolor=BrickRed,
+  backgroundcolor=BrickRed!10,
+  roundcorner=5pt,
+  nobreak=true
+]{theorem}{Theorem}
+
+% Remark
+\newmdtheoremenv[
+  linewidth=1pt,
+  linecolor=Goldenrod,
+  backgroundcolor=Goldenrod!10,
+  roundcorner=5pt,
+  nobreak=true
+]{remark}{Remark}
+
+% Solution
+\newenvironment{solution}{%
+  \begin{mdframed}[linewidth=0.8pt,linecolor=Gray,backgroundcolor=Gray!5,roundcorner=5pt]%
+  \noindent\textbf{Solution.}%
+}{%
+\hfill $ \qed $ 
+  \end{mdframed}%
+}
+
+% Make header with name and date etc.
+\usepackage{fancyhdr}
+\lhead{Pedro D. Llerenas\\An\'alisis de Datos I}
+\rhead{\today\\Tarea IV}
+\thispagestyle{fancy}
+
+\usepackage[utf8]{inputenc}
+\setlength{\parindent}{0pt} % Don't indent new paragraphs
+\setlength{\headheight}{24pt} 
+
+\newcommand{\Z}{\mathbb Z}
+\newcommand{\Q}{\mathbb Q}
+\newcommand{\R}{\mathbb R}
+\newcommand{\C}{\mathbb C}
+\newcommand{\N}{\mathbb N}
+\newcommand{\abs}[1]{\lvert #1 \rvert}
+\DeclareMathOperator{\Var}{\mathbf{Var}}
+\DeclareMathOperator{\E}{\mathbf{E}}
+
+\begin{document}
+%begin problem 1
+\begin{problem}
+Lee el siguiente articulo que se public\'o en septiembre de 2022 en El
+Universal, a ra\'iz de que tanto en 1985, 2017 y 2022 hubo un sismo en la CDMX
+el dia 19 de septiembre (adem\'as de que el 19 de septiembre 2022 hubo un
+seminario de CC en CIMAT sobre m\'etodos num\'ericos para datos
+sismol\'ogicos).
+¿Cu\'al es tu opini\'on basada en lo que vimos en (apenas) un mes de clases de
+probabilidad?
+\end{problem}
+%end problem 1
+
+%begin solution 1
+\begin{solution}
+
+\end{solution}
+%end solution 1
+
+%begin problem 2
+\begin{problem}
+Sea $ X $ el tiempo en minutos entre la llegada de un cliente a una oficina de
+correos y la finalizaci\'on de la atenci\'on, y $ Y $ el tiempo que el cliente
+tiene que esperar. Se sabe que la densidad conjunta es:
+\begin{align*}
+	f_{X,Y}(x,y) =
+	\begin{cases}
+		ky\exp(-x) & \text{ if } 0\leq y<x<\infty \\
+		0          & \text{ otherwise}.
+	\end{cases}
+\end{align*}
+Determina el valor de $ k $, $ Var(X|Y=1) $ y $ P(X-Y<a) $ con $ a>0 $.
+\end{problem}
+%end problem 2
+
+%begin solution 2
+\begin{solution}
+	Para encontrar $ k $, integramos sobre todo $ \R^2 $. Esta integral debe tener valor $ 1 $; es decir,
+	\begin{align*}
+		\displaystyle\int_{\R^2} f_{X,Y}(x,y)\,dA = 1.
+	\end{align*}
+	Por la definici\'on de $ f_{X,Y}(x,y) $ y linealidad de la integral, podemos descomponerla en la regi\'on $ 0\leq y < x<\infty $ y su complemento. Como en el complemento es 0, tenemos
+	\begin{align*}
+		1=\displaystyle\int_{\R^2} f_{X,Y}(x,y)\,dA & = \int_{0}^{\infty}\int_{0}^{x} f_{X,Y}(x,y)\,dydx                                                     \\
+		                                            & = \int_{0}^{\infty}\int_{0}^{x} kye^{-x}\,dydx                                                         \\
+		                                            & = \frac{k}{2}\int_{0}^{\infty}x^2e^{-x}\,dx                                                            \\
+		(\text{por partes}\times 2)                 & = \frac{k}{2}\left[-x^2e^{-x} - 2xe^{-x}\right]_{0}^{\infty} + \frac{k}{2}\int_{0}^{\infty}2e^{-x}\,dx \\
+		                                            & = 0 - k [e^{-x}]_{0}^{\infty}                                                                          \\
+		                                            & = k.
+	\end{align*}
+	Es decir, $ k=1 $ y
+	\begin{align*}
+		f_{X,Y}(x,y) =
+		\begin{cases}
+			y\exp(-x) & \text{ if } 0\leq y<x<\infty \\
+			0         & \text{ otherwise}.
+		\end{cases}
+	\end{align*}
+
+	Recordemos que
+	\begin{align*}
+		\Var(X) \coloneqq \int(x-\E[X])^2f_{X}(x)\,dx,
+	\end{align*}
+	por lo que tenemos
+	\begin{align*}
+		\Var(X|Y=1) \coloneqq \int(x-\E[X|Y=1])^2f_{X|Y=1}(x)\,dx.
+	\end{align*}
+	Entonces, calculemos $ \E[X|Y=1] $. Recordemos que
+	\begin{align*}
+		f_{X|Y=y_0}(x) = \frac{f_{X,Y}(x,y_0)}{f_Y(y_0)},
+	\end{align*}
+	por lo que, en este caso, como $ f_Y(y) = y $,
+	\begin{align*}
+		f_{X|Y=1}(x) & = \frac{f_{X,Y}(x,1)}{f_Y(1)}          \\
+		             & = \frac{f_{X,Y}(x,1)}{1}               \\
+		             & =\begin{cases}
+			                e^{-x}, & \text{ if } x\in [0,\infty] \\
+			                0,      & \text{ otherwise}
+		                \end{cases}
+	\end{align*}
+	Se sigue que
+	\begin{align*}
+		\E[X|Y=1]           & = \int_{\R} x f_{X|Y=1}(x)\,dx                    \\
+		                    & = \int_{[0,\infty]} x e^{-x}\,dx                  \\
+		(\text{por partes}) & = [xe^{-x}]_{0}^{\infty}+\int_{0}^{\infty} e^{-x} \\
+		                    & = 0 + 1                                           \\
+		                    & = 1.
+	\end{align*}
+	Volviendo a $ \Var(X|Y=1) $, tenemos entonces
+	\begin{align*}
+		\Var(X|Y=1) & = \int_{\R} (x-1)^2 f_{X|Y=1}(x)\,dx                                                                \\
+		            & = \int_{0}^{\infty} (x-1)^2 e^{-x}\,dx                                                              \\
+		            & = \int_{0}^{\infty} x^2 e^{-x}\,dx - \int_{0}^{\infty} 2x e^{-x}\,dx + \int_{0}^{\infty} e^{-x}\,dx \\
+		            & = 2 - 2 + 1\numberthis\label{eq:1}                                                                  \\
+		            & = 1.
+	\end{align*}
+	Notemos que \eqref{eq:1} viene de los c\'alculos de integrales anteriores.
+
+	Finalmente, calculamos $ P(X-Y<a) $. Dividimos esto en dos casos: $ x > a $ y $ x < a $. Primero $ x > a $:
+	\begin{align*}
+		P(X-Y<a) & = \int\int_{x-y<a} f_{X,Y}(x,y)\,dx\,dy                                                   \\
+		         & =\int\int_{x-y<a}ye^{-x}\,dx\,dy                                                          \\
+		         & =\int_{0}^{\infty}\int_{x-a}^{x}ye^{-x}\,dy\,dx                                           \\
+		         & =\int_{0}^{\infty}\frac{(x^{2} - (x-a)^{2})}{2}e^{-x}\,dx                                 \\
+		         & =\frac{1}{2}\int_{0}^{\infty}(2xa - a^2)e^{-x}\,dx                                        \\
+		         & =\frac{1}{2}\left(\int_{0}^{\infty}2xae^{-x}\,dx - \int_{0}^{\infty}a^2 e^{-x}\,dx\right) \\
+		         & =\frac{1}{2}\left(2a - a^2\right)                                                         \\
+		         & =\frac{a(2-a)}{2}.
+	\end{align*}
+	En el otro caso, si $ x < a $, tenemos
+	\begin{align*}
+		P(X-Y<a) & = \int\int_{x-y<a} f_{X,Y}(x,y)\,dx\,dy       \\
+		         & =\int\int_{x-y<a}ye^{-x}\,dx\,dy              \\
+		         & =\int_{0}^{\infty}\int_{0}^{x}ye^{-x}\,dy\,dx \\
+		         & =\int_{0}^{\infty}\frac{x^{2}}{2}e^{-x}\,dx   \\
+		         & = \frac{1}{2}.
+	\end{align*}
+\end{solution}
+%end solution 2
+
+\begin{problem}
+Al mismo tiempo alguien sale de Valenciana a Dos Rios y otra persona sale de
+Dos Rios a Valenciana con velocidad constante. La velocidad de la primera
+persona es un valor de una distribuci\'on $ \mathcal U([20, 40])$ km/h y la
+velocidad de la segunda persona es siempre 45km/h. Calcula el tiempo promedio
+que tardan en encontrarse si sabes que la distancia entre los dos lugares es
+3.5km.
+\end{problem}
+\begin{solution}
+	Sean $ V_1, V_2 $ las velocidades de la persona en Valenciana y la persona en Dos Rios, respectivamente. Supongamos que Valenciana se encuentra en el origen, y Dos Rios a $ x_0 = 3.5 $km del origen. Entonces, el tiempo $ t $ que buscamos es uno tal que
+	\begin{align*}
+		v_1 t = -v_2 t + x_0\quad \iff \quad t = \frac{x_0}{v_1+v_2}.
+	\end{align*}
+	Por lo que, el valor esperado del tiempo se calcula de la siguiente manera:
+	\begin{align*}
+		\E[T] & = \E\left[\frac{x_0}{V_1+V_2}\right]                    \\
+		      & = \int_{\R} \frac{x_0}{v_1+v_2} f_{V_1}(v_1)\,dv_1      \\
+		      & = \frac{1}{20}\int_{20}^{40} \frac{x_0}{v_1+v_2} \,dv_1 \\
+		      & = \frac{x_0}{20} \log\frac{\abs{40+v_2}}{\abs{20+v_2}}  \\
+		      & = \frac{3.5}{20}\log \frac{17}{13}                      \\
+		      & \approx  0.175\cdot 0.268                               \\
+		      & \approx 0.046
+	\end{align*}
+	Esto es, $ 0.046 $ horas, que equivale a aproximadamente $ 169 $ segundos.
+\end{solution}
+
+\begin{problem}
+La vida \'util de un cierto tablet sigue una distribuci\'on normal con promedio
+3 a\~nos y $ \sigma^2 = 0.9$.
+\begin{enumerate}[a)]
+	\item Calcula la probabilidad que funcionar\'a m\'as de cuatro a\~nos.
+	\item Se quiere determinar la duraci\'on de la garant\'ia. ¿Para cu\'antos
+	      meses m\'aximos se debe dar la garant\'ia para que la probabilidad que el
+	      tablet se descomponga antes del fin de la garant\'ia sea no mayor que 0.25?
+	      La respuesta debe ser en t\'erminos de meses enteros.
+\end{enumerate}
+\end{problem}
+\begin{solution}
+	\begin{enumerate}[a)]
+		\item La distribuci\'on del tiempo de vida \'util $ T\sim \mathcal N(3, 0.9) $. Queremos $ P(T>4) $. Primero, normalizamos la distribuci\'on:
+		      \begin{align*}
+			      Z = (T-3)/0.9\sim \mathcal N(0,1).
+		      \end{align*}
+		      Entonces, $ P(T>4) = P(0.9Z + 3 > 4) = P(Z > 10/9)\approx 0.1333 $. Esta \'ultima aproximaci\'on viene de una calculadora.
+		\item Buscamos el n\'umero m\'aximo de meses $ M $ tal que $ P(T<M)\leq
+			      0.25 $. Es decir, $ P(T<M+1) >0.25 $. Nuevamente, usando la
+		      distribuci\'on normalizada, tenemos
+		      \begin{align*}
+            P(T<M) = P(0.9Z+3<M) = P\left(Z < \frac{M-3}{0.9}\right) \leq 0.25
+		      \end{align*}
+          Notemos que para $ M=\frac{28}{12} $, tenemos $ P(Z<-0.74) \approx 0.23 $, pero para $ M = \frac{29}{12} $ tenemos $ P(Z<-0.64)\approx 0.26 $. Entonces, debemos dar una garant\'ia de 28 meses.
+	\end{enumerate}
+\end{solution}
+\end{document}
