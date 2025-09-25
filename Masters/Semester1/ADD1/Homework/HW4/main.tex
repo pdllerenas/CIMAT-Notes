@@ -117,7 +117,16 @@ probabilidad?
 
 %begin solution 1
 \begin{solution}
+	La probabilidad proveniente del art\'iculo se calcula asumiendo que la
+	funci\'on de distribuci\'on de los sismos es uniforme con respecto a los
+	d\'ias del a\~no, tambi\'en se asumi\'o alg\'un l\'imite inferior para estas
+	probabilidades, ya que sismos ocurren todos los d\'ias (mayormente
+	inperceptibles) en esas zonas. La independencia de los eventos tampoco es
+	clara de concluir, ya que estos sismos pueden causar que ciertas placas
+	tect\'onicas se posicionen de tal manera que otro sismo sea inminente.
 
+	En conclusi\'on, la probabilidad propuesta por el f\'isico asume diversas
+	condiciones que son posiblemente falsas, o dificil de concluir.
 \end{solution}
 %end solution 1
 
@@ -147,7 +156,7 @@ Determina el valor de $ k $, $ Var(X|Y=1) $ y $ P(X-Y<a) $ con $ a>0 $.
 	\begin{align*}
 		1=\displaystyle\int_{\R^2} f_{X,Y}(x,y)\,dA & = \int_{0}^{\infty}\int_{0}^{x} f_{X,Y}(x,y)\,dydx                                                     \\
 		                                            & = \int_{0}^{\infty}\int_{0}^{x} kye^{-x}\,dydx                                                         \\
-		                                            & = \frac{k}{2}\int_{0}^{\infty}x^2e^{-x}\,dx                                                            \\
+                                                & = \frac{k}{2}\int_{0}^{\infty}x^2e^{-x}\,dx\numberthis\label{eq:x2e}                                                            \\
 		(\text{por partes}\times 2)                 & = \frac{k}{2}\left[-x^2e^{-x} - 2xe^{-x}\right]_{0}^{\infty} + \frac{k}{2}\int_{0}^{\infty}2e^{-x}\,dx \\
 		                                            & = 0 - k [e^{-x}]_{0}^{\infty}                                                                          \\
 		                                            & = k.
@@ -185,7 +194,7 @@ Determina el valor de $ k $, $ Var(X|Y=1) $ y $ P(X-Y<a) $ con $ a>0 $.
 	Se sigue que
 	\begin{align*}
 		\E[X|Y=1]           & = \int_{\R} x f_{X|Y=1}(x)\,dx                    \\
-		                    & = \int_{[0,\infty]} x e^{-x}\,dx                  \\
+                        & = \int_{[0,\infty]} x e^{-x}\,dx\numberthis\label{eq:xe}                  \\
 		(\text{por partes}) & = [xe^{-x}]_{0}^{\infty}+\int_{0}^{\infty} e^{-x} \\
 		                    & = 0 + 1                                           \\
 		                    & = 1.
@@ -198,26 +207,21 @@ Determina el valor de $ k $, $ Var(X|Y=1) $ y $ P(X-Y<a) $ con $ a>0 $.
 		            & = 2 - 2 + 1\numberthis\label{eq:1}                                                                  \\
 		            & = 1.
 	\end{align*}
-	Notemos que \eqref{eq:1} viene de los c\'alculos de integrales anteriores.
+  Notemos que \eqref{eq:1} viene de los c\'alculos de integrales anteriores: \eqref{eq:xe} y \eqref{eq:x2e}.
 
-	Finalmente, calculamos $ P(X-Y<a) $. Dividimos esto en dos casos: $ x > a $ y $ x < a $. Primero $ x > a $:
+	Finalmente, calculamos $ P(X-Y<a) $. Como la funci\'on de distribuci\'on es 0
+	para $ y\leq 0 $, dividimos esto en dos casos: $ 0<x<a $ y $ x > a $. Tenemos entonce que
 	\begin{align*}
-		P(X-Y<a) & = \int\int_{x-y<a} f_{X,Y}(x,y)\,dx\,dy                                                   \\
-		         & =\int\int_{x-y<a}ye^{-x}\,dx\,dy                                                          \\
-		         & =\int_{0}^{\infty}\int_{x-a}^{x}ye^{-x}\,dy\,dx                                           \\
-		         & =\int_{0}^{\infty}\frac{(x^{2} - (x-a)^{2})}{2}e^{-x}\,dx                                 \\
-		         & =\frac{1}{2}\int_{0}^{\infty}(2xa - a^2)e^{-x}\,dx                                        \\
-		         & =\frac{1}{2}\left(\int_{0}^{\infty}2xae^{-x}\,dx - \int_{0}^{\infty}a^2 e^{-x}\,dx\right) \\
-		         & =\frac{1}{2}\left(2a - a^2\right)                                                         \\
-		         & =\frac{a(2-a)}{2}.
-	\end{align*}
-	En el otro caso, si $ x < a $, tenemos
-	\begin{align*}
-		P(X-Y<a) & = \int\int_{x-y<a} f_{X,Y}(x,y)\,dx\,dy       \\
-		         & =\int\int_{x-y<a}ye^{-x}\,dx\,dy              \\
-		         & =\int_{0}^{\infty}\int_{0}^{x}ye^{-x}\,dy\,dx \\
-		         & =\int_{0}^{\infty}\frac{x^{2}}{2}e^{-x}\,dx   \\
-		         & = \frac{1}{2}.
+		P(X-Y<a) & = \int\int_{x-y<a} f_{X,Y}(x,y)\,dy\,dx                                                     \\
+		         & =\int\int_{x-y<a}ye^{-x}\,dy\,dx                                                            \\
+             & =\underbrace{\int_{0}^{a}\int_{0}^{x}ye^{-x}\,dy\,dx}_{0<x<a} + \underbrace{\int_{a}^{\infty}\int_{x-a}^{x}ye^{-x}\,dx\,dy}_{x>a}        \\
+		         & =\int_{0}^{a}\frac{x^2}{2}e^{-x}\,dx + \int_{a}^{\infty}\frac{(x^{2} - (x-a)^{2})}{2}e^{-x}\,dx \\
+		         & =\frac{1}{2}\int_{0}^{a}x^2e^{-x}\,dx + \frac{1}{2}\int_{a}^{\infty}(2ax-a^2)e^{-x}\,dx \\
+             &= \frac{1}{2}\left[-x^2e^{-x} - 2xe^{-x} - 2e^{-x}\right]_{0}^{a} + \frac{1}{2}\left[-2axe^{-x} + a^2e^{-x}-2e^{-x}\right]_{a}^{\infty}\\
+             &=  \frac{1}{2}\left[2-(a^2+2a+2)e^{-a}\right] + \frac{1}{2}\left[a(a+2)e^{-a}\right]\\
+             &=  \frac{1}{2}\left[2-(a(a+2)+2)e^{-a}\right] + \frac{1}{2}\left[a(a+2)e^{-a}\right]\\
+             &=  \frac{1}{2}\left[2-2e^{-a}\right]\\
+             &= 1-e^{-a}.
 	\end{align*}
 \end{solution}
 %end solution 2
@@ -240,6 +244,7 @@ que tardan en encontrarse si sabes que la distancia entre los dos lugares es
 		\E[T] & = \E\left[\frac{x_0}{V_1+V_2}\right]                    \\
 		      & = \int_{\R} \frac{x_0}{v_1+v_2} f_{V_1}(v_1)\,dv_1      \\
 		      & = \frac{1}{20}\int_{20}^{40} \frac{x_0}{v_1+v_2} \,dv_1 \\
+          & = \frac{x_0}{20} \left(\log\abs{40+v_2}-\log\abs{20+v_2}\right)  \\
 		      & = \frac{x_0}{20} \log\frac{\abs{40+v_2}}{\abs{20+v_2}}  \\
 		      & = \frac{3.5}{20}\log \frac{17}{13}                      \\
 		      & \approx  0.175\cdot 0.268                               \\
@@ -270,9 +275,9 @@ La vida \'util de un cierto tablet sigue una distribuci\'on normal con promedio
 			      0.25 $. Es decir, $ P(T<M+1) >0.25 $. Nuevamente, usando la
 		      distribuci\'on normalizada, tenemos
 		      \begin{align*}
-            P(T<M) = P(0.9Z+3<M) = P\left(Z < \frac{M-3}{0.9}\right) \leq 0.25
+			      P(T<M) = P(0.9Z+3<M) = P\left(Z < \frac{M-3}{0.9}\right) \leq 0.25
 		      \end{align*}
-          Notemos que para $ M=\frac{28}{12} $, tenemos $ P(Z<-0.74) \approx 0.23 $, pero para $ M = \frac{29}{12} $ tenemos $ P(Z<-0.64)\approx 0.26 $. Entonces, debemos dar una garant\'ia de 28 meses.
+		      Notemos que para $ M=\frac{28}{12} $, tenemos $ P(Z<-0.74) \approx 0.23 $, pero para $ M = \frac{29}{12} $ tenemos $ P(Z<-0.64)\approx 0.26 $. Entonces, debemos dar una garant\'ia de 28 meses.
 	\end{enumerate}
 \end{solution}
 \end{document}
