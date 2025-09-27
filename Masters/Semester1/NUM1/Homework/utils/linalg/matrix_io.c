@@ -78,6 +78,7 @@ Matrix *load_matrix_from_txt(const char *filename, int *rows, int *cols) {
   if (!flat_data) {
     return NULL;
   }
+  printf("%d, %d\n", *rows, *cols);
 
   if (count != (*rows) * (*cols)) {
     fprintf(stderr,
@@ -107,7 +108,8 @@ Matrix *load_matrix_from_txt(const char *filename, int *rows, int *cols) {
 
 /*
 
-generates a nx2 matrix containing the coefficients to the heat equation in 1 dimension
+generates a nx2 matrix containing the coefficients to the heat equation in 1
+dimension
 
  */
 
@@ -123,7 +125,7 @@ Matrix *create_heat_matrix_1d(int dim) {
   return m;
 }
 
-void print_matrix(Matrix *A) {
+void print_matrix(const Matrix *A) {
   for (int i = 0; i < A->rows; i++) {
     for (int j = 0; j < A->cols; j++) {
       printf("%lf ", ((double *)A->data)[i * A->cols + j]);
