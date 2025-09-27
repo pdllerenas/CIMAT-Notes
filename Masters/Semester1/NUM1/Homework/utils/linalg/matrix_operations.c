@@ -132,7 +132,7 @@ int matrix_compare(const Matrix *A, const Matrix *B, double TOL) {
 computes M x and returns the result as a new vector.
 
 */
-Vector *matrix_times_vector(Matrix *M, Vector *x) {
+Vector *matrix_times_vector(const Matrix *M, const Vector *x) {
   if (M->cols != x->dim) {
     fprintf(stderr, "Dimension mismatch: %d does not equal %d\n", M->cols,
             x->dim);
@@ -158,4 +158,26 @@ void matrix_swap_rows(Matrix *M, const int i, const int j) {
     ((double *)M->data)[i * dim + k] = ((double *)M->data)[j * dim + k];
     ((double *)M->data)[j * dim + k] = temp;
   }
+}
+
+Matrix *deflation_term(const Vector *v, double lambda_v) {
+  int n = v->dim;
+  int k = vector_arg_max(v);
+
+  double v_k = ((double *)v->data)[k];
+  if (fabs(v_k) < 1e-9) {
+    fprintf(stderr, "Error: vector near zero. Method fails.\n");
+  }
+  double w_k = 1.0/v_k;
+
+  Matrix *D = matrix_create_double(n, n);
+  if (!D) {
+    return NULL;
+  }
+
+  for (int i = 0; i < n; i++) {
+    double D_ik = lambda_v * ((double *)v->data)[i] * w_k;
+    ((double *)D->data)[i*n+k] = D_ik;
+  }
+  return D;
 }
