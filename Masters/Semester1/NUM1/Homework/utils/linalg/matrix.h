@@ -13,27 +13,28 @@ typedef struct {
   int rows;
   int cols;
   size_t element_size;
-  void* data;
+  void *data;
 } Matrix;
 
-Matrix* matrix_create_double(int rows, int cols);
-double matrix_get_double(const Matrix* m, int row, int col);
-void matrix_set_double(Matrix* m, int row, int col, double value);
+Matrix *matrix_create_double(int, int);
+double matrix_get_double(const Matrix *, int, int);
+void matrix_set_double(Matrix *, int, int, double);
 
-Matrix* matrix_create_int(int rows, int cols);
-int matrix_get_int(const Matrix* m, int row, int col);
-void matrix_set_int(Matrix* m, int row, int col, int value);
+Matrix *matrix_create_int(int, int);
+int matrix_get_int(const Matrix *, int, int);
+void matrix_set_int(Matrix *, int, int, int);
 
-Matrix* matrix_create_float(int rows, int cols);
-float matrix_get_float(const Matrix* m, int row, int col);
-void matrix_set_float(Matrix* m, int row, int col, float value);
+Matrix *matrix_create_float(int, int);
+float matrix_get_float(const Matrix *, int, int);
+void matrix_set_float(Matrix *, int, int, float);
 
-void matrix_free(Matrix* m);
+void copy_matrix(Matrix *, const Matrix *);
+void matrix_free(Matrix *);
 
-double **matrix_create_double_non_contiguous(int rows, int cols, MatrixType type);
-int **matrix_create_int_non_contiguous(int rows, int cols, MatrixType type);
-float **matrix_create_float_non_contiguous(int rows, int cols, MatrixType type);
+double **matrix_create_double_non_contiguous(int, int, MatrixType);
+int **matrix_create_int_non_contiguous(int, int, MatrixType);
+float **matrix_create_float_non_contiguous(int, int, MatrixType);
 
-double **special_matrix_create_double(int dimension, MatrixType type);
-int **special_matrix_create_int(int dimension, MatrixType type);
-float **special_matrix_create_float(int dimension, MatrixType type);
+double **special_matrix_create_double(int, MatrixType);
+int **special_matrix_create_int(int, MatrixType);
+float **special_matrix_create_float(int, MatrixType);

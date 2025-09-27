@@ -80,6 +80,19 @@ DEFINE_NON_CONTIGUOUS_MATRIX_FUNCTIONS(double, double)
 DEFINE_NON_CONTIGUOUS_MATRIX_FUNCTIONS(float, float)
 DEFINE_NON_CONTIGUOUS_MATRIX_FUNCTIONS(int, int)
 
+void copy_matrix(Matrix *m1, const Matrix *m2) {
+  if (m1->cols != m2->cols || m1->rows != m2->rows) {
+    fprintf(stderr, "Dimension mismatch while copying contents of matrix\n");
+    return;
+  }
+  int cols = m2->cols;
+  for (int i = 0; i < m2->cols; i++) {
+    for (int j = 0; j < m2->cols; j++) {
+      ((double *)m1->data)[i * cols + j] = ((double *)m2->data)[i * cols + j];
+    }
+  }
+}
+
 void matrix_free(Matrix *m) {
   if (m != NULL) {
     free(m->data);
