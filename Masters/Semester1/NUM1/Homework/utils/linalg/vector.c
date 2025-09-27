@@ -172,7 +172,7 @@ void copy_data(Vector *v1, const Vector *v2) {
 
 void print_vector(Vector *v) {
   for (int i = 0; i < v->dim; i++) {
-    printf("%lf ", ((double *)v->data)[i]);
+    printf("%.2lf ", ((double *)v->data)[i]);
   }
   printf("\n");
 }
@@ -188,7 +188,7 @@ void free_vector(Vector *v) {
   free(v);
 }
 
-int vector_arg_max(Vector *v) {
+int vector_arg_max(const Vector *v) {
   int arg_max = 0;
   double max_val = fabs(((double *)v->data)[arg_max]);
   for (int i = 1; i < v->dim; i++) {
@@ -200,10 +200,18 @@ int vector_arg_max(Vector *v) {
   return arg_max;
 }
 
-void vector_scalar_product(Vector *v, const double k) {
+void vector_scalar_product_inplace(Vector *v, const double k) {
   for (int i = 0; i < v->dim; i++) {
     ((double *)v->data)[i] *= k;
   }
+}
+
+Vector *vector_scalar_product(const Vector *v, const double k) {
+  Vector *kv = create_vector(v->dim);
+  for (int i = 0; i < v->dim; i++) {
+    ((double *)kv->data)[i] = ((double *)v->data)[i] = k;
+  }
+  return kv;
 }
 
 double max_norm(const Vector *v) {
