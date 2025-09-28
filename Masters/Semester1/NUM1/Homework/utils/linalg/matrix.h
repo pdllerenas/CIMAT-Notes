@@ -28,6 +28,9 @@ Matrix *matrix_create_float(int, int);
 float matrix_get_float(const Matrix *, int, int);
 void matrix_set_float(Matrix *, int, int, float);
 
+Matrix *identity_matrix(int n);
+Matrix *fill_diagonal_matrix(double v, int n);
+
 void copy_matrix(Matrix *, const Matrix *);
 void matrix_free(Matrix *);
 

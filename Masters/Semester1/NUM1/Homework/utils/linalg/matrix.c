@@ -99,3 +99,19 @@ void matrix_free(Matrix *m) {
     free(m);
   }
 }
+
+Matrix *identity_matrix(int n) {
+  Matrix *I = matrix_create_double(n, n);
+  for (int i = 0; i < n; i++) {
+    ((double *)I->data)[i * n + i] = 1.0;
+  }
+  return I;
+}
+
+Matrix *fill_diagonal_matrix(double v, int n) {
+  Matrix *I = matrix_create_double(n, n);
+  for (int i = 0; i < n; i++) {
+    ((double *)I->data)[i * n + i] = v;
+  }
+  return I;
+}
