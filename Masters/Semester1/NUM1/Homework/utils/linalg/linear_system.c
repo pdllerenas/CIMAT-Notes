@@ -66,6 +66,40 @@ Vector *solve_upper(Matrix *U, Vector *b) {
   return x;
 }
 
+Vector *solve_upper_transpose(Matrix *L, Vector *b) {
+  int n = L->rows;
+  if (L->rows != b->dim) {
+    fprintf(stderr,
+            "Invalid system of equations.\nDimension mismatch: %d does not "
+            "equal %d.\n",
+            L->rows, b->dim);
+    return NULL;
+  }
+  Vector *x = create_vector(n);
+  if (!x) {
+    fprintf(stderr, "Unable to solve system of equations.\n");
+    return NULL;
+  }
+  if (((double *)L->data)[n * n - 1] == 0) {
+    fprintf(stderr, "System has no unique solution.\n");
+    return NULL;
+  }
+
+  for (int i = n - 1; i >= 0; i--) {
+    if (((double *)L->data)[i * n + i] == 0) {
+      fprintf(stderr, "System has no unique solution.\n");
+      return NULL;
+    }
+    double sum = 0.0;
+    for (int k = i + 1; k < n; k++) {
+      sum += ((double *)x->data)[k] * ((double *)L->data)[k * n + i];
+    }
+    ((double *)x->data)[i] =
+        (((double *)b->data)[i] - sum) / ((double *)L->data)[i * n + i];
+  }
+  return x;
+}
+
 Vector *solve_lower(Matrix *L, Vector *b) {
   if (L->rows != b->dim) {
     fprintf(stderr,
@@ -239,16 +273,20 @@ Vector *gaussian_elimination(Matrix *A, Vector *b) {
   return x;
 }
 
-Vector *cholesky_solve(Matrix *A, Vector *b) {
-  Matrix *L = matrix_create_double(A->rows, A->cols);
-  cholesky(A, L, A->rows);
+Vector *cholesky_solve(Matrix *L, Vector *b) {
   Vector *y = solve_lower(L, b);
-  Matrix *LT = matrix_transpose(L);
 
-  Vector *x = solve_upper(LT, y);
+  Vector *x = solve_upper_transpose(L, y);
   free_vector(y);
-  matrix_free(L);
-  matrix_free(LT);
+
+  return x;
+}
+
+Vector *LU_solve(Matrix* L, Matrix *U, Vector *b) {
+  Vector *y = solve_lower(L, b);
+
+  Vector *x = solve_upper(U, y);
+  free_vector(y);
 
   return x;
 }
