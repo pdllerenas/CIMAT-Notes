@@ -12,6 +12,7 @@ Vector *create_vector(int);
 double dot(const Vector *, const Vector *);
 int vector_compare(const Vector *, const Vector *, double);
 double vector_norm_squared(const Vector *);
+void vector_axpy_inplace(Vector *x, double proj, Vector *prev);
 
 Vector *vector_sum(const Vector *, const Vector *);
 Vector *vector_diff(const Vector *, const Vector *);

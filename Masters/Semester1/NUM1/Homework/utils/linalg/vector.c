@@ -1,4 +1,5 @@
 #include "vector.h"
+#include "matrix_operations.h"
 #include <limits.h>
 #include <math.h>
 #include <stdio.h>
@@ -172,7 +173,7 @@ void copy_data(Vector *v1, const Vector *v2) {
 
 void print_vector(Vector *v) {
   for (int i = 0; i < v->dim; i++) {
-    printf("%.2lf ", ((double *)v->data)[i]);
+    printf("%.3lf ", ((double *)v->data)[i]);
   }
   printf("\n");
 }
@@ -231,3 +232,15 @@ double l2_norm(const Vector *v) {
   }
   return sqrt(norm);
 }
+
+/*
+
+remove projection of previous vector to orthogonalize w.r.t. vector prev
+
+ */
+void vector_axpy_inplace(Vector *x, double alpha, Vector *prev) {
+  for (int i = 0; i < x->dim; i++) {
+    ((double *)x->data)[i] += alpha * ((double *)prev->data)[i];
+  }
+}
+
