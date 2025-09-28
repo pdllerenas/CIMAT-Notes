@@ -1,0 +1,767 @@
+\documentclass{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[yyyymmdd]{datetime}
+\usepackage[nottoc]{tocbibind}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{url}
+\usepackage{array}
+\usepackage{bm}
+\usepackage{float}
+\usepackage[inline,shortlabels]{enumitem}
+\usepackage{hhline}
+\usepackage{multirow}
+\usepackage{geometry}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{colortbl}
+\usepackage[framemethod=TikZ]{mdframed}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{tikz}
+\usepackage{amsthm}
+\newtheoremstyle{problemstyle}{3pt}{3pt}{\normalfont}{}{\bfseries}{\normalfont\bfseries:}{.5em}{}
+\theoremstyle{problemstyle}
+\newmdtheoremenv[
+  linewidth=1pt,
+  linecolor=RoyalBlue,
+  backgroundcolor=RoyalBlue!10,
+  roundcorner=5pt,
+  innertopmargin=6pt,
+  innerbottommargin=6pt,
+  innerleftmargin=6pt,
+  innerrightmargin=6pt,
+  nobreak=true
+]{problem}{Problem}
+
+% Example
+\newmdtheoremenv[
+  linewidth=1pt,
+  linecolor=ForestGreen,
+  backgroundcolor=ForestGreen!10,
+  roundcorner=5pt,
+  nobreak=true
+]{example}{Example}
+
+% Theorem
+\newmdtheoremenv[
+  linewidth=1pt,
+  linecolor=BrickRed,
+  backgroundcolor=BrickRed!10,
+  roundcorner=5pt,
+  nobreak=true
+]{theorem}{Theorem}
+
+% Remark
+\newmdtheoremenv[
+  linewidth=1pt,
+  linecolor=Goldenrod,
+  backgroundcolor=Goldenrod!10,
+  roundcorner=5pt,
+  nobreak=true
+]{remark}{Remark}
+
+% Solution
+\newenvironment{solution}{%
+  \begin{mdframed}[linewidth=0.8pt,linecolor=Gray,backgroundcolor=Gray!5,roundcorner=5pt]%
+  \noindent\textbf{Solution.}%
+}{%
+\hfill $ \diamond $ 
+  \end{mdframed}%
+}
+
+\usepackage{listings}
+
+\lstset{breaklines=true}
+\definecolor{vscode-blue}{RGB}{64, 116, 160}   % Keywords
+\definecolor{vscode-green}{RGB}{95, 203, 114}   % Strings
+\definecolor{vscode-gray}{RGB}{128, 128, 128}   % Comments
+\definecolor{vscode-orange}{RGB}{206, 145, 120} % Numbers/Constants
+\definecolor{vscode-purple}{RGB}{204, 124, 255} % Functions/Types
+\definecolor{vscode-cyan}{RGB}{155, 199, 217}   % Preprocessor
+
+\lstdefinestyle{visual-studio}{
+    language=C,
+    backgroundcolor=\color{Gray!10},
+    commentstyle=\color{vscode-gray}\ttfamily,
+    keywordstyle=\color{vscode-blue}\ttfamily,
+    stringstyle=\color{vscode-green}\ttfamily,
+    numberstyle=\color{vscode-orange}\ttfamily,
+    identifierstyle=\color{black}\ttfamily,
+    breaklines=true,
+    showstringspaces=false,
+    tabsize=4,
+    % Additional settings for more Visual Studio feel
+    emph=[1]{void, int, double, float, char, bool, short, long, signed,
+    unsigned, class, struct, enum, union, typedef, template}, % Common types
+    emphstyle=[1]\color{vscode-purple},
+    emph=[2]{printf, scanf, cin, cout, return, new, delete, if, else, while,
+    do, for, switch, case, default, break, continue, goto, throw, try, catch,
+  const, static, extern, volatile, register, restrict, inline, explicit,
+virtual, friend, namespace, using, private, protected, public, operator}, %
+Standard keywords
+    emphstyle=[2]\color{vscode-blue},
+            keywordstyle=[2]\color{vscode-cyan}\ttfamily\bfseries,
+    morekeywords={\#include, \#define, \#ifdef, \#ifndef, \#endif, \#pragma},
+    basicstyle=\small
+}
+
+% Make header with name and date etc.
+\usepackage{fancyhdr}
+\lhead{Pedro D. Llerenas\\M\'etodos Num\'ericos I}
+\rhead{\today\\Tarea V}
+\thispagestyle{fancy}
+
+\setlength{\parindent}{0pt} % Don't indent new paragraphs
+\setlength{\headheight}{24pt} 
+
+\newcommand{\Z}{\mathbb Z}
+\newcommand{\Q}{\mathbb Q}
+\newcommand{\R}{\mathbb R}
+\newcommand{\C}{\mathbb C}
+\newcommand{\N}{\mathbb N}
+
+\begin{document}
+
+%begin problem 1
+\begin{problem}
+Desarrollar un programa que calcule los $ k $ valores propios m\'as grandes en magnitud de
+una matriz $ A $ mediante el m\'etodo de la potencia. \textbf{(5 puntos)}
+\end{problem}
+%end problem 1
+
+%begin solution 1
+\begin{solution}
+	Este algoritmo consiste de dos pedazos funciones principales,
+	\texttt{iterative\_power} y \texttt{get\_m\_largest\_eigenvalues}. El primer
+	m\'etodo tiene la funci\'on de encontrar el eigenvalor de mayor magnitud. La
+	segunda funci\'on utiliza la primera de manera iterativa. Despu\'es de
+	encontrar el m\'as grande, utilizamos una t\'ecnica de \textit{deflaci\'on},
+	que consiste en aplicar el mismo m\'etodo de la potencia, pero con una matriz
+	modificada a la original. Espec\'ificamente, si queremos el eigenvalor $ m $
+	m\'as grande, los eigenvalores de la nueva matriz son exactamente los mismos,
+	excepto los $ m-1 $ m\'as grandes, que son reemplazados por el eigenvalor 0.
+	Esto asegura que la aplicaci\'on del m\'etodo de la potencia encuentre el
+	eigenvalor especificado.
+
+
+	\textbf{Ejemplos:}
+	\begin{enumerate}
+    \item \textbf{Eigen\_3x3.txt}
+		      \begin{align*}
+			      \begin{bmatrix}
+				      5.0    & -1.778 & 0.0    \\
+				      -1.778 & 9.0    & -1.778 \\
+				      0.0    & -1.778 & 10.0
+			      \end{bmatrix}
+		      \end{align*}
+		      Como vector inicial, usaremos $ \mathbf{x}_0 = \begin{bmatrix}
+				      1 & 1 & 1
+			      \end{bmatrix}^{T} $
+		      Ejecutando nuestro programa con
+		      \begin{center}
+			      \texttt{make run-p1
+				      ARGS="t5a/Eigen\_3x3.txt t5a/x0\_3.txt 3 1e-6 500"},
+		      \end{center}
+		      obtenemos los 3 eigenvalores m\'as grandes (en este caso, todos).
+		      \begin{table}[H]
+			      \begin{center}
+				      \begin{tabular}{|l|l|}
+					      \hline
+					      Eigenvector           & Eigenvalue \\
+					      \hline
+					      \rule{0pt}{1.5em}
+					      $ \begin{bmatrix}
+							        0.18 & -0.64 & 0.74
+						        \end{bmatrix} $  & 11.538403     \\
+					      [0.5em]
+					      \hline
+					      \rule{0pt}{1.5em}
+					      $ \begin{bmatrix}
+							        -0.37 & 0.92 & -0.17
+						        \end{bmatrix} $ & 8.213811       \\
+					      [0.5em]
+					      \hline
+					      \rule{0pt}{1.5em}
+					      $ \begin{bmatrix}
+							        0.91 & -0.42 & 0.02
+						        \end{bmatrix} $  & 4.247786      \\
+					      [0.5em]
+					      \hline
+				      \end{tabular}
+			      \end{center}
+			      \caption{Eigenvalores de Eigen\_3x3.txt}\label{tab:3x3}
+		      \end{table}
+		      Como verificaci\'on, utilizamos la librer\'ia de \texttt{numpy}. Corremos el programa (antes activando el virtual environment, e instalando numpy mediante \texttt{pip install numpy} si es necesario) mediante
+		      \begin{center}
+			      \texttt{python3 p1\textunderscore verify.py t5a/Eigen\textunderscore3x3.txt 3 1}
+		      \end{center}
+		      Este nos genera los valores
+		      \begin{table}[H]
+			      \begin{center}
+				      \begin{tabular}{|l|l|}
+					      \hline
+					      Eigenvector           & Eigenvalue \\
+					      \hline
+					      \rule{0pt}{1.5em}
+					      $ \begin{bmatrix}
+							        0.18 & -0.64 & 0.74
+						        \end{bmatrix} $  & 11.538405     \\
+					      [0.5em]
+					      \hline
+					      \rule{0pt}{1.5em}
+					      $ \begin{bmatrix}
+							        -0.37 & 0.92 & -0.17
+						        \end{bmatrix} $ & 8.213809       \\
+					      [0.5em]
+					      \hline
+					      \rule{0pt}{1.5em}
+					      $ \begin{bmatrix}
+							        0.91 & -0.42 & 0.02
+						        \end{bmatrix} $  & 4.247786      \\
+					      [0.5em]
+					      \hline
+				      \end{tabular}
+			      \end{center}
+			      \caption{Eigenvalores de Eigen\_3x3.txt verificados con numpy.}\label{tab:py3x3}
+		      \end{table}
+		      Podemos observar muy poca diferencia entre los eigenvalores, por lo
+		      que podemos asumir que han sido verificados como correctos.
+
+        \item \textbf{Eigen\_5x5.txt}
+		      \begin{align*}
+			      \begin{bmatrix}
+				      0.2 & 0.1 & 1  & 1 & 0   \\
+				      0.1 & 4   & -1 & 1 & -1  \\
+				      1   & -1  & 60 & 0 & -2  \\
+				      1   & 1   & 0  & 8 & 4   \\
+				      0   & -1  & -2 & 4 & 700
+			      \end{bmatrix}
+		      \end{align*}
+		      Como vector inicial, usaremos $ \mathbf{x}_0 = \begin{bmatrix}
+				      1 & 1 & 1 & 1 & 1
+			      \end{bmatrix}^{T} $
+		      Ejecutando nuestro programa con
+		      \begin{center}
+			      \texttt{make run-p1
+				      ARGS="t5a/Eigen\_5x5.txt t5a/x0\_5.txt 3 1e-6 500"},
+		      \end{center}
+		      obtenemos los 3 eigenvalores m\'as grandes (en este caso, todos).
+		      \begin{table}[H]
+			      \begin{center}
+				      \begin{tabular}{|l|l|}
+					      \hline
+					      $ n $ & Eigenvalue \\
+					      \hline
+					      1     & 700.030781 \\
+					      \hline
+					      2     & 60.028366  \\
+					      \hline
+					      3     & 8.338448   \\
+					      \hline
+				      \end{tabular}
+			      \end{center}
+			      \caption{Eigenvalores de Eigen\_5x5.txt}\label{tab:5x5}
+		      \end{table}
+		      Como verificaci\'on, utilizamos la librer\'ia de \texttt{numpy}. Corremos el programa (antes activando el virtual environment, e instalando numpy mediante \texttt{pip install numpy} si es necesario) mediante
+		      \begin{center}
+			      \texttt{python3 p1\textunderscore verify.py t5a/Eigen\textunderscore5x5.txt 3 1}
+		      \end{center}
+		      Este nos genera los valores
+		      \begin{table}[H]
+			      \begin{center}
+				      \begin{tabular}{|l|l|}
+					      \hline
+					      n & Eigenvalue \\
+					      \hline
+					      1 & 700.030781 \\
+					      \hline
+					      2 & 60.028366  \\
+					      \hline
+					      3 & 8.338447   \\
+					      \hline
+				      \end{tabular}
+			      \end{center}
+			      \caption{Eigenvalores de Eigen\_5x5.txt verificados con numpy.}\label{tab:py5x5}
+		      \end{table}
+		      Podemos observar muy poca diferencia entre los eigenvalores, por lo
+		      que podemos asumir que han sido verificados como correctos.
+        \item \textbf{Eigen\_50x50.txt}
+		      \begin{align*}
+			      \begin{bmatrix}
+				      10.000 & 0.084  & 0.039  & \cdots & 0.052   & 0.078   & 0.007   \\
+				      0.084  & 20.000 & 0.095  & \cdots & 0.040   & 0.053   & 0.040   \\
+				      0.039  & 0.095  & 30.000 & \cdots & 0.084   & 0.013   & 0.052   \\
+				      \vdots & \vdots & \vdots & \ddots & \vdots  & \vdots  & \vdots  \\
+				      0.081  & 0.044  & 0.095  & \cdots & 380.000 & 0.038   & 0.081   \\
+				      0.092  & 0.092  & 0.005  & \cdots & 0.041   & 490.000 & 0.092   \\
+				      0.007  & 0.040  & 0.052  & \cdots & 0.078   & 0.078   & 500.000 \\
+			      \end{bmatrix}
+		      \end{align*}
+		      Como vector inicial, usaremos $ \mathbf{x}_0 = \begin{bmatrix}
+				      1 & 1 & \cdots & 1 & 1
+			      \end{bmatrix}^{T} $
+		      Ejecutando nuestro programa con
+		      \begin{center}
+			      \texttt{make run-p1
+				      ARGS="t5a/Eigen\_50x50.txt t5a/x0\_50.txt 7 1e-6 500"},
+		      \end{center}
+		      obtenemos los73 eigenvalores m\'as grandes (en este caso, todos).
+		      \begin{table}[H]
+			      \begin{center}
+				      \begin{tabular}{|l|l|}
+					      \hline
+					      $ n $ & Eigenvalue \\
+					      \hline
+					      1     & 500.001591 \\
+					      \hline
+					      2     & 490.001430 \\
+					      \hline
+					      3     & 480.000520 \\
+					      \hline
+					      4     & 470.001067 \\
+					      \hline
+					      5     & 460.001265 \\
+					      \hline
+					      6     & 450.000481 \\
+					      \hline
+					      7     & 440.000418 \\
+					      \hline
+				      \end{tabular}
+			      \end{center}
+			      \caption{Eigenvalores de Eigen\_50x50.txt}\label{tab:50x50}
+		      \end{table}
+		      Como verificaci\'on, utilizamos la librer\'ia de \texttt{numpy}. Corremos el programa (antes activando el virtual environment, e instalando numpy mediante \texttt{pip install numpy} si es necesario) mediante
+		      \begin{center}
+			      \texttt{python3 p1\textunderscore verify.py t5a/Eigen\textunderscore50x50.txt 7 1}
+		      \end{center}
+		      Este nos genera los valores
+		      \begin{table}[H]
+			      \begin{center}
+				      \begin{tabular}{|l|l|}
+					      \hline
+					      n & Eigenvalue \\
+					      \hline
+					      1 & 500.001543 \\
+					      \hline
+					      2 & 490.001431 \\
+					      \hline
+					      3 & 480.000527 \\
+					      \hline
+					      4 & 470.001058 \\
+					      \hline
+					      5 & 460.001269 \\
+					      \hline
+					      6 & 450.000483 \\
+					      \hline
+					      7 & 440.000419 \\
+					      \hline
+				      \end{tabular}
+			      \end{center}
+			      \caption{Eigenvalores de Eigen\_50x50.txt verificados con numpy.}\label{tab:py50x50}
+		      \end{table}
+		      Podemos observar muy poca diferencia entre los eigenvalores, por lo
+		      que podemos asumir que han sido verificados como correctos.
+
+        \item \textbf{Eigen\_125x125.txt}
+		      \begin{align*}
+			      \begin{bmatrix}
+				      9.566e-05 & 0         & 0      & \cdots & 0         & 0         & 0         \\
+				      0         & 1.965e-04 & 0      & \cdots & 0         & 0         & 0         \\
+				      0 & 0 & 1      & \cdots & 0         & 0         & 0         \\
+				      \vdots    & \vdots    & \vdots & \ddots & \vdots    & \vdots    & \vdots    \\
+				      0         & 0         & 0      & \cdots & 3.802e-04 & 1.356e-06 & 0         \\
+				      0         & 0         & 0      & \cdots & 1.356e-06 & 3.701e-04 & 0         \\
+				      0         & 0         & 0      & \cdots & 0         & 0         & 3.522e-04 \\
+			      \end{bmatrix}
+		      \end{align*}
+		      Como vector inicial, usaremos $ \mathbf{x}_0 = \begin{bmatrix}
+				      1 & 1 & 1 & 1 & 1
+			      \end{bmatrix}^{T} $
+		      Ejecutando nuestro programa con
+		      \begin{center}
+			      \texttt{make run-p1
+				      ARGS="t5a/Eigen\_125x125.txt t5a/x0\_125.txt 7 1e-6 500"},
+		      \end{center}
+		      obtenemos los 7 eigenvalores m\'as grandes.
+		      \begin{table}[H]
+			      \begin{center}
+				      \begin{tabular}{|l|l|}
+					      \hline
+					      $ n $ & Eigenvalue \\
+					      \hline
+					      1     &1.000000\\
+					      \hline
+					      2     & 0.000598\\
+					      \hline
+					      3     & 0.000581\\
+					      \hline
+					      4     & 0.000561\\
+					      \hline
+					      5     & 0.000556\\
+					      \hline
+					      6     & 0.000551\\
+					      \hline
+					      7     & 0.000548\\
+					      \hline
+				      \end{tabular}
+			      \end{center}
+			      \caption{Eigenvalores m\'as grandes de Eigen\_125x125.txt}\label{tab:125x125}
+		      \end{table}
+		      Como verificaci\'on, utilizamos la librer\'ia de \texttt{numpy}. Corremos el programa (antes activando el virtual environment, e instalando numpy mediante \texttt{pip install numpy} si es necesario) mediante
+		      \begin{center}
+			      \texttt{python3 p1\textunderscore verify.py t5a/Eigen\textunderscore125x125.txt 18 1}
+		      \end{center}
+		      Este nos genera los valores
+		      \begin{table}[H]
+			      \begin{center}
+				      \begin{tabular}{|l|l|}
+					      \hline
+					      n & Eigenvalue \\
+					      \hline
+					      1 & 1.000000\\
+					      \hline
+					      2 & 1.000000\\
+					      \hline
+                \vdots & \vdots\\
+					      \hline
+					      12 & 1.000000\\
+					      \hline
+					      13 & 0.000598\\
+					      \hline
+					      14 & 0.000581\\
+					      \hline
+					      15 & 0.000561\\
+					      \hline
+					      16 & 0.000556\\
+					      \hline
+					      17 & 0.000551\\
+					      \hline
+					      18 & 0.000548\\
+					      \hline
+				      \end{tabular}
+			      \end{center}
+			      \caption{Eigenvalores m\'as grandes de Eigen\_125x125.txt verificados con numpy.}\label{tab:py125x125}
+		      \end{table}
+          Por la naturaleza del algoritmo, no se va a encontrar el mismo
+          eigenvalor en la siguiente iteraci\'on. Entonces, encontramos los 7
+          eigenvalores m\'as grandes no repetidos. Como podemos confirmar,
+          estos corresponden a los que regresa numpy.
+	\end{enumerate}
+\end{solution}
+%end solution 1
+
+%begin problem 2
+\begin{problem}
+Desarrollar un programa que calcule los $ k $ valores propios m\'as peque\~nos en magnitud de
+una matriz $ A $ mediante el m\'etodo de la potencia inversa. \textbf{(5 puntos)}
+\end{problem}
+%end problem 2
+%begin solution 1
+\begin{solution}
+  Para encontrar los eigenvalores m\'as peque\~nos, realizamos el m\'etodo de
+  la potencia inversa. Despu\'es de cada iteraci\'on, realizamos un ajuste en
+  los vectores para ortogonalizarlos con los eigenvalores anteriores,
+  asegurando que el nuevo eigenvalor se encuentre en otro eigenespacio,
+  permitiendo encontrar los otros eigenvalores m\'as peque\~nos.
+	\begin{enumerate}
+    \item \textbf{Eigen\_3x3.txt}
+		      \begin{align*}
+			      \begin{bmatrix}
+				      5.0    & -1.778 & 0.0    \\
+				      -1.778 & 9.0    & -1.778 \\
+				      0.0    & -1.778 & 10.0
+			      \end{bmatrix}
+		      \end{align*}
+		      Como vector inicial, usaremos $ \mathbf{x}_0 = \begin{bmatrix}
+				      1 & 1 & 1
+			      \end{bmatrix}^{T} $
+		      Ejecutando nuestro programa con
+		      \begin{center}
+			      \texttt{make run-p2
+				      ARGS="t5a/Eigen\_3x3.txt t5a/x0\_3.txt 3 1e-6 500"},
+		      \end{center}
+		      obtenemos los 3 eigenvalores m\'as peque\~nos (en este caso, todos).
+		      \begin{table}[H]
+			      \begin{center}
+				      \begin{tabular}{|l|l|}
+					      \hline
+					      Eigenvector           & Eigenvalue \\
+					      \hline
+					      \rule{0pt}{1.5em}
+					      $ \begin{bmatrix}
+							        0.91 & -0.42 & 0.02
+						        \end{bmatrix} $  & 4.247786      \\
+					      [0.5em]
+					      \hline
+					      \rule{0pt}{1.5em}
+					      $ \begin{bmatrix}
+							        -0.37 & 0.92 & -0.17
+						        \end{bmatrix} $ & 8.213811       \\
+					      [0.5em]
+					      \hline
+					      \rule{0pt}{1.5em}
+					      $ \begin{bmatrix}
+							        0.18 & -0.64 & 0.74
+						        \end{bmatrix} $  & 11.538403     \\
+					      [0.5em]
+					      \hline
+				      \end{tabular}
+			      \end{center}
+			      \caption{3 eigenvalores m\'as peque\~nos de Eigen\_3x3.txt}\label{tab:inv3x3}
+		      \end{table}
+		      Como verificaci\'on, utilizamos la librer\'ia de \texttt{numpy}. Corremos el programa (antes activando el virtual environment, e instalando numpy mediante \texttt{pip install numpy} si es necesario) mediante
+		      \begin{center}
+			      \texttt{python3 p1\textunderscore verify.py t5a/Eigen\textunderscore3x3.txt 3 0}
+		      \end{center}
+		      Este nos genera los valores
+		      \begin{table}[H]
+			      \begin{center}
+				      \begin{tabular}{|l|l|}
+					      \hline
+					      Eigenvector           & Eigenvalue \\
+					      \hline
+					      \rule{0pt}{1.5em}
+					      $ \begin{bmatrix}
+							        0.91 & -0.42 & 0.02
+						        \end{bmatrix} $  & 4.247786      \\
+					      [0.5em]
+					      \hline
+					      \rule{0pt}{1.5em}
+					      $ \begin{bmatrix}
+							        -0.37 & 0.92 & -0.17
+						        \end{bmatrix} $ & 8.213809       \\
+					      [0.5em]
+					      \hline
+					      \rule{0pt}{1.5em}
+					      $ \begin{bmatrix}
+							        0.18 & -0.64 & 0.74
+						        \end{bmatrix} $  & 11.538405     \\
+					      [0.5em]
+					      \hline
+				      \end{tabular}
+			      \end{center}
+			      \caption{3 eigenvalores m\'as peque\~nos de Eigen\_3x3.txt verificados con numpy.}\label{tab:invpy3x3}
+		      \end{table}
+		      Podemos observar muy poca diferencia entre los eigenvalores, por lo
+		      que podemos asumir que han sido verificados como correctos.
+
+        \item \textbf{Eigen\_5x5.txt}
+		      \begin{align*}
+			      \begin{bmatrix}
+				      0.2 & 0.1 & 1  & 1 & 0   \\
+				      0.1 & 4   & -1 & 1 & -1  \\
+				      1   & -1  & 60 & 0 & -2  \\
+				      1   & 1   & 0  & 8 & 4   \\
+				      0   & -1  & -2 & 4 & 700
+			      \end{bmatrix}
+		      \end{align*}
+		      Como vector inicial, usaremos $ \mathbf{x}_0 = \begin{bmatrix}
+				      1 & 1 & 1 & 1 & 1
+			      \end{bmatrix}^{T} $
+		      Ejecutando nuestro programa con
+		      \begin{center}
+			      \texttt{make run-p2
+				      ARGS="t5a/Eigen\_5x5.txt t5a/x0\_5.txt 3 1e-6 500"},
+		      \end{center}
+		      obtenemos los 3 eigenvalores m\'as peque\~nos.
+		      \begin{table}[H]
+			      \begin{center}
+				      \begin{tabular}{|l|l|}
+                \hline
+					      n & Eigenvalue \\
+					      \hline
+					      1 & 0.057075 \\
+					      \hline
+					      2 & 3.745331\\
+					      \hline
+					      3 & 8.338447   \\
+					      \hline
+				      \end{tabular}
+			      \end{center}
+			      \caption{Eigenvalores de Eigen\_5x5.txt}\label{tab:inv5x5}
+		      \end{table}
+		      Como verificaci\'on, utilizamos la librer\'ia de \texttt{numpy}. Corremos el programa (antes activando el virtual environment, e instalando numpy mediante \texttt{pip install numpy} si es necesario) mediante
+		      \begin{center}
+			      \texttt{python3 p1\textunderscore verify.py t5a/Eigen\textunderscore5x5.txt 3 0}
+		      \end{center}
+		      Este nos genera los valores
+		      \begin{table}[H]
+			      \begin{center}
+				      \begin{tabular}{|l|l|}
+					      \hline
+					      n & Eigenvalue \\
+					      \hline
+					      1 & 0.057075 \\
+					      \hline
+					      2 & 3.745331\\
+					      \hline
+					      3 & 8.338447   \\
+					      \hline
+				      \end{tabular}
+			      \end{center}
+			      \caption{3 eigenvalores m\'as peque\~nos de Eigen\_5x5.txt verificados con numpy.}\label{tab:invpy5x5}
+		      \end{table}
+		      Podemos observar muy poca diferencia entre los eigenvalores, por lo
+		      que podemos asumir que han sido verificados como correctos.
+        \item \textbf{Eigen\_50x50.txt}
+		      \begin{align*}
+			      \begin{bmatrix}
+				      10.000 & 0.084  & 0.039  & \cdots & 0.052   & 0.078   & 0.007   \\
+				      0.084  & 20.000 & 0.095  & \cdots & 0.040   & 0.053   & 0.040   \\
+				      0.039  & 0.095  & 30.000 & \cdots & 0.084   & 0.013   & 0.052   \\
+				      \vdots & \vdots & \vdots & \ddots & \vdots  & \vdots  & \vdots  \\
+				      0.081  & 0.044  & 0.095  & \cdots & 380.000 & 0.038   & 0.081   \\
+				      0.092  & 0.092  & 0.005  & \cdots & 0.041   & 490.000 & 0.092   \\
+				      0.007  & 0.040  & 0.052  & \cdots & 0.078   & 0.078   & 500.000 \\
+			      \end{bmatrix}
+		      \end{align*}
+		      Como vector inicial, usaremos $ \mathbf{x}_0 = \begin{bmatrix}
+				      1 & 1 & 1 & 1 & 1
+			      \end{bmatrix}^{T} $
+		      Ejecutando nuestro programa con
+		      \begin{center}
+			      \texttt{make run-p2
+				      ARGS="t5a/Eigen\_50x50.txt t5a/x0\_50.txt 7 1e-6 500"},
+		      \end{center}
+		      obtenemos los 7 eigenvalores m\'as peque\~nos.
+		      \begin{table}[H]
+			      \begin{center}
+				      \begin{tabular}{|l|l|}
+					      \hline
+					      $ n $ & Eigenvalue \\
+					      \hline
+					      1     & 9.998050\\
+					      \hline
+					      2     & 19.998794\\
+					      \hline
+					      3     & 29.998932\\
+					      \hline
+					      4     & 39.999764\\
+					      \hline
+					      5     & 49.998366\\
+					      \hline
+					      6     & 59.999846\\
+					      \hline
+					      7     & 69.999136\\
+					      \hline
+				      \end{tabular}
+			      \end{center}
+			      \caption{7 eigenvalores m\'as peque\~nos de Eigen\_50x50.txt}\label{tab:inv50x50}
+		      \end{table}
+		      Como verificaci\'on, utilizamos la librer\'ia de \texttt{numpy}. Corremos el programa (antes activando el virtual environment, e instalando numpy mediante \texttt{pip install numpy} si es necesario) mediante
+		      \begin{center}
+			      \texttt{python3 p1\textunderscore verify.py t5a/Eigen\textunderscore50x50.txt 7 0}
+		      \end{center}
+		      Este nos genera los valores
+		      \begin{table}[H]
+			      \begin{center}
+				      \begin{tabular}{|l|l|}
+					      \hline
+					      n & Eigenvalue \\
+					      \hline
+					      1 & 9.998050\\
+					      \hline
+					      2 & 19.998794\\
+					      \hline
+					      3 & 29.998931\\
+					      \hline
+					      4 & 39.999763\\
+					      \hline
+					      5 & 49.998366\\
+					      \hline
+					      6 & 59.999845\\
+					      \hline
+					      7 & 69.999135\\
+					      \hline
+				      \end{tabular}
+			      \end{center}
+			      \caption{Eigenvalores de Eigen\_50x50.txt verificados con numpy.}\label{tab:invpy50x50}
+		      \end{table}
+		      Podemos observar muy poca diferencia entre los eigenvalores, por lo
+		      que podemos asumir que han sido verificados como correctos.
+
+        \item \textbf{Eigen\_125x125.txt}
+		      \begin{align*}
+			      \begin{bmatrix}
+				      9.566e-05 & 0         & 0      & \cdots & 0         & 0         & 0         \\
+				      0         & 1.965e-04 & 0      & \cdots & 0         & 0         & 0         \\
+				      0 & 0 & 1      & \cdots & 0         & 0         & 0         \\
+				      \vdots    & \vdots    & \vdots & \ddots & \vdots    & \vdots    & \vdots    \\
+				      0         & 0         & 0      & \cdots & 3.802e-04 & 1.356e-06 & 0         \\
+				      0         & 0         & 0      & \cdots & 1.356e-06 & 3.701e-04 & 0         \\
+				      0         & 0         & 0      & \cdots & 0         & 0         & 3.522e-04 \\
+			      \end{bmatrix}
+		      \end{align*}
+		      Como vector inicial, usaremos $ \mathbf{x}_0 = \begin{bmatrix}
+				      1 & 1 & \cdots & 1 & 1
+			      \end{bmatrix}^{T} $
+		      Ejecutando nuestro programa con
+		      \begin{center}
+			      \texttt{make run-p2
+				      ARGS="t5a/Eigen\_125x125.txt t5a/x0\_125.txt 7 1e-9 500"},
+		      \end{center}
+		      obtenemos los 7 eigenvalores m\'as peque\~nos.
+		      \begin{table}[H]
+			      \begin{center}
+				      \begin{tabular}{|l|l|}
+					      \hline
+					      $ n $ & Eigenvalue \\
+					      \hline
+					      1     & 0.000002\\
+					      \hline
+					      2     & 0.000008\\
+					      \hline
+					      3     & 0.000017\\
+					      \hline
+					      4     & 0.000018\\
+					      \hline
+					      5     & 0.000026\\
+					      \hline
+					      6     & 0.000036\\
+					      \hline
+					      7     & 0.000038\\
+					      \hline
+				      \end{tabular}
+			      \end{center}
+			      \caption{Eigenvalores de Eigen\_125x125.txt}\label{tab:inv125x125}
+		      \end{table}
+		      Como verificaci\'on, utilizamos la librer\'ia de \texttt{numpy}. Corremos el programa (antes activando el virtual environment, e instalando numpy mediante \texttt{pip install numpy} si es necesario) mediante
+		      \begin{center}
+			      \texttt{python3 p1\textunderscore verify.py t5a/Eigen\textunderscore125x125.txt 7 0}
+		      \end{center}
+		      Este nos genera los valores
+		      \begin{table}[H]
+			      \begin{center}
+				      \begin{tabular}{|l|l|}
+					      \hline
+					      n & Eigenvalue \\
+					      \hline
+					      1 & 0.000002\\
+					      \hline
+					      2 & 0.000008\\
+					      \hline
+					      3 &0.000017\\
+					      \hline
+					      4 & 0.000018\\
+					      \hline
+					      5 & 0.000026\\
+					      \hline
+					      6 & 0.000036\\
+					      \hline
+					      7 & 0.000038\\
+					      \hline
+				      \end{tabular}
+			      \end{center}
+			      \caption{Eigenvalores de Eigen\_125x125.txt verificados con numpy.}\label{tab:invpy125x125}
+		      \end{table}
+          Para esta matriz, usamos una tolerancia de menor magnitud para aproximar los eigenvalores de manera m\'as cercana a los reales. Con esto, verificamos que los calculados son correctos.
+	\end{enumerate}
+
+\end{solution}
+%end solution 1
+
+\bibliographystyle{plain}
+\bibliography{main}
+
+\end{document}
