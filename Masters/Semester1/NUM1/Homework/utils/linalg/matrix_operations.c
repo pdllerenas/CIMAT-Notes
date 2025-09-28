@@ -168,7 +168,7 @@ Matrix *deflation_term(const Vector *v, double lambda_v) {
   if (fabs(v_k) < 1e-9) {
     fprintf(stderr, "Error: vector near zero. Method fails.\n");
   }
-  double w_k = 1.0/v_k;
+  double w_k = 1.0 / v_k;
 
   Matrix *D = matrix_create_double(n, n);
   if (!D) {
@@ -177,7 +177,7 @@ Matrix *deflation_term(const Vector *v, double lambda_v) {
 
   for (int i = 0; i < n; i++) {
     double D_ik = lambda_v * ((double *)v->data)[i] * w_k;
-    ((double *)D->data)[i*n+k] = D_ik;
+    ((double *)D->data)[i * n + k] = D_ik;
   }
   return D;
 }
