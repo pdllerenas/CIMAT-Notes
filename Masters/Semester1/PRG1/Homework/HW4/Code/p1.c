@@ -14,6 +14,15 @@ typedef struct {
   char *country;
 } Author;
 
+int compare_str(const void *a, const void *b) {
+  return strcmp(*(const char **)a, *(const char **)b);
+}
+
+void order_authors(Author **authors, int n, int (*comp)(const void *, const void*)) {
+
+  
+}
+
 
 int get_cols(char *line) {
   const char *token;
