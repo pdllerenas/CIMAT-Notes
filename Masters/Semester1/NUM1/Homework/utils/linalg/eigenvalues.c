@@ -2,9 +2,11 @@
 #include "linear_system.h"
 #include "matrix.h"
 #include "matrix_factorization.h"
+#include "matrix_io.h"
 #include "matrix_operations.h"
 #include "vector.h"
 #include <math.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -275,4 +277,74 @@ void get_m_smallest_eigenvalues(const Matrix *A, const Vector *x0,
   if (x_start) {
     free_vector(x_start);
   }
+}
+
+/*
+
+returns the index of the maxmimum element in the off-diagonal of row k
+We assume A is symmetric, so we only check off-diagonal elements in 1 direction
+
+ */
+
+static uint max_ind(Matrix *A, uint k) {
+  uint n = A->cols;
+  uint m = k + 1;
+  for (uint i = k + 2; i < n; i++) {
+    if (fabs(((double *)A->data)[k * n + i]) >
+        fabs(((double *)A->data)[k * n + m])) {
+      m = i;
+    }
+  }
+  return m;
+}
+
+static void update_jacobi(Vector *e, int k, bool **changed, int *state,
+                          double t) {
+  double yk = ((double *)e->data)[k];
+  ((double *)e->data)[k] = yk + t;
+  if (*changed[k] && yk == ((double *)e->data)[k]) {
+    *changed[k] = false;
+    (*state)--;
+  } else if (!*changed[k] && yk != ((double *)e->data)[k]) {
+    *changed[k] = true;
+    (*state)++;
+  }
+}
+
+static void rotate_jacobi(Matrix *A, uint k, uint l, uint i, uint j,
+                          double theta) {
+  int n = A->cols;
+  double x = cos(theta) * ((double *)A->data)[k * n + l] -
+             sin(theta) * ((double *)A->data)[i * n + j];
+  double y = sin(theta) * ((double *)A->data)[k * n + l] +
+             cos(theta) * ((double *)A->data)[i * n + j];
+}
+
+/*
+
+returns a matrix with the corresponding eigenvectors to the eigenvalues in the
+Vector eigenvalues
+
+ */
+
+Matrix *jacobi_eigenvalue(Matrix *S, Vector *eigenvalues) {
+  int n = S->rows, i, k, l, m, state;
+  double s, c, t, p, y, d, r;
+
+  int *ind = malloc(n * sizeof(int));
+  bool *changed = malloc(n * sizeof(bool));
+
+  Matrix *E = identity_matrix(n);
+  state = n;
+
+  // for (k = 1; k < n; )
+  
+}
+
+double **subspace_iteration(const Matrix *A, Matrix *phi_0, double TOL,
+                            int MAX_ITER) {
+  Matrix *B = conjugate_m_by_a(A, phi_0);
+  print_matrix(B);
+  int k = 1;
+  return NULL;
 }

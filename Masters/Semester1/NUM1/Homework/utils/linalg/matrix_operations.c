@@ -181,3 +181,38 @@ Matrix *deflation_term(const Vector *v, double lambda_v) {
   }
   return D;
 }
+
+/*
+
+performs the operation A^T M A
+
+ */
+Matrix *conjugate_m_by_a(const Matrix *M, const Matrix *A) {
+  // A^T->cols = A->rows, so new size is A->rows * A->rows
+  int n = A->rows;
+  int m = A->cols;
+  // we first do A^T times M, then times A
+  Matrix *R1 = matrix_create_double(m, n);
+  for (int i = 0; i < m; i++) {
+    for (int j = 0; j < n; j++) {
+      double sum = 0.0;
+      for (int k = 0; k < n; k++) {
+        sum += ((double *)A->data)[i * n + k] * ((double *)M->data)[k * n + j];
+      }
+      ((double *)R1->data)[i * n + j] = sum;
+    }
+  }
+  Matrix *R2 = matrix_create_double(n, n);
+
+  for (int i = 0; i < m; i++) {
+    for (int j = 0; j < m; j++) {
+      double sum = 0.0;
+      for (int k = 0; k < n; k++) {
+        sum += ((double *)R1->data)[i * n + k] * ((double *)A->data)[k * n + j];
+      }
+      ((double *)R2->data)[i * n + j] = sum;
+    }
+  }
+  matrix_free(R1);
+  return R2;
+}

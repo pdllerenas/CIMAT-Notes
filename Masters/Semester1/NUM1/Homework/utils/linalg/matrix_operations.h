@@ -11,3 +11,4 @@ int matrix_compare(const Matrix *, const Matrix *, double);
 void matrix_swap_rows(Matrix *, const int, const int);
 Vector *matrix_times_vector(const Matrix *, const Vector *);
 Matrix *deflation_term(const Vector *, double);
+Matrix *conjugate_m_by_a(const Matrix *, const Matrix *);
