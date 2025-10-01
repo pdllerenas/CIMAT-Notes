@@ -1,5 +1,6 @@
 #include "bitboard.h"
 #include "pgm_io.h"
+#include "wav_io.h"
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -7,13 +8,18 @@
 #include <unistd.h>
 
 const int renji_params[8] = {4, 3, 3, 2, 3, 4, 5, 8};
-const int renji_B[8] = {3, 4, 1, 2, 5, 8, 12, 9};
-
+const uint64_t renji_B[8] = {3424232302134182413, 2123232302134188241,
+                             1234222234124564743, 2422312345234582412,
+                             3234672342432428315, 5578223424234234818,
+                             4234244187724234414, 2423424423422124319};
 uint64_t pack_bytes_to_u64(char bytes[8]) {
-  return ((uint64_t)(bytes[0]) << 56) | ((uint64_t)(bytes[1]) << 48) |
-         ((uint64_t)(bytes[2]) << 40) | ((uint64_t)(bytes[3]) << 32) |
-         ((uint64_t)(bytes[4]) << 24) | ((uint64_t)(bytes[5]) << 16) |
-         ((uint64_t)(bytes[6]) << 8) | ((uint64_t)(bytes[7]));
+  return ((uint64_t)((uint8_t)bytes[0]) << 56) |
+         ((uint64_t)((uint8_t)bytes[1]) << 48) |
+         ((uint64_t)((uint8_t)bytes[2]) << 40) |
+         ((uint64_t)((uint8_t)bytes[3]) << 32) |
+         ((uint64_t)((uint8_t)bytes[4]) << 24) |
+         ((uint64_t)((uint8_t)bytes[5]) << 16) |
+         ((uint64_t)((uint8_t)bytes[6]) << 8) | ((uint64_t)((uint8_t)bytes[7]));
 }
 
 char *unpack_u64_to_bytes(uint64_t u64) {
@@ -23,10 +29,8 @@ char *unpack_u64_to_bytes(uint64_t u64) {
     return NULL;
   }
   for (int i = 0; i < 8; i++) {
-    // 0xF = 1111, so we shift this value by 4 each iteration
-    // and use the & operator to select only those specific bytes from
-    // u64
-    data[7 - i] = u64 & (0xF << 4 * i);
+    int shift = 8 * (7 - i);
+    data[i] = (char)((u64 >> shift) & 0xFFu);
   }
   return data;
 }
@@ -55,7 +59,7 @@ static inline bool valid_sq(Square square) {
   return true;
 }
 
-uint64_t renyi_map(uint64_t xj, unsigned int B, unsigned int k) {
+uint64_t renyi_map(uint64_t xj, uint64_t B, unsigned int k) {
   return B * xj + (xj >> k);
 }
 
@@ -131,7 +135,7 @@ void initialize_board(Board *board) {
 
 /*
 
-prints the board struct passed
+prints the board struct passed (used for debugging)
 
 ** stockfish design insipiration **
 
@@ -168,6 +172,12 @@ void print_board(Board *board) {
   fflush(stdout);
 }
 
+/*
+
+given a board state, move the piece in 'from' square to 'to' square
+handles prey and predators differently
+
+ */
 uint64_t make_move(Board *board, Square from, Square to) {
   // retrieve piece to be moved
   Piece p_from = piece_on(board, from);
@@ -175,14 +185,14 @@ uint64_t make_move(Board *board, Square from, Square to) {
 
   // if moving to a predator, warn caller
   if (board->occupancies[1] & (1ULL << to)) {
-    return -2;
+    return 0;
   }
 
   // if prey is the one moving
   if (p_from < W_1) {
     // prevent prey from moving to occupied prey squares
     if (board->occupancies[0] & (1ULL << to)) {
-      return -2;
+      return 0;
     }
     clearBit(&board->occupancies[0], from);
     setBit(&board->occupancies[0], to);
@@ -209,28 +219,36 @@ uint64_t make_move(Board *board, Square from, Square to) {
     // respawn captures prey
     respawn_prey(board, p_to);
 
+    // get chaotic path
     uint64_t x = renyi_map(to, renji_B[p_to], renji_params[p_to]);
 
     return x;
   }
-  return NO_PIECE;
+  return 0;
 }
 
 uint64_t move_piece(Board *board, Piece p) {
   if (!board->bitboards[p]) {
     return 0;
   }
+  // retrieve source square from piece
   Square from = lsb(board->bitboards[p]);
+
+  // placeholder for available moves
   Bitboard moves = 0ULL;
+
+  // check for each direction if square is available
   if (valid_sq(from + NORTH))
     moves |= 1ULL << (from + NORTH);
   if (valid_sq(from + SOUTH))
     moves |= 1ULL << (from + SOUTH);
+  // check for warping moves
   if (valid_sq(from + EAST) && !((1ULL << from) & FileHBB))
     moves |= 1ULL << (from + EAST);
   if (valid_sq(from + WEST) && !((1ULL << from) & FileABB))
     moves |= 1ULL << (from + WEST);
 
+  // if piece is a prey
   if (p < W_1) {
     // prey cannot move to where a predator is, nor another prey's sq
     moves &= ~board->occupancies[2];
@@ -252,65 +270,190 @@ uint64_t move_piece(Board *board, Piece p) {
 
       // go to smallest prey (in bits)
       Square to = lsb(moves);
+
+      // this is guaranteed to return the renji map value
       return make_move(board, from, to);
     }
     // if no adjacent prey are found, move randomly
   }
+  // pop the number of active bits in moves bitboard
   int move_count = popCount(moves);
   int choice = rand() % move_count;   // only choose from available directions
   Square to = nth_bit(moves, choice); // get choice'th lsb
 
+  // once the move is verified to be legal, make the move
+  // this call to make move will always return 0
   return make_move(board, from, to);
 }
 
+// moves all prey. We do not need to make distinctions as in the predator case
 void move_prey(Board *board) {
   for (Piece p = R_1; p < W_1; ++p) {
     move_piece(board, p);
   }
 }
 
-void cypher(char *file_in, char *file_out, Board *board) {
+/*
+
+central function to the exercise. Takes in a file input, a file output, and a
+board. When a captures occurs in the board, the renji map is called, which
+returns a value depending on the prey caught. Once all bytes of the original
+image have been exhausted, print the resulting image to file output using the
+pgm_io library.
+
+ */
+void cypher_img(char *file_in, char *file_out, Board *board) {
   int rows, cols;
+
+  // file input
   unsigned char **image;
   image = pgmRead(file_in, &rows, &cols);
   if (image == NULL) {
     printf("Error pgmRead\n");
     exit(1);
   }
-  unsigned char **image_out;
+
+  // file output
+  unsigned char **image_out = malloc(rows * sizeof(unsigned char *));
+  if (!image_out) {
+    perror("Error image_out malloc\n");
+    // free image if pgmRead allocated it (we assume it did)
+    for (int i = 0; i < rows; ++i)
+      free(image[i]);
+    free(image);
+    exit(1);
+  }
+  for (int r = 0; r < rows; ++r) {
+    image_out[r] = malloc(cols * sizeof(unsigned char));
+    if (!image_out[r]) {
+      perror("malloc image_out[r]");
+      for (int k = 0; k < r; ++k)
+        free(image_out[k]);
+      free(image_out);
+      for (int k = 0; k < rows; ++k)
+        free(image[k]);
+      free(image);
+      exit(1);
+    }
+  }
 
   uint64_t renji;
   char im_data[8];
-  for (int i = 0; i < rows; i++) {
-    for (int j = 0; j < cols - 8; j += 8) {
-      for (Piece p = W_1; p <= W_2; ++p) {
-        renji = move_piece(board, p);
-        if (renji > 0) {
+  int i = 0;
+  int j = 0;
+  do {
+    move_prey(board);
+    renji = move_piece(board, W_1);
+    if (renji > 0) {
+      for (int k = 0; k < 8; k++) {
+        im_data[k] = image[i][j + k];
+      }
+      uint64_t packed_bytes = pack_bytes_to_u64(im_data);
+      uint64_t new_data = packed_bytes ^ renji;
+      char *new_bytes = unpack_u64_to_bytes(new_data);
+      if (new_bytes) {
+        for (int k = 0; k < 8; k++) {
+          image_out[i][j + k] = (unsigned char)new_bytes[k];
+        }
+        free(new_bytes);
+      }
+      j += 8;
+    }
+    if (j >= cols) {
+      j = 0;
+      i++;
+    }
+    if (i >= rows) {
+      break;
+    }
+
+    // do predator 2 movement if there are still bytes to encode
+    if (i * cols + j < rows * cols - 1) {
+      renji = move_piece(board, W_2);
+      if (renji > 0) {
+        for (int k = 0; k < 8; k++) {
+          im_data[k] = image[i][j + k];
+        }
+        uint64_t packed_bytes = pack_bytes_to_u64(im_data);
+        uint64_t new_data = packed_bytes ^ renji;
+        char *new_bytes = unpack_u64_to_bytes(new_data);
+        if (new_bytes) {
           for (int k = 0; k < 8; k++) {
-            im_data[k] = image[i][j + k];
-          }
-          uint64_t packed_bytes = pack_bytes_to_u64(im_data);
-          uint64_t new_data = packed_bytes ^ renji;
-          char *new_bytes = unpack_u64_to_bytes(new_data);
-          for (int k = 0; k < 8; k++) {
-            image_out[i][j + k] = new_bytes[k];
+            image_out[i][j + k] = (unsigned char)new_bytes[k];
           }
           free(new_bytes);
         }
+        j += 8;
       }
     }
-  }
+    if (j >= cols) {
+      j = 0;
+      i++;
+    }
+    if (i >= rows) {
+      break;
+    }
+  } while (i * cols + j < rows * cols - 1);
+
+  pgmWrite(file_out, rows, cols, image_out, NULL);
+  free(image[0]);
+  free(image_out[0]);
+  free(image);
+  free(image_out);
 }
 
-int main() {
-  srand(time(NULL));
+void cypher_wav(const char *file_in, const char *file_out, Board *board) {
+  char *wav_data, *wav_out;
+  HEADER *header = read_wav(file_in, &wav_data);
+
+  wav_out = malloc(header->data_size * sizeof(char));
+  memcpy(wav_out, wav_data, header->data_size);
+
+  uint64_t renji;
+  char im_data[8];
+  int j = 0;
+  do {
+    move_prey(board);
+    renji = move_piece(board, W_1);
+    if (renji > 0) {
+      memcpy(im_data, wav_data + j, 8);
+      uint64_t packed_bytes = pack_bytes_to_u64(im_data);
+      uint64_t new_data = packed_bytes ^ renji;
+      char *new_bytes = unpack_u64_to_bytes(new_data);
+      if (new_bytes) {
+        memcpy(wav_out + j, new_bytes, 8);
+        free(new_bytes);
+      }
+      j += 8;
+    }
+    // do predator 2 movement if there are still bytes to encode
+    if (j < header->data_size) {
+      renji = move_piece(board, W_2);
+      if (renji > 0) {
+        memcpy(im_data, wav_data + j, 8);
+        uint64_t packed_bytes = pack_bytes_to_u64(im_data);
+        uint64_t new_data = packed_bytes ^ renji;
+        char *new_bytes = unpack_u64_to_bytes(new_data);
+        if (new_bytes) {
+          memcpy(im_data, wav_data + j, 8);
+          free(new_bytes);
+        }
+        j += 8;
+      }
+    }
+  } while (j < header->data_size);
+
+  write_wav(file_out, header->data_size, header, wav_out);
+}
+
+int main(int argc, char *argv[]) {
+  srand(69);
   Board *board = malloc(sizeof(Board));
   initialize_board(board);
-  print_board(board);
-  while (true) {
-    move_prey(board);
-    print_board(board);
-  }
+  // cypher_img(argv[1], argv[2], board);
+
+  cypher_wav(argv[1], argv[2], board);
+
   free(board);
   return 0;
 }
