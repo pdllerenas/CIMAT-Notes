@@ -9,20 +9,28 @@ typedef struct {
 
 typedef struct {
   char *name; // full name
-  char *afiliation;
+  char *affiliation;
   Article *info;
   char *country;
 } Author;
 
-int compare_str(const void *a, const void *b) {
-  return strcmp(*(const char **)a, *(const char **)b);
+int compare_author_name(const void *a, const void *b) {
+  const Author *authorA = *(const Author **)a;
+  const Author *authorB = *(const Author **)b;
+  return strcmp(authorA->name, authorB->name);
 }
 
-void order_authors(Author **authors, int n, int (*comp)(const void *, const void*)) {
-
-  
+int compare_article_year(const void *a, const void *b) {
+  const Author *authorA = *(const Author **)a;
+  const Author *authorB = *(const Author **)b;
+  return (authorA->info->year > authorB->info->year) -
+         (authorA->info->year < authorB->info->year);
 }
 
+void order_authors(Author **authors, int n,
+                   int (*comp)(const void *, const void *)) {
+  qsort(authors, n, sizeof(Author *), comp);
+}
 
 int get_cols(char *line) {
   const char *token;
@@ -34,6 +42,13 @@ int get_cols(char *line) {
   return cols;
 }
 
+/*
+
+parses the given csv, assuming that the structure is that of
+
+string string string string int, all separated with a comma
+
+ */
 Author **csv_reader(const char *filename, int *rows) {
   FILE *fp = fopen(filename, "r");
   if (!fp) {
@@ -44,7 +59,7 @@ Author **csv_reader(const char *filename, int *rows) {
   Author **authors = malloc(size * sizeof(Author *));
 
   char line[1024];
-  int cols, row = 0;
+  int cols;
   *rows = 0;
   fgets(line, 1024, fp);
   cols = get_cols(line);
@@ -70,24 +85,34 @@ Author **csv_reader(const char *filename, int *rows) {
       authors = temp;
     }
     // attribute handling
+
+    // author name
     tokens = strtok(line, ",");
     auth_row->name = strdup(tokens);
 
+    // article title
     tokens = strtok(NULL, ",\n");
     Article *article = malloc(sizeof(Article));
     article->title = strdup(tokens);
-    article->year = 2020;
-    auth_row->info = article;
 
+    // author affiliation
     tokens = strtok(NULL, ",\n");
-    auth_row->afiliation = strdup(tokens);
+    auth_row->affiliation = strdup(tokens);
 
+    // author country
     tokens = strtok(NULL, ",\n");
     auth_row->country = strdup(tokens);
 
-    authors[row] = auth_row;
+    // article year
+    tokens = strtok(NULL, ",\n");
+    article->year = atoi(tokens);
+
+    // store article info in auth_row struct
+    auth_row->info = article;
+
+    // use auth_row pointer for general array
+    authors[*rows] = auth_row;
     (*rows)++;
-    row++;
   }
   fclose(fp);
   return authors;
@@ -95,24 +120,43 @@ Author **csv_reader(const char *filename, int *rows) {
 
 void print_author(const Author *author) {
   printf("name: %s\n", author->name);
-  printf("afiliation: %s\n", author->afiliation);
+  printf("affiliation: %s\n", author->affiliation);
   printf("article: %s\n", author->info->title);
+  printf("year: %d\n", author->info->year);
   printf("country: %s\n", author->country);
 }
 
 int main(int argc, char *argv[]) {
-  if (argc != 2) {
-    fprintf(stderr, "Invalid argument count. Usage: %s <file-input>\n",
-            argv[0]);
+  if (argc != 3) {
+    fprintf(
+        stderr,
+        "Invalid argument count. Usage: %s <file-input> <sort [name | year]>\n",
+        argv[0]);
+    exit(1);
   }
   int rows;
   Author **authors = csv_reader(argv[1], &rows);
+
+  if (strcmp(argv[2], "name") == 0) {
+    order_authors(authors, rows, compare_author_name);
+  } else if (strcmp(argv[2], "year") == 0) {
+    order_authors(authors, rows, compare_article_year);
+  } else {
+    fprintf(stderr, "Invalid sorting argument.\n");
+    exit(1);
+  }
 
   for (int i = 0; i < rows; i++) {
     print_author(authors[i]);
     printf("\n");
   }
+  // since each entry was copied using strdup, we must free every single struct
+  // attribute (except year, since it is not a string duplication)
   for (int i = 0; i < rows; i++) {
+    free(authors[i]->name);
+    free(authors[i]->affiliation);
+    free(authors[i]->country);
+    free(authors[i]->info->title);
     free(authors[i]->info);
     free(authors[i]);
   }
