@@ -14,12 +14,35 @@ typedef struct {
   char *country;
 } Author;
 
+void free_authors(Author **authors, int rows) {
+  for (int i = 0; i < rows; i++) {
+    free(authors[i]->name);
+    free(authors[i]->affiliation);
+    free(authors[i]->country);
+    free(authors[i]->info->title);
+    free(authors[i]->info);
+    free(authors[i]);
+  }
+  free(authors);
+}
+/*
+
+assumes both a and b can be converted to an Author pointer, and that their name
+property can be compared meaningfully
+
+ */
 int compare_author_name(const void *a, const void *b) {
   const Author *authorA = *(const Author **)a;
   const Author *authorB = *(const Author **)b;
   return strcmp(authorA->name, authorB->name);
 }
 
+/*
+
+assumes both a and b can be converted to an Author pointer, and that their year
+property can be compared meaningfully
+
+ */
 int compare_article_year(const void *a, const void *b) {
   const Author *authorA = *(const Author **)a;
   const Author *authorB = *(const Author **)b;
@@ -27,19 +50,15 @@ int compare_article_year(const void *a, const void *b) {
          (authorA->info->year < authorB->info->year);
 }
 
+/*
+
+uses qsort to sort w.r.t year or name, depending on comp (comparing function)
+passed
+
+ */
 void order_authors(Author **authors, int n,
                    int (*comp)(const void *, const void *)) {
   qsort(authors, n, sizeof(Author *), comp);
-}
-
-int get_cols(char *line) {
-  const char *token;
-  int cols;
-  for (token = strtok(line, ","); token && *token;
-       token = strtok(NULL, ",\n")) {
-    cols++;
-  }
-  return cols;
 }
 
 /*
@@ -59,26 +78,27 @@ Author **csv_reader(const char *filename, int *rows) {
   Author **authors = malloc(size * sizeof(Author *));
 
   char line[1024];
-  int cols;
   *rows = 0;
   fgets(line, 1024, fp);
-  cols = get_cols(line);
 
   char *temp;
   char *tokens;
+
   while (fgets(line, 1024, fp)) {
     Author *auth_row = malloc(sizeof(Author));
+    if (!auth_row) {
+      perror("Unable to allocate memory.\n");
+      free_authors(authors, *rows);
+      fclose(fp);
+      return NULL;
+    }
     // realloc if necessary
     if (*rows == size) {
       size *= 2;
       Author **temp = realloc(authors, size * sizeof(Author *));
       if (!temp) {
         perror("Failed to reallocate memory.\n");
-        for (int i = 0; i < size / 2; i++) {
-          free(authors[i]->info);
-          free(authors[i]);
-        }
-        free(authors);
+        free_authors(authors, *rows);
         fclose(fp);
         return NULL;
       }
@@ -118,20 +138,20 @@ Author **csv_reader(const char *filename, int *rows) {
   return authors;
 }
 
-void print_author(const Author *author) {
-  printf("name: %s\n", author->name);
-  printf("affiliation: %s\n", author->affiliation);
-  printf("article: %s\n", author->info->title);
-  printf("year: %d\n", author->info->year);
-  printf("country: %s\n", author->country);
+void fprint_author(FILE *f, const Author *author) {
+  fprintf(f, "%s,", author->name);
+  fprintf(f, "%s,", author->info->title);
+  fprintf(f, "%s,", author->affiliation);
+  fprintf(f, "%s,", author->country);
+  fprintf(f, "%d", author->info->year);
 }
 
 int main(int argc, char *argv[]) {
-  if (argc != 3) {
-    fprintf(
-        stderr,
-        "Invalid argument count. Usage: %s <file-input> <sort [name | year]>\n",
-        argv[0]);
+  if (argc != 4) {
+    fprintf(stderr,
+            "Invalid argument count. Usage: %s <file-input> <sort [name | "
+            "year]> <file-out>\n",
+            argv[0]);
     exit(1);
   }
   int rows;
@@ -146,19 +166,21 @@ int main(int argc, char *argv[]) {
     exit(1);
   }
 
-  for (int i = 0; i < rows; i++) {
-    print_author(authors[i]);
-    printf("\n");
+  FILE *f = fopen(argv[3], "w");
+  if (!f) {
+    perror(argv[3]);
+    exit(1);
   }
+
+  fprintf(f, "Name,Article,Affiliation,Country/Region,year\n");
+  for (int i = 0; i < rows; i++) {
+    fprint_author(f, authors[i]);
+    fprintf(f, "\n");
+  }
+
+  free_authors(authors, rows);
+  fclose(f);
+
   // since each entry was copied using strdup, we must free every single struct
   // attribute (except year, since it is not a string duplication)
-  for (int i = 0; i < rows; i++) {
-    free(authors[i]->name);
-    free(authors[i]->affiliation);
-    free(authors[i]->country);
-    free(authors[i]->info->title);
-    free(authors[i]->info);
-    free(authors[i]);
-  }
-  free(authors);
 }
