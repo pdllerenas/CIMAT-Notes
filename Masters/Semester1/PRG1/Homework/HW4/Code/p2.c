@@ -348,7 +348,10 @@ void cypher_img(char *file_in, char *file_out, Board *board) {
       for (int k = 0; k < 8; k++) {
         im_data[k] = image[i][j + k];
       }
+      // pack 8 separate bytes into 64 contiguous bits
       uint64_t packed_bytes = pack_bytes_to_u64(im_data);
+
+      // xor with renji chaotic map
       uint64_t new_data = packed_bytes ^ renji;
       char *new_bytes = unpack_u64_to_bytes(new_data);
       if (new_bytes) {
@@ -374,8 +377,13 @@ void cypher_img(char *file_in, char *file_out, Board *board) {
         for (int k = 0; k < 8; k++) {
           im_data[k] = image[i][j + k];
         }
+        // pack the 8 bytes of image data into a 64bit number
         uint64_t packed_bytes = pack_bytes_to_u64(im_data);
+
+        // apply renji xor
         uint64_t new_data = packed_bytes ^ renji;
+
+        // unpack into 8 bytes
         char *new_bytes = unpack_u64_to_bytes(new_data);
         if (new_bytes) {
           for (int k = 0; k < 8; k++) {
@@ -397,7 +405,9 @@ void cypher_img(char *file_in, char *file_out, Board *board) {
 
   pgmWrite(file_out, rows, cols, image_out, NULL);
   free(image[0]);
-  free(image_out[0]);
+  for (int i = 0; i < rows; i++) {
+    free(image_out[i]);
+  }
   free(image);
   free(image_out);
 }
@@ -444,15 +454,43 @@ void cypher_wav(const char *file_in, const char *file_out, Board *board) {
   } while (j < header->data_size);
 
   write_wav(file_out, header->data_size, header, wav_out);
+  free(wav_out);
+  free(wav_data);
+  free(header);
 }
 
 int main(int argc, char *argv[]) {
-  srand(69);
+  if (argc != 4) {
+    fprintf(stderr,
+            "Invalid argument count. Usage: %s <uint: encryption-key> "
+            "<file-input (.pgm | .wav)> <file-output>",
+            argv[0]);
+    exit(1);
+  }
+  // seed for encryption
+  // using different seeds will result in the data being encrypted in another "random" way
+  // therefore, if we encrypt using 2020, and apply the same function to the encrypted file,
+  // using key 2020 will restore the file, but using 2021 will encrypt it again. To restore a double encryption,
+  // we must apply both transformations again (that is, image ^ key1 ^ key2 ^ key2 ^ key1 = image)
+  srand(atoi(argv[1]));
   Board *board = malloc(sizeof(Board));
   initialize_board(board);
-  // cypher_img(argv[1], argv[2], board);
 
-  cypher_wav(argv[1], argv[2], board);
+  const char *dot = strrchr(argv[2], '.');
+  if (!dot || dot == argv[2]) {
+    fprintf(stderr, "Invalid file extension\n"); // no extension was found
+    exit(1);
+  }
+  const char *extension = dot + 1; // skip the dot
+
+  if (strcmp(extension, "wav") == 0) {
+    cypher_wav(argv[2], argv[3], board);
+  } else if (strcmp(extension, "pgm") == 0) {
+    cypher_img(argv[2], argv[3], board);
+  } else {
+    fprintf(stderr, "Invalid file extension.\n");
+    exit(1);
+  }
 
   free(board);
   return 0;
