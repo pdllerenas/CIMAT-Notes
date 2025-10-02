@@ -15,7 +15,9 @@ double vector_norm_squared(const Vector *);
 void vector_axpy_inplace(Vector *x, double proj, Vector *prev);
 
 Vector *vector_sum(const Vector *, const Vector *);
+void vector_sum_inplace(Vector *, const Vector *);
 Vector *vector_diff(const Vector *, const Vector *);
+void vector_diff_inplace(Vector *, const Vector *);
 Vector *load_vector_from_txt(const char *);
 Vector *vector_fill(int, double);
 void vector_swap_rows(Vector *, int, int);

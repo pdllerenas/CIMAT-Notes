@@ -79,6 +79,17 @@ Vector *vector_sum(const Vector *v1, const Vector *v2) {
   return s;
 }
 
+void vector_sum_inplace(Vector *v1, const Vector *v2) {
+  if (v1->dim != v2->dim) {
+    fprintf(stderr, "Vector dimension mismatch. %d does not equal %d.\n",
+            v1->dim, v2->dim);
+    exit(1);
+  }
+  for (int i = 0; i < v1->dim; i++) {
+    ((double *)v1->data)[i] += ((double *)v2->data)[i];
+  }
+}
+
 Vector *vector_diff(const Vector *v1, const Vector *v2) {
   if (v1->dim != v2->dim) {
     fprintf(stderr, "Vector dimension mismatch. %d does not equal %d.\n",
@@ -90,6 +101,17 @@ Vector *vector_diff(const Vector *v1, const Vector *v2) {
     ((double *)s->data)[i] = ((double *)v1->data)[i] - ((double *)v2->data)[i];
   }
   return s;
+}
+
+void vector_diff_inplace(Vector *v1, const Vector *v2) {
+  if (v1->dim != v2->dim) {
+    fprintf(stderr, "Vector dimension mismatch. %d does not equal %d.\n",
+            v1->dim, v2->dim);
+    exit(1);
+  }
+  for (int i = 0; i < v1->dim; i++) {
+    ((double *)v1->data)[i] -= ((double *)v2->data)[i];
+  }
 }
 
 double vector_norm_squared(const Vector *v) {
@@ -243,4 +265,3 @@ void vector_axpy_inplace(Vector *x, double alpha, Vector *prev) {
     ((double *)x->data)[i] += alpha * ((double *)prev->data)[i];
   }
 }
-
