@@ -200,6 +200,18 @@ void print_vector(Vector *v) {
   printf("\n");
 }
 
+void print_tex_table(Vector *v) {
+  printf("\\begin{bmatrix}");
+  for (int i = 0; i < v->dim; i++) {
+    printf("%.3lf", ((double *)v->data)[i]);
+    if (i < v->dim - 1) {
+      printf("\\\\");
+    }
+  }
+  printf("\\end{bmatrix}");
+  printf("\n");
+}
+
 void vector_swap_rows(Vector *v, const int i, const int j) {
   double temp = ((double *)v->data)[i];
   ((double *)v->data)[i] = ((double *)v->data)[j];
