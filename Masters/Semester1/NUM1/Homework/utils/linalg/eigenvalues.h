@@ -17,3 +17,4 @@ double **subspace_iteration(const Matrix *A, Matrix *phi_0, double TOL,
 Vector *conjugate_gradient(Matrix *, Vector *, Vector *x0, double TOL,
                            int MAX_ITER);
 double matrix_conjugate_with_vector(Matrix *A, Vector *v);
+Matrix *jacobi_eigenvalue(Matrix *S, double *eigenvalues, double TOL, int MAX_ITER);

@@ -12,7 +12,7 @@
 
 /*
 
-finds the biggest eigenvalue and stores its eigenvector in eigenvector
+Finds the biggest eigenvalue and stores its eigenvector in eigenvector
 
  */
 
@@ -82,7 +82,7 @@ double iterative_power(const Matrix *A, const Vector *x0, const double TOL,
 
 /*
 
-finds the m biggest eigenvalues of A, stored in eigenvalues_out and its
+Finds the m biggest eigenvalues of A, stored in eigenvalues_out and its
 corresponding eigenvectors in eigenvectors_out
 
  */
@@ -147,7 +147,7 @@ void get_m_largest_eigenvalues(const Matrix *A, const Vector *x0,
 
 /*
 
-single iteration for finding smallest eigenvalue. Takes additional parameters
+Single iteration for finding smallest eigenvalue. Takes additional parameters
 for m-iterations for orthogonalization of next eigenvectors.
 
 A is the target matrix.
@@ -155,8 +155,8 @@ x0 is our initial iterating vector.
 TOL max tolerance for stopping algorithm.
 MAX_ITER max iterations available.
 v_i eigenvector for the found eigenvalue.
-prev_vecs list of previously found eigenvectors for next vector.
-orthogonalization found_count counter for previous vectors, to know how many
+Prev_vecs list of previously found eigenvectors for next vector.
+Orthogonalization found_count counter for previous vectors, to know how many
 times we have to orthogonalize.
 
  */
@@ -239,7 +239,7 @@ double inverse_iterative_power(Matrix *A, Vector *x0, double TOL, int MAX_ITER,
 
 /*
 
-finds the m smallest eigenvalues of A, modifies the pointer eigenvales_out and
+Finds the m smallest eigenvalues of A, modifies the pointer eigenvalues_out and
 eigenvectors_out with the corresponding values
 
  */
@@ -280,141 +280,126 @@ void get_m_smallest_eigenvalues(const Matrix *A, const Vector *x0,
   }
 }
 
-/*
-
-returns the index of the maxmimum element in the off-diagonal of row k
-We assume A is symmetric, so we only check off-diagonal elements in 1 direction
-
- */
-
-static uint max_ind(Matrix *A, uint k) {
-  uint n = A->cols;
-  uint m = k + 1;
-  for (uint i = k + 2; i < n; i++) {
-    if (fabs(((double *)A->data)[k * n + i]) >
-        fabs(((double *)A->data)[k * n + m])) {
-      m = i;
-    }
-  }
-  return m;
-}
-
-static void update_jacobi(double *e, int k, bool **changed, int *state,
-                          double t) {
-  double yk = e[k];
-  e[k] = yk + t;
-  if (*changed[k] && yk == e[k]) {
-    *changed[k] = false;
-    (*state)--;
-  } else if (!*changed[k] && yk != e[k]) {
-    *changed[k] = true;
-    (*state)++;
-  }
-}
-
-static void rotate_jacobi(Matrix *A, uint k, uint l, uint i, uint j, double c,
-                          double s) {
-  int n = A->cols;
-  double x =
-      c * ((double *)A->data)[k * n + l] - s * ((double *)A->data)[i * n + j];
-  double y =
-      s * ((double *)A->data)[k * n + l] + c * ((double *)A->data)[i * n + j];
-  ((double *)A->data)[k * n + l] = x;
-  ((double *)A->data)[i * n + j] = y;
-}
-
-/*
-
-returns a matrix with the corresponding eigenvectors to the eigenvalues in the
-Vector eigenvalues
-
- */
-
-Matrix *jacobi_eigenvalue(Matrix *S, double *eigenvalues, int MAX_ITER) {
-  int n = S->rows, i, k, l, m, state;
-  double s, c, t, p, y, d, r;
-
-  int *ind = malloc(n * sizeof(int));
-  bool *changed = malloc(n * sizeof(bool));
-
-  Matrix *E = identity_matrix(n);
-  state = n;
-
-  for (k = 0; k < n; k++) {
-    ind[k] = max_ind(S, k);
-    eigenvalues[k] = ((double *)S->data)[k * n + k];
-    changed[k] = true;
-  }
-  int iter = 0;
-  while (state != 0 || iter < MAX_ITER) {
-    iter++;
-    m = 1;
-    for (k = 1; k < n - 1; k++) {
-      if (fabs(((double *)S->data)[k * n + ind[k]]) >
-          fabs(((double *)S->data)[m * n + ind[m]])) {
-        m = k;
-      }
-    }
-    k = m;
-    l = ind[m];
-    p = ((double *)S->data)[k * n + l];
-    y = (eigenvalues[l] - eigenvalues[k]) / 2;
-    d = fabs(y) + sqrt(p * p + y * y);
-    r = sqrt(p * p + d * d);
-    c = d / r;
-    s = p / r;
-    t = p * p / d;
-    if (y < 0) {
-      s = -s;
-      t = -t;
-    }
-    ((double *)S->data)[k * n + l] = 0.0;
-    update_jacobi(eigenvalues, k, &changed, &state, -t);
-    update_jacobi(eigenvalues, l, &changed, &state, t);
-
-    for (i = 0; i <= k - 1; i++) {
-      rotate_jacobi(S, i, k, i, l, c, s);
-    }
-    for (i = k+1; i <= l - 1; i++) {
-      rotate_jacobi(S, k, i, i, l, c, s);
-    }
-    for (i = l+1; i < n; i++) {
-      rotate_jacobi(S, k, i, l, i, c, s);
-    }
-
-    for (i = 0; i < n; i++) {
-      rotate_jacobi(E, i, k, i, l, c, s);
-    }
-    for (i = 0; i < n; i++) {
-      ind[i] = max_ind(S, i);
-    }
-  }
-  if (iter < MAX_ITER) {
-    return E;
-  } else{
-    fprintf(stderr, "Method failed at %d iterations.\n", k);
+Matrix *jacobi_eigenvalue(Matrix *S, double *eigenvalues, double TOL,
+                          int MAX_ITER) {
+  int n = S->rows;
+  if (n != S->cols) {
+    fprintf(stderr, "Matrix columns do not match rows.\n");
     return NULL;
   }
+  Matrix *A = matrix_create_double(S->rows, S->cols);
+  copy_matrix(A, S);
+
+  // all operations will be reflected on the eigenvalue matrix
+  // can be thought of as the augmented matrix in the
+  // augmented Gaussian elimination
+  Matrix *E = identity_matrix(n);
+
+  int iter;
+  for (iter = 0; iter < MAX_ITER; ++iter) {
+    // find largest off-diagonal element (k,l)
+    double maxval = 0.0;
+    int k = 0, l = 1;
+    double *adata = (double *)A->data;
+    for (int i = 0; i < n; ++i) {
+      for (int j = i + 1; j < n; ++j) {
+        double v = fabs(adata[i * n + j]);
+        if (v > maxval) {
+          maxval = v;
+          k = i;
+          l = j;
+        }
+      }
+    }
+    if (maxval < TOL) {
+      printf("Method converged at %d iterations.\n", iter);
+      break;
+    }
+
+    double a_kk = adata[k * n + k];
+    double a_ll = adata[l * n + l];
+    double p = adata[k * n + l];
+    if (p == 0.0)
+      continue;
+
+    // t = tan(theta)
+    // c = cos(theta)
+    // s = sin(theta)
+    double tau = (a_ll - a_kk) / (2.0 * p);
+    double sign = (tau >= 0.0) ? 1.0 : -1.0;
+    double t = sign / (fabs(tau) + sqrt(1.0 + tau * tau));
+    double c = 1.0 / sqrt(1.0 + t * t);
+    double s = t * c;
+
+    // Update A: for i != k,l update A[i,k], A[i,l] (and symmetric entries)
+    for (int i = 0; i < n; ++i) {
+      if (i == k || i == l)
+        continue;
+      double Aik = adata[i * n + k];
+      double Ail = adata[i * n + l];
+      double Aik_new = c * Aik - s * Ail;
+      double Ail_new = s * Aik + c * Ail;
+      adata[i * n + k] = Aik_new;
+      adata[k * n + i] = Aik_new;
+      adata[i * n + l] = Ail_new;
+      adata[l * n + i] = Ail_new;
+    }
+
+    double a_kk_new = a_kk - t * p;
+    double a_ll_new = a_ll + t * p;
+    adata[k * n + k] = a_kk_new;
+    adata[l * n + l] = a_ll_new;
+    adata[k * n + l] = 0.0;
+    adata[l * n + k] = 0.0;
+
+    // Update eigenvector matrix E (columns k and l)
+    double *edata = (double *)E->data;
+    for (int i = 0; i < n; ++i) {
+      double eik = edata[i * n + k];
+      double eil = edata[i * n + l];
+      edata[i * n + k] = c * eik - s * eil;
+      edata[i * n + l] = s * eik + c * eil;
+    }
+  }
+
+  if (iter == MAX_ITER) {
+    fprintf(stderr, "Method failed after %d iterations.\n", iter);
+    return NULL;
+  }
+
+  double *adata_final = (double *)A->data;
+  for (int i = 0; i < n; ++i)
+    eigenvalues[i] = adata_final[i * n + i];
+
+  matrix_free(A);
+  return E;
 }
 
+/*
+
+A is an nxn matrix
+phi_0 is an nxm matrix, where m is much smaller than m
+This technique reduces the computation needed to calculate the m smallest (or
+biggest) eigenvalues
+
+ */
 double **subspace_iteration(const Matrix *A, Matrix *phi_0, double TOL,
                             int MAX_ITER) {
   Matrix *B = conjugate_m_by_a(A, phi_0);
-  print_matrix(B);
-  int k = 1;
-  return NULL;
-}
+  double *evals = malloc(B->rows * sizeof(double));
+  Matrix *evecs = jacobi_eigenvalue(B, evals, TOL, MAX_ITER);
 
-double matrix_conjugate_with_vector(Matrix *A, Vector *v) {
-  Vector *Av = matrix_times_vector(A, v);
-  double vTAv = dot(v, Av);
-  free_vector(Av);
-  return vTAv;
+  for (int i = 0; i < A->rows; i++) {
+    printf("%lf\n", evals[i]);
+  }
+  print_matrix(B);
+
+  return NULL;
 }
 
 Vector *conjugate_gradient(Matrix *A, Vector *b, Vector *x0, double TOL,
                            int MAX_ITER) {
-  // todo: if x0 = 0, rk = b, skipping Ax0
+  // TODO: if x0 = 0, rk = b, skipping Ax0
   Vector *Ax0 = matrix_times_vector(A, x0);
   Vector *rk = vector_diff(b, Ax0);
   if (l2_norm(rk) < TOL) {
@@ -422,40 +407,47 @@ Vector *conjugate_gradient(Matrix *A, Vector *b, Vector *x0, double TOL,
   }
   free_vector(Ax0);
 
-  Vector *pk = create_vector(rk->dim);
   Vector *xk = create_vector(x0->dim);
   copy_data(xk, x0);
+
+  Vector *pk = create_vector(rk->dim);
   copy_data(pk, rk);
   int k = 0;
 
+  double rr = dot(rk, rk);
+
   while (k < MAX_ITER) {
-    // rk^T rk / pk^T A pk
-    double ak = dot(rk, rk) / matrix_conjugate_with_vector(A, pk);
-    Vector *akpk = vector_scalar_product(pk, ak);
-    vector_sum_inplace(xk, akpk);
     Vector *Apk = matrix_times_vector(A, pk);
-    vector_scalar_product_inplace(Apk, ak);
-    Vector *rk_next = vector_diff(rk, Apk);
-    print_vector(rk_next);
-    if (l2_norm(rk_next) < TOL) {
+    double denominator = dot(pk, Apk);
+
+    // rk^T rk / pk^T A pk
+    double ak = rr / denominator;
+
+    // xk += ak pk
+    vector_axpy_inplace(xk, ak, pk);
+
+    // rk -= ak A pk
+    vector_axpy_inplace(rk, -ak, Apk);
+
+    // rk_next^T rk_next
+    double rr_next = dot(rk, rk);
+    if (sqrt(rr_next) < TOL) {
       printf("Method converged at %d iterations.\n", k);
       free_vector(pk);
       free_vector(rk);
       free_vector(Apk);
-      free_vector(rk_next);
-      free_vector(akpk);
       return xk;
     }
-    double bk = dot(rk_next, rk_next) / dot(rk, rk);
+
+    // rk_next^T rk_next / rk^T rk
+    double bk = rr_next / rr;
+
+    // pk *= bk
     vector_scalar_product_inplace(pk, bk);
-    vector_sum_inplace(pk, rk_next);
 
-    free_vector(akpk);
-    free_vector(Apk);
-
-    copy_data(rk, rk_next);
-
-    free_vector(rk_next);
+    // pk += rk
+    vector_sum_inplace(pk, rk);
+    rr = rr_next;
     k++;
   }
   free_vector(rk);
