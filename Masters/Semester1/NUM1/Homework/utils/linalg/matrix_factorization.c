@@ -5,6 +5,7 @@
 
 #include "matrix.h"
 #include "matrix_factorization.h"
+#include "vector.h"
 
 /*
 
@@ -169,3 +170,77 @@ void crout(const Matrix *A, Matrix *L, Matrix *U, int n) {
     }
   }
 }
+
+/*
+
+The Householder method takes in a symmetric matrix and converts it to a
+tridiagonal matrix
+
+ */
+void householder(Matrix *A) {
+  int n = A->rows;
+  int j, k;
+  double alpha;
+
+  double *adata = (double *)A->data;
+  double *v = calloc(n, sizeof(double));
+  double *u = calloc(n, sizeof(double));
+  double *z = calloc(n, sizeof(double));
+  for (k = 0; k < n - 1; k++) {
+    double q = 0.0;
+    for (j = k + 1; j < n; j++) {
+      // q += a_jk^2
+      q += adata[j * n + k] * adata[j * n + k];
+    }
+    double ak = adata[(k + 1) * n + k];
+    if (ak == 0) {
+      alpha = -sqrt(q);
+    } else {
+      alpha = -sqrt(q) * ak / fabs(ak);
+    }
+    // RSQ = 2r^2
+    double RSQ = alpha * alpha - alpha * ak;
+    v[k + 1] = ak - alpha;
+
+    for (j = k + 2; j < n; j++) {
+      v[j] = adata[j * n + k];
+    }
+
+    for (j = k; j < n; j++) {
+      double uj = 0.0;
+      // sum a_ji * vi
+      for (int i = k + 1; i < n; i++) {
+        uj += adata[j * n + i] * v[i];
+      }
+      u[j] = (1 / RSQ) * uj;
+    }
+
+    double PROD = 0.0;
+    for (j = k + 1; j < n; j++) {
+      PROD += v[j] * u[j];
+    }
+
+    for (j = k; j < n; j++) {
+      z[j] = u[j] - (PROD / 2 * RSQ) * v[j];
+    }
+
+    for (int l = k + 1; l < n - 1; l++) {
+      adata[j * n + l] -= v[l] * z[j] + v[j] * z[l];
+      adata[l * n + j] = adata[j * n + l];
+    }
+    adata[n * n - 1] -= 2 * v[n - 1] * z[n - 1];
+
+    for (j = k + 2; j < n; j++) {
+      adata[k * n + j] = adata[j * n + k] = 0;
+    }
+
+    adata[(k + 1) * n + k] -= v[k + 1] * z[k];
+
+    adata[k * n + k + 1] = adata[(k + 1) * n + k];
+  }
+  free(u);
+  free(v);
+  free(z);
+}
+
+void QR_factorization(const Matrix *A, Matrix *Q, Matrix *R) {}
