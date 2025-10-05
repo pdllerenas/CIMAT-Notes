@@ -22,14 +22,14 @@ Matrix *matrix_product(const Matrix *A, const Matrix *B) {
   Matrix *P = matrix_create_double(A->rows, B->cols);
   double sum;
 
-  for (int i = 0; i < A->rows; i++) {
-    for (int j = 0; j < B->cols; j++) {
+  for (int i = 0; i < P->rows; i++) {
+    for (int j = 0; j < P->cols; j++) {
       sum = 0.0;
       for (int k = 0; k < A->cols; k++) {
-        sum += ((double *)A->data)[i * A->rows + k] *
-               ((double *)B->data)[k * B->rows + j];
+        sum += ((double *)A->data)[i * A->cols + k] *
+               ((double *)B->data)[k * B->cols + j];
       }
-      ((double *)P->data)[i * A->rows + j] = sum;
+      ((double *)P->data)[i * P->cols + j] = sum;
     }
   }
   return P;
@@ -189,7 +189,7 @@ performs the operation A^T M A
  */
 Matrix *conjugate_m_by_a(const Matrix *M, const Matrix *A) {
   // A^T->cols = A->rows, so new size is A->rows * A->rows
-  int n = A->rows;
+  int n = M->rows;
   int m = A->cols;
   // we first do A^T times M, then times A
   Matrix *R1 = matrix_create_double(m, n);
@@ -197,9 +197,9 @@ Matrix *conjugate_m_by_a(const Matrix *M, const Matrix *A) {
     for (int j = 0; j < n; j++) {
       double sum = 0.0;
       for (int k = 0; k < n; k++) {
-        sum += ((double *)A->data)[i * n + k] * ((double *)M->data)[k * n + j];
+        sum += ((double *)A->data)[k * m + i] * ((double *)M->data)[k * m + j];
       }
-      ((double *)R1->data)[i * n + j] = sum;
+      ((double *)R1->data)[i * m + j] = sum;
     }
   }
   Matrix *R2 = matrix_create_double(n, n);
@@ -208,11 +208,21 @@ Matrix *conjugate_m_by_a(const Matrix *M, const Matrix *A) {
     for (int j = 0; j < m; j++) {
       double sum = 0.0;
       for (int k = 0; k < n; k++) {
-        sum += ((double *)R1->data)[i * n + k] * ((double *)A->data)[k * n + j];
+        sum += ((double *)R1->data)[i * m + k] * ((double *)A->data)[k * m + j];
       }
-      ((double *)R2->data)[i * n + j] = sum;
+      ((double *)R2->data)[i * m + j] = sum;
     }
   }
   matrix_free(R1);
   return R2;
+}
+
+void swap_matrix_cols(Matrix *A, int c1, int c2) {
+  int n = A->rows;
+  int m = A->cols;
+  for (int i = 0; i < n; i++) {
+    double temp = ((double *)A->data)[i * m + c1];
+    ((double *)A->data)[i * m + c1] = ((double *)A->data)[i * m + c2] ;
+    ((double *)A->data)[i * m + c2] = temp;
+  }
 }
