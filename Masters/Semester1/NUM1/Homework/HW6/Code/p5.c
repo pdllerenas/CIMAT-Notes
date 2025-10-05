@@ -15,7 +15,7 @@ int main(int argc, char *argv[])
   Vector *x0 = load_vector_from_txt(argv[3]);
   
   double s = matrix_conjugate_with_vector(A, x0);
-  printf("%lf\n", s);
 
-  Vector *x = conjugate_gradient(A, b, x0, 1e-2, 100);
+  Vector *x = conjugate_gradient(A, b, x0, 1e-6, 100);
+  print_tex_table(x);
 }
