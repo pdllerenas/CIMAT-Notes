@@ -9,6 +9,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 /*
 
@@ -287,12 +288,9 @@ Matrix *jacobi_eigenvalue(Matrix *S, double *eigenvalues, double TOL,
     fprintf(stderr, "Matrix columns do not match rows.\n");
     return NULL;
   }
-  Matrix *A = matrix_create_double(S->rows, S->cols);
-  copy_matrix(A, S);
+  Matrix *A = matrix_deep_copy(S);
 
-  // all operations will be reflected on the eigenvalue matrix
-  // can be thought of as the augmented matrix in the
-  // augmented Gaussian elimination
+  // eigenvector matrix, each column represents an eigenvector
   Matrix *E = identity_matrix(n);
 
   int iter;
@@ -301,8 +299,8 @@ Matrix *jacobi_eigenvalue(Matrix *S, double *eigenvalues, double TOL,
     double maxval = 0.0;
     int k = 0, l = 1;
     double *adata = (double *)A->data;
-    for (int i = 0; i < n; ++i) {
-      for (int j = i + 1; j < n; ++j) {
+    for (int i = 0; i < n; i++) {
+      for (int j = i + 1; j < n; j++) {
         double v = fabs(adata[i * n + j]);
         if (v > maxval) {
           maxval = v;
@@ -325,14 +323,14 @@ Matrix *jacobi_eigenvalue(Matrix *S, double *eigenvalues, double TOL,
     // t = tan(theta)
     // c = cos(theta)
     // s = sin(theta)
-    double tau = (a_ll - a_kk) / (2.0 * p);
-    double sign = (tau >= 0.0) ? 1.0 : -1.0;
-    double t = sign / (fabs(tau) + sqrt(1.0 + tau * tau));
+    double theta = (a_ll - a_kk) / (2.0 * p);
+    double sign = (theta >= 0.0) ? 1.0 : -1.0;
+    double t = sign / (fabs(theta) + sqrt(1.0 + theta * theta));
     double c = 1.0 / sqrt(1.0 + t * t);
     double s = t * c;
 
     // Update A: for i != k,l update A[i,k], A[i,l] (and symmetric entries)
-    for (int i = 0; i < n; ++i) {
+    for (int i = 0; i < n; i++) {
       if (i == k || i == l)
         continue;
       double Aik = adata[i * n + k];
@@ -354,7 +352,7 @@ Matrix *jacobi_eigenvalue(Matrix *S, double *eigenvalues, double TOL,
 
     // Update eigenvector matrix E (columns k and l)
     double *edata = (double *)E->data;
-    for (int i = 0; i < n; ++i) {
+    for (int i = 0; i < n; i++) {
       double eik = edata[i * n + k];
       double eil = edata[i * n + l];
       edata[i * n + k] = c * eik - s * eil;
@@ -368,8 +366,27 @@ Matrix *jacobi_eigenvalue(Matrix *S, double *eigenvalues, double TOL,
   }
 
   double *adata_final = (double *)A->data;
-  for (int i = 0; i < n; ++i)
+  for (int i = 0; i < n; i++)
     eigenvalues[i] = adata_final[i * n + i];
+
+  // sort eigenvalues and eigenvectors
+  for (int g = 0; g < n - 1; g++) {
+    int w = g;
+    for (int h = g+1; h < n; h++) {
+      if (fabs(eigenvalues[h]) > fabs(eigenvalues[w])) {
+        w = h;
+      }
+    }
+    if (w != g) {
+      // swap eigenvalues
+      double temp_val = eigenvalues[w];
+      eigenvalues[w] = eigenvalues[g];
+      eigenvalues[g] = temp_val;
+      
+      // swap eigenvectors
+      swap_matrix_cols(E, w, g);
+    }
+  }
 
   matrix_free(A);
   return E;
@@ -383,76 +400,76 @@ This technique reduces the computation needed to calculate the m smallest (or
 biggest) eigenvalues
 
  */
-double **subspace_iteration(const Matrix *A, Matrix *phi_0, double TOL,
-                            int MAX_ITER) {
-  Matrix *B = conjugate_m_by_a(A, phi_0);
-  double *evals = malloc(B->rows * sizeof(double));
-  Matrix *evecs = jacobi_eigenvalue(B, evals, TOL, MAX_ITER);
+double *subspace_iteration(const Matrix *A, Matrix *Phi_0, double TOL,
+                           int MAX_ITER, Matrix **eigenvectors) {
+  int k = 1;
+  int m = Phi_0->cols;
 
-  for (int i = 0; i < A->rows; i++) {
-    printf("%lf\n", evals[i]);
-  }
-  print_matrix(B);
+  double *eigenvals = malloc(m * sizeof(double));
+  double *prev_eigenvals = malloc(m * sizeof(double));
 
-  return NULL;
-}
-
-Vector *conjugate_gradient(Matrix *A, Vector *b, Vector *x0, double TOL,
-                           int MAX_ITER) {
-  // TODO: if x0 = 0, rk = b, skipping Ax0
-  Vector *Ax0 = matrix_times_vector(A, x0);
-  Vector *rk = vector_diff(b, Ax0);
-  if (l2_norm(rk) < TOL) {
-    return x0;
-  }
-  free_vector(Ax0);
-
-  Vector *xk = create_vector(x0->dim);
-  copy_data(xk, x0);
-
-  Vector *pk = create_vector(rk->dim);
-  copy_data(pk, rk);
-  int k = 0;
-
-  double rr = dot(rk, rk);
+  Matrix *Phi = matrix_deep_copy(Phi_0);
+  print_matrix(Phi);
 
   while (k < MAX_ITER) {
-    Vector *Apk = matrix_times_vector(A, pk);
-    double denominator = dot(pk, Apk);
+    Matrix *Z = matrix_product(A, Phi);
+    
 
-    // rk^T rk / pk^T A pk
-    double ak = rr / denominator;
+    // QR decomposition of APhi
+    Matrix *Q, *R;
+    QR_factorization(Z, &Q, &R);
+    matrix_free(Z);
+    matrix_free(R);
 
-    // xk += ak pk
-    vector_axpy_inplace(xk, ak, pk);
+    // B = Q^T A Q
+    Matrix *B = conjugate_m_by_a(A, Q);
 
-    // rk -= ak A pk
-    vector_axpy_inplace(rk, -ak, Apk);
-
-    // rk_next^T rk_next
-    double rr_next = dot(rk, rk);
-    if (sqrt(rr_next) < TOL) {
-      printf("Method converged at %d iterations.\n", k);
-      free_vector(pk);
-      free_vector(rk);
-      free_vector(Apk);
-      return xk;
+    if (k > 1) {
+      memcpy(prev_eigenvals, eigenvals, m * sizeof(double));
     }
 
-    // rk_next^T rk_next / rk^T rk
-    double bk = rr_next / rr;
+    // Solve for mxm matrix
+    Matrix *U = jacobi_eigenvalue(B, eigenvals, TOL, MAX_ITER);
+    matrix_free(B);
 
-    // pk *= bk
-    vector_scalar_product_inplace(pk, bk);
+    Matrix *X = matrix_product(Q, U);
+    matrix_free(U);
 
-    // pk += rk
-    vector_sum_inplace(pk, rk);
-    rr = rr_next;
+    // convergence when previous eigenvalues have not changed much
+    bool converged = true;
+
+    // we can only compare previous eigenvalues if at least one iteration was
+    // made (otherwise we cant compare anything)
+    if (k > 1) {
+      for (int i = 0; i < m; i++) {
+        if (fabs(eigenvals[i] - prev_eigenvals[i]) > TOL) {
+          converged = false;
+          break;
+        }
+      }
+    } else {
+      converged = false;
+    }
+
+    if (converged) {
+      printf("Subspace iteration converged at %d iterations\n", k);
+      *eigenvectors = X;
+      matrix_free(Phi);
+      free(prev_eigenvals);
+      matrix_free(Q);
+      return eigenvals;
+    }
+
+    matrix_free(Phi);
+    Phi = Q;
+    Q = NULL;
+    matrix_free(X);
+
     k++;
   }
-  free_vector(rk);
-  free_vector(pk);
-  free_vector(xk);
-  fprintf(stderr, "Method failed after %d iterations\n", k);
+  fprintf(stderr, "Method failed at %d iterations\n", k);
+  matrix_free(Phi);
+  free(eigenvals);
+  free(prev_eigenvals);
   return NULL;
 }
