@@ -6,3 +6,4 @@ void doolittle(const Matrix *A, Matrix *L, Matrix *U, int n);
 void cholesky(const Matrix *A, Matrix *L, int n);
 void cholesky_symmetric_banded(const Matrix *A, Matrix *L);
 void householder(Matrix *A);
+void QR_factorization(const Matrix *A, Matrix **Q, Matrix **R);
