@@ -1,8 +1,8 @@
 #include "linear_system.h"
 #include "matrix.h"
-#include "matrix_factorization.h"
 #include "matrix_operations.h"
 #include "vector.h"
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -282,11 +282,71 @@ Vector *cholesky_solve(Matrix *L, Vector *b) {
   return x;
 }
 
-Vector *LU_solve(Matrix* L, Matrix *U, Vector *b) {
+Vector *LU_solve(Matrix *L, Matrix *U, Vector *b) {
   Vector *y = solve_lower(L, b);
 
   Vector *x = solve_upper(U, y);
   free_vector(y);
 
   return x;
+}
+
+Vector *conjugate_gradient(Matrix *A, Vector *b, Vector *x0, double TOL,
+                           int MAX_ITER) {
+  // TODO: if x0 = 0, rk = b, skipping Ax0
+  Vector *Ax0 = matrix_times_vector(A, x0);
+  Vector *rk = vector_diff(b, Ax0);
+  if (l2_norm(rk) < TOL) {
+    return x0;
+  }
+  free_vector(Ax0);
+
+  Vector *xk = create_vector(x0->dim);
+  copy_data(xk, x0);
+
+  Vector *pk = create_vector(rk->dim);
+  copy_data(pk, rk);
+  int k = 0;
+
+  double rr = dot(rk, rk);
+
+  while (k < MAX_ITER) {
+    Vector *Apk = matrix_times_vector(A, pk);
+    double denominator = dot(pk, Apk);
+
+    // rk^T rk / pk^T A pk
+    double ak = rr / denominator;
+
+    // xk += ak pk
+    vector_axpy_inplace(xk, ak, pk);
+
+    // rk -= ak A pk
+    vector_axpy_inplace(rk, -ak, Apk);
+
+    // rk_next^T rk_next
+    double rr_next = dot(rk, rk);
+    if (sqrt(rr_next) < TOL) {
+      printf("Method converged at %d iterations.\n", k);
+      free_vector(pk);
+      free_vector(rk);
+      free_vector(Apk);
+      return xk;
+    }
+
+    // rk_next^T rk_next / rk^T rk
+    double bk = rr_next / rr;
+
+    // pk *= bk
+    vector_scalar_product_inplace(pk, bk);
+
+    // pk += rk
+    vector_sum_inplace(pk, rk);
+    rr = rr_next;
+    k++;
+  }
+  free_vector(rk);
+  free_vector(pk);
+  free_vector(xk);
+  fprintf(stderr, "Method failed after %d iterations\n", k);
+  return NULL;
 }
