@@ -2,6 +2,7 @@
 #include <stdlib.h>
 
 #include "matrix.h"
+#include "vector.h"
 
 #define DEFINE_MATRIX_FUNCTIONS(TYPE, SUFFIX)                                  \
   Matrix *matrix_create_##SUFFIX(int rows, int cols) {                         \
@@ -86,7 +87,7 @@ void copy_matrix(Matrix *m1, const Matrix *m2) {
     return;
   }
   int cols = m2->cols;
-  for (int i = 0; i < m2->cols; i++) {
+  for (int i = 0; i < m2->rows; i++) {
     for (int j = 0; j < m2->cols; j++) {
       ((double *)m1->data)[i * cols + j] = ((double *)m2->data)[i * cols + j];
     }
@@ -114,4 +115,59 @@ Matrix *fill_diagonal_matrix(double v, int n) {
     ((double *)I->data)[i * n + i] = v;
   }
   return I;
+}
+
+Matrix *matrix_minor(const Matrix *A, int d) {
+  int c = A->cols;
+  Matrix *m = matrix_create_double(A->rows, A->cols);
+  double *mdata = (double *)m->data;
+  double *adata = (double *)A->data;
+
+  for (int i = 0; i < d; i++) {
+    mdata[i * c + i] = 1;
+  }
+  for (int i = d; i < A->rows; i++) {
+    for (int j = d; j < A->cols; j++) {
+      mdata[i * c + j] = adata[i * c + j];
+    }
+  }
+  return m;
+}
+
+/* take c-th column of m, put in v */
+Vector *mcol(Matrix *m, int c) {
+  Vector *v = create_vector(m->rows);
+  if (!v) {
+    return NULL;
+  }
+  double *mdata = (double *)m->data;
+  double *vdata = (double *)v->data;
+
+  for (int i = 0; i < m->rows; i++) {
+    vdata[i] = mdata[i * m->cols + c];
+  }
+
+  return v;
+}
+
+/* m = I - v v^T */
+Matrix *vmul(Vector *v) {
+  int n = v->dim;
+  Matrix *x = matrix_create_double(n, n);
+  double *xdata = (double *)x->data;
+  double *vdata = (double *)v->data;
+  for (int i = 0; i < n; i++)
+    for (int j = 0; j < n; j++)
+      xdata[i * n + j] = -2 * vdata[i] * vdata[j];
+  for (int i = 0; i < n; i++)
+    xdata[i * n + i] += 1;
+
+  return x;
+}
+
+Matrix *matrix_deep_copy(const Matrix *A) {
+  Matrix *cpy = matrix_create_double(A->rows, A->cols);
+  copy_matrix(cpy, A);
+
+  return cpy;
 }

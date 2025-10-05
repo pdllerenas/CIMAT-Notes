@@ -1,5 +1,6 @@
 #pragma once
 
+#include "vector.h"
 #include <stddef.h>
 
 typedef enum {
@@ -33,6 +34,10 @@ void matrix_set_float(Matrix *, int, int, float);
 */
 Matrix *identity_matrix(int n);
 Matrix *fill_diagonal_matrix(double v, int n);
+Matrix *matrix_minor(const Matrix *A, int d);
+Vector* mcol(Matrix *m, int c);
+Matrix *vmul(Vector *v);
+Matrix *matrix_deep_copy(const Matrix *A);
 
 void copy_matrix(Matrix *, const Matrix *);
 void matrix_free(Matrix *);
