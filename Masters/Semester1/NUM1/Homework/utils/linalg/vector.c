@@ -277,3 +277,26 @@ void vector_axpy_inplace(Vector *x, double alpha, Vector *prev) {
     ((double *)x->data)[i] += alpha * ((double *)prev->data)[i];
   }
 }
+
+void vmadd(Vector *a, Vector *b, Vector *c, double s) {
+  if (a->dim != b->dim) {
+    fprintf(stderr, "vmadd error: dimension mismatch.\n");
+    return;
+  }
+  double *cdata = (double *)c->data;
+  double *adata = (double *)a->data;
+  double *bdata = (double *)b->data;
+  for (int i = 0; i < c->dim; i++) {
+    cdata[i] = adata[i] + s * bdata[i];
+  }
+}
+
+/* y = x / d */
+Vector *vdiv(Vector *x, double d) {
+  double *xdata = (double *)x->data;
+  Vector *y = create_vector(x->dim);
+  double *ydata = (double *)y->data;
+  for (int i = 0; i < x->dim; i++)
+    ydata[i] = xdata[i] / d;
+  return y;
+}
