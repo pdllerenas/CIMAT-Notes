@@ -1,6 +1,8 @@
 #include "matrix.h"
 #include "vector.h"
 
+#include <stdbool.h>
+
 double iterative_power(const Matrix *, const Vector *, const double, const int,
                        Vector **);
 void get_m_largest_eigenvalues(const Matrix *, const Vector *, unsigned int,
@@ -12,9 +14,9 @@ double inverse_iterative_power(Matrix *A, Vector *x0, double TOL, int MAX_ITER,
                                int found_count);
 
 double *subspace_iteration(const Matrix *A, Matrix *phi_0, double TOL,
-                            int MAX_ITER, Matrix **eigenvectors);
+                            int MAX_ITER, Matrix **eigenvectors, bool largest);
 
 Vector *conjugate_gradient(Matrix *, Vector *, Vector *x0, double TOL,
                            int MAX_ITER);
 double matrix_conjugate_with_vector(Matrix *A, Vector *v);
-Matrix *jacobi_eigenvalue(Matrix *S, double *eigenvalues, double TOL, int MAX_ITER);
+Matrix *jacobi_eigenvalue(Matrix *S, double *eigenvalues, double TOL, int MAX_ITER, int m, bool largest);
