@@ -53,9 +53,9 @@ Matrix *matrix_sum(const Matrix *A, const Matrix *B) {
   }
   for (int i = 0; i < S->rows; i++) {
     for (int j = 0; j < S->cols; j++) {
-      ((double *)S->data)[i * S->rows + j] =
-          ((double *)A->data)[i * A->rows + j] +
-          ((double *)B->data)[i * B->rows + j];
+      ((double *)S->data)[i * S->cols + j] =
+          ((double *)A->data)[i * A->cols + j] +
+          ((double *)B->data)[i * B->cols + j];
     }
   }
   return S;
@@ -79,9 +79,9 @@ Matrix *matrix_difference(const Matrix *A, const Matrix *B) {
   }
   for (int i = 0; i < D->rows; i++) {
     for (int j = 0; j < D->cols; j++) {
-      ((double *)D->data)[i * D->rows + j] =
-          ((double *)A->data)[i * A->rows + j] -
-          ((double *)B->data)[i * B->rows + j];
+      ((double *)D->data)[i * D->cols + j] =
+          ((double *)A->data)[i * A->cols + j] -
+          ((double *)B->data)[i * B->cols + j];
     }
   }
   return D;
@@ -97,8 +97,8 @@ Matrix *matrix_transpose(const Matrix *A) {
   Matrix *T = matrix_create_double(A->cols, A->rows);
   for (int i = 0; i < T->rows; i++) {
     for (int j = 0; j < T->cols; j++) {
-      ((double *)T->data)[i * T->rows + j] =
-          ((double *)A->data)[j * A->rows + i];
+      ((double *)T->data)[i * T->cols + j] =
+          ((double *)A->data)[j * A->cols + i];
     }
   }
   return T;
@@ -118,8 +118,8 @@ int matrix_compare(const Matrix *A, const Matrix *B, double TOL) {
   }
   for (int i = 0; i < A->rows; i++) {
     for (int j = 0; j < A->cols; j++) {
-      if (fabs(((double *)A->data)[i * A->rows + j] -
-               ((double *)B->data)[i * B->rows + j]) > TOL) {
+      if (fabs(((double *)A->data)[i * A->cols + j] -
+               ((double *)B->data)[i * B->cols + j]) > TOL) {
         return 1;
       }
     }
@@ -160,61 +160,33 @@ void matrix_swap_rows(Matrix *M, const int i, const int j) {
   }
 }
 
-Matrix *deflation_term(const Vector *v, double lambda_v) {
+Matrix *deflation_term(const Vector *v, double lambda) {
   int n = v->dim;
-  int k = vector_arg_max(v);
-
-  double v_k = ((double *)v->data)[k];
-  if (fabs(v_k) < 1e-9) {
-    fprintf(stderr, "Error: vector near zero. Method fails.\n");
-  }
-  double w_k = 1.0 / v_k;
-
   Matrix *D = matrix_create_double(n, n);
-  if (!D) {
+  if (!D)
     return NULL;
-  }
+
+  double *v_data = (double *)v->data;
 
   for (int i = 0; i < n; i++) {
-    double D_ik = lambda_v * ((double *)v->data)[i] * w_k;
-    ((double *)D->data)[i * n + k] = D_ik;
+    for (int j = 0; j < n; j++) {
+      ((double *)D->data)[i * D->cols + j] = lambda * v_data[i] * v_data[j];
+    }
   }
   return D;
 }
-
 /*
 
 performs the operation A^T M A
 
  */
-Matrix *conjugate_m_by_a(const Matrix *M, const Matrix *A) {
-  // A^T->cols = A->rows, so new size is A->rows * A->rows
-  int n = M->rows;
-  int m = A->cols;
-  // we first do A^T times M, then times A
-  Matrix *R1 = matrix_create_double(m, n);
-  for (int i = 0; i < m; i++) {
-    for (int j = 0; j < n; j++) {
-      double sum = 0.0;
-      for (int k = 0; k < n; k++) {
-        sum += ((double *)A->data)[k * m + i] * ((double *)M->data)[k * m + j];
-      }
-      ((double *)R1->data)[i * m + j] = sum;
-    }
-  }
-  Matrix *R2 = matrix_create_double(n, n);
-
-  for (int i = 0; i < m; i++) {
-    for (int j = 0; j < m; j++) {
-      double sum = 0.0;
-      for (int k = 0; k < n; k++) {
-        sum += ((double *)R1->data)[i * m + k] * ((double *)A->data)[k * m + j];
-      }
-      ((double *)R2->data)[i * m + j] = sum;
-    }
-  }
-  matrix_free(R1);
-  return R2;
+Matrix *conjugate_m_by_a(const Matrix *A, Matrix *Q) {
+  Matrix *Qt = matrix_transpose(Q);     // n x m -> m x n
+  Matrix *temp = matrix_product(Qt, A); // m x n * n x n -> m x n
+  Matrix *B = matrix_product(temp, Q);  // m x n * n x m -> m x m
+  matrix_free(Qt);
+  matrix_free(temp);
+  return B;
 }
 
 void swap_matrix_cols(Matrix *A, int c1, int c2) {
@@ -222,7 +194,7 @@ void swap_matrix_cols(Matrix *A, int c1, int c2) {
   int m = A->cols;
   for (int i = 0; i < n; i++) {
     double temp = ((double *)A->data)[i * m + c1];
-    ((double *)A->data)[i * m + c1] = ((double *)A->data)[i * m + c2] ;
+    ((double *)A->data)[i * m + c1] = ((double *)A->data)[i * m + c2];
     ((double *)A->data)[i * m + c2] = temp;
   }
 }
