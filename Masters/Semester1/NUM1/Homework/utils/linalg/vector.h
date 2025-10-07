@@ -5,7 +5,7 @@
 typedef struct {
   int dim;
   size_t type;
-  void *data;
+  double *data;
 } Vector;
 
 Vector *create_vector(int);

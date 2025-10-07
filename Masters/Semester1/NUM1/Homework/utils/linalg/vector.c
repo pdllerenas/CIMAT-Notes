@@ -244,7 +244,7 @@ void vector_scalar_product_inplace(Vector *v, const double k) {
 Vector *vector_scalar_product(const Vector *v, const double k) {
   Vector *kv = create_vector(v->dim);
   for (int i = 0; i < v->dim; i++) {
-    ((double *)kv->data)[i] = ((double *)v->data)[i] = k;
+    ((double *)kv->data)[i] = ((double *)v->data)[i] * k;
   }
   return kv;
 }
@@ -260,7 +260,7 @@ double max_norm(const Vector *v) {
 }
 
 double l2_norm(const Vector *v) {
-  double norm = 0;
+  double norm = 0.0;
   for (int i = 0; i < v->dim; i++) {
     norm += ((double *)v->data)[i] * ((double *)v->data)[i];
   }
