@@ -11,6 +11,7 @@ HuffmanNode *hn_create_node(unsigned char c, int freq) {
   }
   hn->c = c;
   hn->freq = freq;
+  hn->left = hn->right = NULL;
   return hn;
 }
 
@@ -108,7 +109,6 @@ HuffmanNode *peek(PriorityQueue *pq) {
 }
 
 void pq_print_queue(PriorityQueue *pq) {
-  printf("char | freq\n");
   for (int i = 0; i < pq->size; i++) {
     printf("%d, ", pq->items[i]->freq);
   }

@@ -4,6 +4,7 @@
 typedef struct HuffmanNode{
   int freq;
   unsigned char c;
+  struct HuffmanNode *left, *right;
 } HuffmanNode;
 
 typedef struct {
