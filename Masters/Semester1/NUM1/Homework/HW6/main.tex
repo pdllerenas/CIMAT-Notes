@@ -1,0 +1,1336 @@
+\documentclass{article}
+\newcommand\numberthis{\addtocounter{equation}{1}\tag{\theequation}}
+\def\MinimumPaperHeight{210mm}
+\usepackage{geometry}
+\geometry{paperwidth=\MinimumPaperHeight,paperheight=\maxdimen,margin=1in}
+\usepackage{etoolbox}
+\usepackage{environ}
+\NewEnviron{MyBox}{
+    \setbox0=\vbox{\BODY}%
+}{%
+    \dimen0=\dp0%
+    \pdfpageheight=\dimexpr\ht0+2cm\relax%
+    \ifdim\pdfpageheight<\MinimumPaperHeight \pdfpageheight=\MinimumPaperHeight \fi%
+    \unvbox0\kern-\dimen0%
+}
+\usepackage{etoolbox}
+
+\AtBeginDocument{
+  \setbox0=\vbox\bgroup
+  \preto\enddocument{\egroup
+    \dimen0=\dp0
+    \pdfpageheight=\dimexpr\ht0+3.5cm\relax
+    \ifdim\pdfpageheight<\MinimumPaperHeight
+      \pdfpageheight=\MinimumPaperHeight
+    \fi
+    \unvbox0\kern-\dimen0 }
+}
+\usepackage[yyyymmdd]{datetime}
+\usepackage[inline,shortlabels]{enumitem}
+\usepackage{mathtools}
+\usepackage[dvipsnames]{xcolor}
+\usepackage[framemethod=TikZ]{mdframed}
+\usepackage{amsfonts}
+\usepackage{float}
+\usepackage{amsthm}
+\usepackage{multirow}
+\usepackage{amsmath}
+\newtheoremstyle{problemstyle}{3pt}{3pt}{\normalfont}{}{\bfseries}{\normalfont\bfseries:}{.5em}{}
+\theoremstyle{problemstyle}
+\newmdtheoremenv[
+  linewidth=1pt,
+  linecolor=RoyalBlue,
+  backgroundcolor=RoyalBlue!10,
+  roundcorner=5pt,
+  innertopmargin=6pt,
+  innerbottommargin=6pt,
+  innerleftmargin=6pt,
+  innerrightmargin=6pt,
+  nobreak=true
+]{problem}{Problem}
+
+% Example
+\newmdtheoremenv[
+  linewidth=1pt,
+  linecolor=ForestGreen,
+  backgroundcolor=ForestGreen!10,
+  roundcorner=5pt,
+  nobreak=true
+]{example}{Example}
+
+% Theorem
+\newmdtheoremenv[
+  linewidth=1pt,
+  linecolor=BrickRed,
+  backgroundcolor=BrickRed!10,
+  roundcorner=5pt,
+  nobreak=true
+]{theorem}{Theorem}
+
+% Remark
+\newmdtheoremenv[
+  linewidth=1pt,
+  linecolor=Goldenrod,
+  backgroundcolor=Goldenrod!10,
+  roundcorner=5pt,
+  nobreak=true
+]{remark}{Remark}
+
+% Solution
+\newenvironment{solution}{%
+  \begin{mdframed}[linewidth=0.8pt,linecolor=Gray,backgroundcolor=Gray!5,roundcorner=5pt]%
+  \noindent\textbf{Solution.}%
+}{%
+\hfill $ \qed $ 
+  \end{mdframed}%
+}
+
+% Make header with name and date etc.
+\usepackage{fancyhdr}
+\lhead{Pedro D. Llerenas\\An\'alisis de Datos I}
+\rhead{\today\\Tarea IV}
+\thispagestyle{fancy}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\setlength{\parindent}{0pt} % Don't indent new paragraphs
+\setlength{\headheight}{24pt} 
+
+\newcommand{\Z}{\mathbb Z}
+\newcommand{\Q}{\mathbb Q}
+\newcommand{\R}{\mathbb R}
+\newcommand{\C}{\mathbb C}
+\newcommand{\N}{\mathbb N}
+\newcommand{\abs}[1]{\lvert #1 \rvert}
+\DeclareMathOperator{\Var}{\mathbf{Var}}
+\DeclareMathOperator{\E}{\mathbf{E}}
+
+\begin{document}
+%begin problem 1
+\begin{problem}
+Desarrollar un programa que calcule los $ m $ valores propios y vectores
+propios más grandes para matrices de tama\~no $ n $ mediante el
+\textbf{m\'etodo de la potencia. (2 puntos)}
+\end{problem}
+%end problem 1
+
+%begin solution 1
+\begin{solution}
+	El c\'odigo para resolver este problema es el mismo que se utiliz\'o en la
+	tarea pasada. Ahora, adicionalmente presentaremos los vectores propios que se
+	consiguen en el proceso del m\'etodo.
+	\textbf{Ejemplos:}
+	\begin{enumerate}
+		\item \textbf{Eigen\_3x3.txt}
+		      \begin{align*}
+			      \begin{bmatrix}
+				      5.0    & -1.778 & 0.0    \\
+				      -1.778 & 9.0    & -1.778 \\
+				      0.0    & -1.778 & 10.0
+			      \end{bmatrix}
+		      \end{align*}
+		      Como vector inicial, usaremos $ \mathbf{x}_0^i = 3^{-1/2} $ para $
+			      1\leq i \leq 3 $.
+		      Ejecutando nuestro programa con
+		      \begin{center}
+			      \texttt{make run-p1
+				      ARGS="t5a/Eigen\_3x3.txt t5a/x0\_3.txt 3 1e-12 10000 c\_eigenvalues.txt c\_eigenvectors.txt"},
+		      \end{center}
+		      obtenemos los 3 eigenvalores m\'as grandes (en este caso, todos).
+		      Para verificar, usamos \texttt{numpy}. Corremos el programa de
+		      \texttt{python} con
+		      \begin{center}
+			      \texttt{python3 p1\textunderscore verify.py t5a/Eigen\textunderscore3x3.txt 3 1}
+		      \end{center}
+		      \begin{table}[H]
+			      \begin{center}
+				      \begin{tabular}{|c|c|}
+					      \multicolumn{2}{c}{Eigenvectores}               \\
+					      \hline
+					      Numpy                   & M. de Potencia        \\
+					      \hline
+					      \rule{0pt}{1.5em}
+					      $ \begin{bmatrix}
+							        0.175 & -0.644 & 0.745
+						        \end{bmatrix} $ &
+					      $ \begin{bmatrix}
+							        0.175 & -0.644 & 0.745
+						        \end{bmatrix} $                        \\
+					      [0.5em]
+					      \hline
+					      \rule{0pt}{1.5em}
+					      $ \begin{bmatrix}
+							        -0.365 & 0.660 & 0.656
+						        \end{bmatrix} $ & $ \begin{bmatrix}
+							                            0.365 & -0.660 & -0.656
+						                            \end{bmatrix} $   \\
+					      [0.5em]
+					      \hline
+					      \rule{0pt}{1.5em}
+					      $ \begin{bmatrix}
+							        0.914 & 0.386 & 0.119
+						        \end{bmatrix} $  & $ \begin{bmatrix}
+							                             -0.914 & -0.386 & -0.119
+						                             \end{bmatrix} $ \\
+					      [0.5em]
+					      \hline
+				      \end{tabular}
+
+			      \end{center}
+			      \caption{Comparaci\'on de resultados de Eigen\_3x3.txt}\label{tab:aevecs3x3}
+		      \end{table}
+
+		      \begin{table}[H]
+			      \begin{center}
+				      \begin{tabular}{|c|c|}
+					      \multicolumn{2}{c}{Eigenvectores} \\
+					      \hline
+					      Numpy     & M. de Potencia        \\
+					      \hline
+					      \rule{0pt}{1.5em}
+					      11.538405 & 11.538403             \\
+					      [0.5em]
+					      \hline
+					      \rule{0pt}{1.5em}
+					      8.213809  & 8.213811              \\
+					      [0.5em]
+					      \hline
+					      \rule{0pt}{1.5em}
+					      4.247786  & 4.247786              \\
+					      [0.5em]
+					      \hline
+				      \end{tabular}
+			      \end{center}
+			      \caption{Comparaci\'on de eigenvalores de Eigen\_3x3.txt}\label{tab:evals3x3}
+		      \end{table}
+
+		\item \textbf{Eigen\_5x5.txt}
+		      \begin{align*}
+			      \begin{bmatrix}
+				      0.2 & 0.1 & 1  & 1 & 0   \\
+				      0.1 & 4   & -1 & 1 & -1  \\
+				      1   & -1  & 60 & 0 & -2  \\
+				      1   & 1   & 0  & 8 & 4   \\
+				      0   & -1  & -2 & 4 & 700
+			      \end{bmatrix}
+		      \end{align*}
+		      Como vector inicial, usaremos $ \mathbf{x}_0^i = 5^{-1/2}$.
+		      Ejecutando nuestro programa con
+		      \begin{center}
+			      \texttt{make run-p1
+				      ARGS="t5a/Eigen\_5x5.txt t5a/x0\_5.txt 3 1e-12 10000 c\_eigenvalues.txt
+				      c\_eigenvectors.txt"},
+		      \end{center}
+		      obtenemos los 3 eigenvalores m\'as grandes. Verificamos los resultados con
+		      \begin{center}
+			      \texttt{python3 p1\textunderscore verify.py t5a/Eigen\textunderscore5x5.txt 3 1}
+		      \end{center}
+		      \begin{table}[H]
+			      \begin{center}
+				      \begin{tabular}{|c|c|}
+					      \multicolumn{2}{c}{Eigenvectores}                                                  \\
+					      \hline
+					      Numpy                                   & M. de Potencia                           \\
+					      \hline
+					      \rule{0pt}{1.5em}
+					      $ \begin{bmatrix}
+							        0.000  & -0.001 &
+							        -0.003 & 0.005  &
+							        0.999
+						        \end{bmatrix} $                      &
+					      $ \begin{bmatrix}
+							        -0.000 & 0.001  & 0.003 &
+							        -0.005 & -0.999
+						        \end{bmatrix} $                                                        \\
+					      [0.5em]
+					      \hline
+					      \rule{0pt}{1.5em}
+					      $ \begin{bmatrix}
+							        0.016 & -0.017 & 0.99 & 0.0002 & 0.003
+						        \end{bmatrix} $ & $ \begin{bmatrix}
+							                            -0.016 & 0.017 & -0.999 & -0.0002 & -0.003
+						                            \end{bmatrix} $
+					      \\
+					      [0.5em]
+					      \hline
+					      \rule{0pt}{1.5em}
+					      $ \begin{bmatrix}
+							        0.122&0.226&0.002&0.966&-0.005  \end{bmatrix} $
+					                                              & $ \begin{bmatrix}
+							                                                  0.111 & 0.207 & -0.003 & 0.886 & 0.399
+						                                                  \end{bmatrix}
+					      $
+					      \\
+					      [0.5em]
+					      \hline
+				      \end{tabular}
+			      \end{center}
+			      \caption{Comparaci\'on de eigenvectores de Eigen\_5x5.txt}\label{tab:invevecs5x5}
+		      \end{table}
+
+
+		      \begin{table}[H]
+			      \begin{center}
+				      \begin{tabular}{|c|c|}
+					      \multicolumn{2}{c}{Eigenvalores} \\
+					      \hline
+					      Numpy      & M. de Potencia      \\
+					      \hline
+					      \rule{0pt}{1.5em}
+					      700.030781 & 700.030781          \\
+					      [0.5em]
+					      \hline
+					      \rule{0pt}{1.5em}
+					      60.028366  & 60.028366           \\
+					      [0.5em]
+					      \hline
+					      \rule{0pt}{1.5em}
+					      8.338447   & 8.338448            \\
+					      [0.5em]
+					      \hline
+				      \end{tabular}
+			      \end{center}
+			      \caption{Comparaci\'on de eigenvalores de Eigen\_5x5.txt}\label{tab:evals5x5}
+		      \end{table}
+		      Podemos observar muy poca diferencia entre los eigenvalores, por lo
+		      que podemos asumir que han sido verificados como correctos.
+		\item \textbf{Eigen\_50x50.txt}
+		      \begin{align*}
+			      \begin{bmatrix}
+				      10.000 & 0.084  & 0.039  & \cdots & 0.052   & 0.078   & 0.007   \\
+				      0.084  & 20.000 & 0.095  & \cdots & 0.040   & 0.053   & 0.040   \\
+				      0.039  & 0.095  & 30.000 & \cdots & 0.084   & 0.013   & 0.052   \\
+				      \vdots & \vdots & \vdots & \ddots & \vdots  & \vdots  & \vdots  \\
+				      0.081  & 0.044  & 0.095  & \cdots & 380.000 & 0.038   & 0.081   \\
+				      0.092  & 0.092  & 0.005  & \cdots & 0.041   & 490.000 & 0.092   \\
+				      0.007  & 0.040  & 0.052  & \cdots & 0.078   & 0.078   & 500.000 \\
+			      \end{bmatrix}
+		      \end{align*}
+		      Como vector inicial, usaremos $ \mathbf{x}^i_0 = 50^{-1/2} $
+		      Ejecutando nuestro programa con
+		      \begin{center}
+			      \texttt{make run-p1
+				      ARGS="t5a/Eigen\_50x50.txt t5a/x0\_50.txt 7 1e-12 10000 c\_eigenvalues.txt
+				      c\_eigenvectors.txt"},
+		      \end{center}
+		      obtenemos los 7 eigenvalores m\'as grandes. Para verificar el resultado, usar
+		      \begin{center}
+			      \texttt{python3 p1\textunderscore verify.py t5a/Eigen\textunderscore50x50.txt 7 1}
+		      \end{center}
+		      \begin{table}[H]
+			      \begin{center}
+				      \begin{tabular}{|c|c|}
+					      \multicolumn{2}{c}{Eigenvalores} \\
+					      \hline
+					      Numpy      & M. de Potencia      \\
+					      \hline
+					      500.001543 & 500.001591          \\
+					      \hline
+					      490.001431 & 490.001430          \\
+					      \hline
+					      480.000527 & 480.000520          \\
+					      \hline
+					      470.001058 & 470.001067          \\
+					      \hline
+					      460.001269 & 460.001265          \\
+					      \hline
+					      450.000483 & 450.000481          \\
+					      \hline
+					      440.000419 & 440.000418          \\
+					      \hline
+				      \end{tabular}
+			      \end{center}
+			      \caption{Comparaci\'on de eigenvectores de Eigen\_50x50.txt}\label{tab:evals50x50}
+		      \end{table}
+
+
+		      Para ver las normas de $ \lVert Ax - \lambda x\rVert $, obtenemos el archivo \texttt{verify.txt}, que contiene los valores
+
+		      \begin{table}[H]
+			      \centering
+			      \begin{tabular}{|c|c|}
+				      \hline
+				      $n$ & $\lVert Ax - \lambda x \rVert$ \\
+				      \hline
+				      1   & $1.5159 \times 10^{-5}$        \\
+				      \hline
+				      2   & $2.1505 \times 10^{-5}$        \\
+				      \hline
+				      3   & $2.1678 \times 10^{-5}$        \\
+				      \hline
+				      4   & $2.1239 \times 10^{-5}$        \\
+				      \hline
+				      5   & $2.0382 \times 10^{-5}$        \\
+				      \hline
+				      6   & $2.0829 \times 10^{-5}$        \\
+				      \hline
+				      7   & $2.0991 \times 10^{-5}$        \\
+				      \hline
+			      \end{tabular}
+			      \caption{Norma residual $\lVert Ax - \lambda x \rVert$}
+		      \end{table}
+
+
+		\item \textbf{Eigen\_125x125.txt}
+		      \begin{align*}
+			      \begin{bmatrix}
+				      9.566e-05 & 0         & 0      & \cdots & 0         & 0         & 0         \\
+				      0         & 1.965e-04 & 0      & \cdots & 0         & 0         & 0         \\
+				      0         & 0         & 1      & \cdots & 0         & 0         & 0         \\
+				      \vdots    & \vdots    & \vdots & \ddots & \vdots    & \vdots    & \vdots    \\
+				      0         & 0         & 0      & \cdots & 3.802e-04 & 1.356e-06 & 0         \\
+				      0         & 0         & 0      & \cdots & 1.356e-06 & 3.701e-04 & 0         \\
+				      0         & 0         & 0      & \cdots & 0         & 0         & 3.522e-04 \\
+			      \end{bmatrix}
+		      \end{align*}
+		      Como vector inicial, usaremos $ \mathbf{x}^i_0 = 125^{-1/2}$.
+		      Ejecutando nuestro programa con
+		      \begin{center}
+			      \texttt{make run-p1
+				      ARGS="make run-p1 ARGS="t5a/Eigen\_125x125.txt t5a/x0\_125.txt 7 1e-12 10000 c\_eigenvalues.txt c\_eigenvectors.txt"},
+		      \end{center}
+		      \begin{center}
+			      \texttt{python3 p1\textunderscore verify.py t5a/Eigen\textunderscore125x125.txt 7 1}
+		      \end{center}
+		      obtenemos los 7 eigenvalores m\'as grandes. Notemos que en la siguiente tabla, comparamos los eigenvalores distintos. El el \'etodo de la potencia, no obtenemos los 12 eigenvalores igual a 1, pero si obtenemos los 7 eigenvalores m\'as grandes distintos.
+		      \begin{table}[H]
+			      \begin{center}
+				      \begin{tabular}{|c|c|}
+					      \multicolumn{2}{c}{Eigenvalores}   \\
+					      \hline
+					      Numpy             & M. de Potencia \\
+					      \hline
+
+					      1.000000000000000 &
+					      1.000000000000000                  \\
+					      \hline
+					      0.000597537881445
+					                        &
+					      0.000597537915193
+					      \\
+					      \hline
+
+					      0.000580571976900
+					                        &
+					      0.000580571970964
+					      \\
+					      \hline
+
+					      0.000561184341205
+					                        &
+					      0.000561184198043
+					      \\
+					      \hline
+
+					      0.000556494725919
+					                        &
+					      0.000556402899526
+					      \\
+					      \hline
+
+					      0.000550804423138
+					                        &
+					      0.000551046077159
+					      \\
+					      \hline
+
+					      0.000547941791866
+					                        &
+					      0.000547801563565
+					      \\
+					      \hline
+				      \end{tabular}
+			      \end{center}
+			      \caption{Comparaci\'on de eigenvalores de Eigen\_125x125.txt}\label{tab:evals125x125}
+		      \end{table}
+		      \begin{table}[H]
+			      \centering
+			      \begin{tabular}{|c|c|}
+				      \hline
+				      $n$ & $\lVert Ax - \lambda x \rVert$ \\
+				      \hline
+				      1   & $5.0 \times 10^{-15}$          \\
+				      \hline
+				      2   & $1.0 \times 10^{-15}$          \\
+				      \hline
+				      3   & $1.0 \times 10^{-15}$          \\
+				      \hline
+				      4   & $2.0 \times 10^{-15}$          \\
+				      \hline
+				      5   & $2.0 \times 10^{-15}$          \\
+				      \hline
+				      6   & $2.0 \times 10^{-15}$          \\
+				      \hline
+				      7   & $4.0 \times 10^{-15}$          \\
+				      \hline
+			      \end{tabular}
+			      \caption{Norma residual $\lVert Ax - \lambda x \rVert$}
+		      \end{table}
+	\end{enumerate}
+\end{solution}
+%end solution 1
+
+%begin problem 2
+\begin{problem}
+Desarrollar un programa que calcule los $ m $ valores propios y vectores
+propios más peque\~nos para matrices de tama\~no $ n $ mediante el
+\textbf{m\'etodo de la potencia inversa. (2 puntos)}
+\end{problem}
+%end problem 2
+
+%begin solution 2
+\begin{solution}
+	\begin{enumerate}
+		\item \textbf{Eigen\_3x3.txt}
+		      \begin{align*}
+			      \begin{bmatrix}
+				      5.0    & -1.778 & 0.0    \\
+				      -1.778 & 9.0    & -1.778 \\
+				      0.0    & -1.778 & 10.0
+			      \end{bmatrix}
+		      \end{align*}
+		      Como vector inicial, usaremos $ \mathbf{x}^i_0 = 3^{-1/2}$
+		      Ejecutando nuestro programa con
+		      \begin{center}
+			      \texttt{make run-p2
+				      ARGS="t5a/Eigen\_3x3.txt t5a/x0\_3.txt 3 1e-12 10000 c\_eigenvalues.txt c\_eigenvectors.txt"},
+		      \end{center}
+		      obtenemos los 3 eigenvalores m\'as peque\~nos (en este caso, todos).
+		      \begin{center}
+			      \texttt{python3 p1\textunderscore verify.py t5a/Eigen\textunderscore3x3.txt 3 0}
+		      \end{center}
+		      \begin{table}[H]
+			      \begin{center}
+				      \begin{tabular}{|c|c|}
+					      \multicolumn{2}{c}{Eigenvectores}              \\
+					      \hline
+					      Numpy                     & M. de Potencia     \\
+					      \hline
+					      \rule{0pt}{1.5em}
+					      $ \begin{bmatrix}
+							        -0.914 & -0.387 & -0.120
+						        \end{bmatrix} $ &
+					      $ \begin{bmatrix}
+							        0.914 & 0.387 & 0.120
+						        \end{bmatrix} $                        \\
+					      [0.5em]
+					      \hline
+					      \rule{0pt}{1.5em}
+					      $ \begin{bmatrix}
+							        0.365 & -0.660 & -0.657
+						        \end{bmatrix} $  & $ \begin{bmatrix}
+							                             -0.365 & 0.660 & 0.657
+						                             \end{bmatrix} $  \\
+					      [0.5em]
+					      \hline
+					      \rule{0pt}{1.5em}
+					      $ \begin{bmatrix}
+							        0.175 & -0.644 & 0.745
+						        \end{bmatrix} $   & $ \begin{bmatrix}
+							                              0.175 & -0.644 & 0.745
+						                              \end{bmatrix} $ \\
+					      [0.5em]
+					      \hline
+				      \end{tabular}
+
+			      \end{center}
+			      \caption{Comparaci\'on de resultados de Eigen\_3x3.txt}\label{tab:invevecs3x3}
+		      \end{table}
+
+		      \begin{table}[H]
+			      \begin{center}
+				      \begin{tabular}{|c|c|}
+					      \multicolumn{2}{c}{Eigenvalores}        \\
+					      \hline
+					      Numpy              & M. de Potencia     \\
+					      \hline
+
+					      4.247785692735033  & 4.247785692735150  \\
+					      \hline
+					      8.213809393221599  & 8.213809393222336  \\
+					      \hline
+					      11.538404914043371 & 11.538404914042516 \\
+					      \hline
+				      \end{tabular}
+			      \end{center}
+			      \caption{Comparaci\'on de eigenvalores de Eigen\_3x3.txt}\label{tab:invevals3x3}
+		      \end{table}
+
+
+		\item \textbf{Eigen\_5x5.txt}
+		      \begin{align*}
+			      \begin{bmatrix}
+				      0.2 & 0.1 & 1  & 1 & 0   \\
+				      0.1 & 4   & -1 & 1 & -1  \\
+				      1   & -1  & 60 & 0 & -2  \\
+				      1   & 1   & 0  & 8 & 4   \\
+				      0   & -1  & -2 & 4 & 700
+			      \end{bmatrix}
+		      \end{align*}
+		      Como vector inicial, usaremos $ \mathbf{x}_0 = \begin{bmatrix}
+				      1 & 1 & 1 & 1 & 1
+			      \end{bmatrix}^{T} $
+		      Ejecutando nuestro programa con
+		      \begin{center}
+			      \texttt{make run-p2
+				      ARGS="t5a/Eigen\_5x5.txt t5a/x0\_5.txt 3 1e-12 10000 c\_eigenvalues.txt c\_eigenvectors.txt"},
+		      \end{center}
+		      \begin{center}
+			      \texttt{python3 p1\textunderscore verify.py t5a/Eigen\textunderscore5x5.txt 3 0}
+		      \end{center}
+		      obtenemos los 3 eigenvalores m\'as peque\~nos.
+		      Como verif\begin{table}[H]
+			      \begin{center}
+				      \begin{tabular}{|c|c|}
+					      \multicolumn{2}{c}{Eigenvectores}                             \\
+					      \hline
+					      Numpy                                    & M. de Potencia     \\
+					      \hline
+					      \rule{0pt}{1.5em}
+					      $ \begin{bmatrix}
+							        0.992 & 0.003 & -0.016 & -0.126 & 0.001
+						        \end{bmatrix} $ &
+					      $ \begin{bmatrix}
+							        0.992 & 0.003 & -0.016 & -0.126 & 0.001
+						        \end{bmatrix} $                     \\
+					      [0.5em]
+					      \hline
+					      \rule{0pt}{1.5em}
+					      $ \begin{bmatrix}
+							        -0.031 & 0.974 & 0.018 & -0.224 & 0.003
+						        \end{bmatrix} $ & $ \begin{bmatrix}
+							                            -0.031 & 0.974 & 0.018 & -0.224 & 0.003
+						                            \end{bmatrix} $ \\
+					      [0.5em]
+					      \hline
+					      \rule{0pt}{1.5em}
+					      $ \begin{bmatrix}
+							        0.122 & 0.226 & 0.002 & 0.966 & -0.005
+						        \end{bmatrix} $  & $ \begin{bmatrix}
+							                             0.122 & 0.226 & 0.002 & 0.966 & -0.005
+						                             \end{bmatrix} $ \\
+					      [0.5em]
+					      \hline
+				      \end{tabular}
+			      \end{center}
+			      \caption{Comparaci\'on de resultados de Eigen\_5x5.txt}\label{tab:evecs5x5}
+		      \end{table}
+		      \begin{table}[H]
+			      \begin{center}
+				      \begin{tabular}{|c|c|}
+					      \multicolumn{2}{c}{Eigenvalores}        \\
+					      \hline
+					      Numpy              & M. de Potencia     \\
+					      \hline
+
+					      9.998050174885066  & 9.998050174885281  \\
+					      \hline
+					      19.998793857960756 & 19.998793857961047 \\
+					      \hline
+					      29.998930953123583 & 29.998930953123931 \\
+					      \hline
+					      39.999763292782198 & 39.999763292782603 \\
+					      \hline
+					      49.998366378355584 & 49.998366378356302 \\
+					      \hline
+					      59.999844677982182 & 59.999844677982736 \\
+					      \hline
+					      69.999135451279130 & 69.999135451279898 \\
+					      \hline
+				      \end{tabular}
+			      \end{center}
+			      \caption{Comparaci\'on de eigenvalores de Eigen\_5x5.txt}\label{tab:invevals5x5}
+		      \end{table}
+		\item \textbf{Eigen\_50x50.txt}
+		      \begin{align*}
+			      \begin{bmatrix}
+				      10.000 & 0.084  & 0.039  & \cdots & 0.052   & 0.078   & 0.007   \\
+				      0.084  & 20.000 & 0.095  & \cdots & 0.040   & 0.053   & 0.040   \\
+				      0.039  & 0.095  & 30.000 & \cdots & 0.084   & 0.013   & 0.052   \\
+				      \vdots & \vdots & \vdots & \ddots & \vdots  & \vdots  & \vdots  \\
+				      0.081  & 0.044  & 0.095  & \cdots & 380.000 & 0.038   & 0.081   \\
+				      0.092  & 0.092  & 0.005  & \cdots & 0.041   & 490.000 & 0.092   \\
+				      0.007  & 0.040  & 0.052  & \cdots & 0.078   & 0.078   & 500.000 \\
+			      \end{bmatrix}
+		      \end{align*}
+		      Como vector inicial, usaremos $ \mathbf{x}_0 = \begin{bmatrix}
+				      1 & 1 & 1 & 1 & 1
+			      \end{bmatrix}^{T} $
+		      Ejecutando nuestro programa con
+		      \begin{center}
+			      \texttt{make run-p2
+				      ARGS="t5a/Eigen\_50x50.txt t5a/x0\_50.txt 7 1e-12 10000 c\_eigenvalues.txt c\_eigenvectors.txt"},
+		      \end{center}
+		      \begin{center}
+			      \texttt{python3 p1\textunderscore verify.py t5a/Eigen\textunderscore50x50.txt 7 0}
+		      \end{center}
+		      obtenemos los 7 eigenvalores m\'as peque\~nos.
+		      \begin{table}[H]
+			      \begin{center}
+				      \begin{tabular}{|c|c|}
+					      \multicolumn{2}{c}{Eigenvalores}        \\
+					      \hline
+					      Numpy              & M. de Potencia     \\
+					      \hline
+
+					      9.998050174885066  & 9.998050174885281  \\
+					      \hline
+					      19.998793857960756 & 19.998793857961047 \\
+					      \hline
+					      29.998930953123583 & 29.998930953123931 \\
+					      \hline
+					      39.999763292782198 & 39.999763292782603 \\
+					      \hline
+					      49.998366378355584 & 49.998366378356302 \\
+					      \hline
+					      59.999844677982182 & 59.999844677982736 \\
+					      \hline
+					      69.999135451279130 & 69.999135451279898 \\
+					      \hline
+				      \end{tabular}
+			      \end{center}
+			      \caption{Comparaci\'on de eigenvalores}\label{tab:invevals_comparison50x50}
+		      \end{table}
+
+		      \begin{table}[H]
+			      \begin{center}
+				      \begin{tabular}{|c|c|}
+					      \multicolumn{2}{c}{Norma del residuo} \\
+					      \hline
+					      $n$ & $\lVert Ax - \lambda x \rVert$  \\
+					      \hline
+					      1   & $1.201 \times 10^{-6}$          \\
+					      2   & $2.362 \times 10^{-6}$          \\
+					      3   & $3.804 \times 10^{-6}$          \\
+					      4   & $5.104 \times 10^{-6}$          \\
+					      5   & $6.145 \times 10^{-6}$          \\
+					      6   & $6.902 \times 10^{-6}$          \\
+					      7   & $7.463 \times 10^{-6}$          \\
+					      \hline
+				      \end{tabular}
+			      \end{center}
+			      \caption{Norma del residuo $\lVert Ax - \lambda x \rVert$ para cada vector $n$}\label{tab:residual_norms}
+		      \end{table}
+
+		\item \textbf{Eigen\_125x125.txt}
+		      \begin{align*}
+			      \begin{bmatrix}
+				      9.566e-05 & 0         & 0      & \cdots & 0         & 0         & 0         \\
+				      0         & 1.965e-04 & 0      & \cdots & 0         & 0         & 0         \\
+				      0         & 0         & 1      & \cdots & 0         & 0         & 0         \\
+				      \vdots    & \vdots    & \vdots & \ddots & \vdots    & \vdots    & \vdots    \\
+				      0         & 0         & 0      & \cdots & 3.802e-04 & 1.356e-06 & 0         \\
+				      0         & 0         & 0      & \cdots & 1.356e-06 & 3.701e-04 & 0         \\
+				      0         & 0         & 0      & \cdots & 0         & 0         & 3.522e-04 \\
+			      \end{bmatrix}
+		      \end{align*}
+		      Como vector inicial, usaremos $ \mathbf{x}_0 = \begin{bmatrix}
+				      1 & 1 & \cdots & 1 & 1
+			      \end{bmatrix}^{T} $
+		      Ejecutando nuestro programa con
+		      \begin{center}
+			      \texttt{make run-p2 ARGS="t5a/Eigen\_125x125.txt t5a/x0\_125.txt 7
+				      1e-12 10000 c\_eigenvalues.txt c\_eigenvectors.txt"},
+		      \end{center}
+		      \begin{center}
+			      \texttt{python3 p1\_verify.py t5a/Eigen\_125x125.txt 7 0}
+		      \end{center}
+		      obtenemos los 7 eigenvalores m\'as peque\~nos.
+		      \begin{table}[H]
+			      \begin{center}
+				      \begin{tabular}{|c|c|}
+					      \multicolumn{2}{c}{Eigenvalores}      \\
+					      \hline
+					      Numpy             & M. de Potencia    \\
+					      \hline
+
+					      0.000001862755663 & 0.000001862755675 \\
+					      \hline
+					      0.000008134856129 & 0.000008134856232 \\
+					      \hline
+					      0.000016501222866 & 0.000016501229475 \\
+					      \hline
+					      0.000017624976804 & 0.000017624970527 \\
+					      \hline
+					      0.000026113052404 & 0.000026113052601 \\
+					      \hline
+					      0.000036480135426 & 0.000036480144069 \\
+					      \hline
+					      0.000038289865234 & 0.000038289857965 \\
+					      \hline
+				      \end{tabular}
+			      \end{center}
+			      \caption{Comparaci\'on de eigenvalores}\label{tab:evals_comparison_small}
+		      \end{table}
+		      \begin{table}[H]
+			      \begin{center}
+				      \begin{tabular}{|c|c|}
+					      \multicolumn{2}{c}{Norma del residuo} \\
+					      \hline
+					      $n$ & $\lVert Ax - \lambda x \rVert$  \\
+					      \hline
+					      1   & $2.793 \times 10^{-10}$         \\
+					      \hline
+					      2   & $1.050 \times 10^{-9}$          \\
+					      \hline
+					      3   & $2.833 \times 10^{-9}$          \\
+					      \hline
+					      4   & $3.434 \times 10^{-9}$          \\
+					      \hline
+					      5   & $3.247 \times 10^{-9}$          \\
+					      \hline
+					      6   & $4.807 \times 10^{-9}$          \\
+					      \hline
+					      7   & $5.686 \times 10^{-9}$          \\
+					      \hline
+				      \end{tabular}
+			      \end{center}
+			      \caption{Comparaci\'on de la norma del residuo $\lVert Ax - \lambda x \rVert$}\label{tab:residual_norms_small}
+		      \end{table}
+
+	\end{enumerate}
+
+\end{solution}
+%end solution 2
+
+\begin{problem}
+Desarrollar un programa que calcule los $ m $ valores propios y vectores
+propios más grandes para matrices de tama\~no $ n $ mediante el
+\textbf{m\'etodo de iteraci\'on de subespacio. (2 puntos)}
+\end{problem}
+\begin{solution}
+
+	\begin{center}
+		\texttt{
+			make run-p3 ARGS="t5a/Eigen\_3x3.txt t5a/phi0\_3.txt 1e-12
+			10000 c\_eigenvalues.txt c\_eigenvectors.txt"
+		}
+	\end{center}
+	\begin{center}
+		\texttt{    python3 p1\_verify.py t5a/Eigen\_3x3.txt 3 0}
+	\end{center}
+	\begin{table}[H]
+		\begin{center}
+			\begin{tabular}{|c|c|}
+				\multicolumn{2}{c}{Eigenvectores}               \\
+				\hline
+				Numpy                     & Iter. de subespacio \\
+				\hline
+				\rule{0pt}{1.5em}
+				$ \begin{bmatrix}
+						  -0.175 & 0.644 & -0.745
+					  \end{bmatrix} $  &
+				$ \begin{bmatrix}
+						  0.175 & -0.644 & 0.745
+					  \end{bmatrix} $                        \\
+				[0.5em]
+				\hline
+				\rule{0pt}{1.5em}
+				$ \begin{bmatrix}
+						  0.365 & -0.660 & -0.657
+					  \end{bmatrix} $  & $ \begin{bmatrix}
+						                       0.365 & -0.660 & -0.657
+					                       \end{bmatrix} $  \\
+				[0.5em]
+				\hline
+				\rule{0pt}{1.5em}
+				$ \begin{bmatrix}
+						  -0.914 & -0.387 & -0.120
+					  \end{bmatrix} $ & $ \begin{bmatrix}
+						                      -0.914 & -0.387 & -0.120
+					                      \end{bmatrix} $  \\
+				[0.5em]
+				\hline
+			\end{tabular}
+
+		\end{center}
+		\caption{Comparaci\'on de resultados de Eigen\_3x3.txt}\label{tab:evecs3x3_new}
+	\end{table}
+
+	\begin{table}[H]
+		\begin{center}
+			\begin{tabular}{|c|c|}
+				\multicolumn{2}{c}{Eigenvalores} \\
+				\hline
+				Numpy     & Iter. de subespacio  \\
+				\hline
+				\rule{0pt}{1.5em}
+				11.538405 & 11.538405            \\
+				[0.5em]
+				\hline
+				\rule{0pt}{1.5em}
+				8.213809  & 8.213809             \\
+				[0.5em]
+				\hline
+				\rule{0pt}{1.5em}
+				4.247786  & 4.247786             \\
+				[0.5em]
+				\hline
+			\end{tabular}
+		\end{center}
+		\caption{Comparaci\'on de eigenvalores de Eigen\_3x3.txt}\label{tab:aevals3x3}
+	\end{table}
+
+	\begin{center}
+		\texttt{make run-p3 ARGS="t5a/Eigen\_5x5.txt t5a/phi0\_5.txt 1e-12 10000
+			c\_eigenvalues.txt c\_eigenvectors.txt"}
+	\end{center}
+	\begin{center}
+		\texttt{python3 p1\_verify.py t5a/Eigen\_5x5.txt 3 1}
+	\end{center}
+
+	\begin{table}[H]
+		\begin{center}
+			\begin{tabular}{|c|c|}
+				\multicolumn{2}{c}{Eigenvalores}           \\
+				\hline
+				Numpy               & Iter. de subsespacio \\
+				\hline
+
+				700.030781317611741 & 700.030781317611854  \\
+				\hline
+				60.028366199091948  & 60.028366199091877   \\
+				\hline
+				8.338447114875077   & 8.338447114875077    \\
+				\hline
+			\end{tabular}
+		\end{center}
+		\caption{Comparaci\'on de eigenvalores}\label{tab:evals_comparison_large}
+	\end{table}
+
+	\begin{table}[H]
+		\begin{center}
+			\begin{tabular}{|c|c|}
+				\multicolumn{2}{c}{Eigenvectores}                                  \\
+				\hline
+				Numpy                                      & Iter. de subespacio   \\
+				\hline
+				\rule{0pt}{1.5em}
+				$ \begin{bmatrix}
+						  -0.000 & 0.001 & 0.003 & -0.006 & -0.999
+					  \end{bmatrix} $  &
+				$ \begin{bmatrix}
+						  -0.000 & 0.001 & 0.003 & -0.006 & -0.999
+					  \end{bmatrix} $                         \\
+				[0.5em]
+				\hline
+				\rule{0pt}{1.5em}
+				$ \begin{bmatrix}
+						  -0.017 & 0.018 & -1.000 & -0.000 & -0.003
+					  \end{bmatrix} $ & $ \begin{bmatrix}
+						                      0.017 & -0.018 & 1.000 & 0.000 & 0.003
+					                      \end{bmatrix} $       \\
+				[0.5em]
+				\hline
+				\rule{0pt}{1.5em}
+				$ \begin{bmatrix}
+						  0.122 & 0.226 & 0.002 & 0.966 & -0.005
+					  \end{bmatrix} $    & $ \begin{bmatrix}
+						                         -0.122 & -0.226 & -0.002 & -0.966 & 0.005
+					                         \end{bmatrix} $ \\
+				[0.5em]
+				\hline
+			\end{tabular}
+
+		\end{center}
+		\caption{Comparaci\'on de resultados de Eigen\_5x5.txt}\label{tab:evecs5x5_new}
+	\end{table}
+	\begin{center}
+		\texttt{
+			make run-p3 ARGS="t5a/Eigen\_50x50.txt t5a/phi0\_50.txt 1e-12
+			10000 c\_eigenvalues.txt c\_eigenvectors.txt"
+		}
+
+	\end{center}
+	\begin{table}[H]
+		\begin{center}
+			\begin{tabular}{|c|c|}
+				\multicolumn{2}{c}{Eigenvalores}          \\
+				\hline
+				Numpy               & Iter. de subespacio \\
+				\hline
+
+				500.001542724573085 & 500.001542724574108 \\
+				\hline
+				490.001431174117840 & 490.001431174118466 \\
+				\hline
+				480.000526650997813 & 480.000526650998040 \\
+				\hline
+				470.001058080440032 & 470.001058080439805 \\
+				\hline
+				460.001269023366604 & 460.001269023366888 \\
+				\hline
+				450.000483273630266 & 450.000483273628618 \\
+				\hline
+				440.000418898496378 & 440.000418898496832 \\
+				\hline
+			\end{tabular}
+		\end{center}
+		\caption{Comparaci\'on de eigenvalores 50x50}\label{tab:evals_comparison_large2}
+	\end{table}
+
+	\begin{table}[H]
+		\begin{center}
+			\begin{tabular}{|c|c|}
+				\multicolumn{2}{c}{Norma del residuo} \\
+				\hline
+				$n$ & $\lVert Ax - \lambda x \rVert$  \\
+				\hline
+				1   & $6.9997 \times 10^{-7}$         \\
+				\hline
+				2   & $5.5789 \times 10^{-9}$         \\
+				\hline
+				3   & $1.5060 \times 10^{-9}$         \\
+				\hline
+				4   & $1.2245 \times 10^{-9}$         \\
+				\hline
+				5   & $1.0248 \times 10^{-9}$         \\
+				\hline
+				6   & $8.2062 \times 10^{-10}$        \\
+				\hline
+				7   & $3.7819 \times 10^{-10}$        \\
+				\hline
+			\end{tabular}
+		\end{center}
+		\caption{Comparaci\'on de la norma del residuo $\lVert Ax - \lambda x \rVert$ 50x50}\label{tab:residual_norms_tiny}
+	\end{table}
+	\begin{center}
+		\texttt{
+			make run-p3 ARGS="t5a/Eigen\_125x125.txt t5a/phi0\_125.txt 1e-6
+			10000 c\_eigenvalues.txt c\_eigenvectors.txt"
+		}
+
+	\end{center}
+
+	\begin{table}[H]
+		\begin{center}
+			\begin{tabular}{|c|c|}
+				\multicolumn{2}{c}{Eigenvalores}        \\
+				\hline
+				Numpy             & Iter. de subespacio \\
+				\hline
+
+				1.000000000000000 & 0.999999999999999   \\
+				\hline
+				1.000000000000000 & 0.999999999999999   \\
+				\hline
+				1.000000000000000 & 0.999999999999999   \\
+				\hline
+				1.000000000000000 & 0.999999999999933   \\
+				\hline
+				1.000000000000000 & 0.999999999992407   \\
+				\hline
+				1.000000000000000 & 0.999999999990629   \\
+				\hline
+				1.000000000000000 & 0.999999999990306   \\
+				\hline
+			\end{tabular}
+		\end{center}
+		\caption{Comparaci\'on de eigenvalores 125x125}\label{tab:evals_comparison_ones}
+	\end{table}
+
+	\begin{table}[H]
+		\begin{center}
+			\begin{tabular}{|c|c|}
+				\multicolumn{2}{c}{Norma del residuo} \\
+				\hline
+				$n$ & $\lVert Ax - \lambda x \rVert$  \\
+				\hline
+				1   & $1.385 \times 10^{-9}$          \\
+				\hline
+				2   & $1.370 \times 10^{-9}$          \\
+				\hline
+				3   & $1.321 \times 10^{-9}$          \\
+				\hline
+				4   & $2.584 \times 10^{-10}$         \\
+				\hline
+				5   & $2.755 \times 10^{-9}$          \\
+				\hline
+				6   & $3.061 \times 10^{-9}$          \\
+				\hline
+				7   & $3.113 \times 10^{-9}$          \\
+				\hline
+			\end{tabular}
+		\end{center}
+		\caption{Comparaci\'on de la norma del residuo $\lVert Ax - \lambda x \rVert$ 125x125}\label{tab:residual_norms_small2}
+	\end{table}
+\end{solution}
+
+\begin{problem}
+Desarrollar un programa que calcule los $ m $ valores propios y vectores
+propios más peque\~nos para matrices de tama\~no $ n $ mediante el
+\textbf{m\'etodo de iteraci\'on de subespacio. (2 puntos)}
+\end{problem}
+\begin{solution}
+\begin{center}
+  \texttt{make run-p4 ARGS="t5a/Eigen\_3x3.txt t5a/phi0\_3.txt 1e-12 10000 c\_eigenvalues.txt c\_eigenvectors.txt"}
+\end{center}
+\begin{table}[H]
+    \begin{center}
+        \begin{tabular}{|c|c|}
+            \multicolumn{2}{c}{Eigenvalores}   \\
+            \hline
+            Numpy             & Iter. de subespacio\\
+            \hline
+
+            4.247785692735035 & 4.247785692735035 \\
+            \hline
+            8.213809393221592 & 8.213809393221592 \\
+            \hline
+            11.538404914043371 & 11.538404914043371 \\
+            \hline
+        \end{tabular}
+    \end{center}
+    \caption{Comparaci\'on de eigenvalores de Eigen\_3x3.txt}\label{tab:evals3x3_identical}
+\end{table}
+
+\begin{table}[H]
+    \begin{center}
+        \begin{tabular}{|c|c|}
+            \multicolumn{2}{c}{Eigenvectores}               \\
+            \hline
+            Numpy                   &Iter. de subespacio\\
+            \hline
+            \rule{0pt}{1.5em}
+            $ \begin{bmatrix}
+                    -0.914 & -0.387 & -0.120
+              \end{bmatrix} $ &
+            $ \begin{bmatrix}
+                    -0.914 & -0.387 & -0.120
+              \end{bmatrix} $                        \\
+            [0.5em]
+            \hline
+            \rule{0pt}{1.5em}
+            $ \begin{bmatrix}
+                    0.365 & -0.660 & -0.657
+              \end{bmatrix} $ & $ \begin{bmatrix}
+                                      0.365 & -0.660 & -0.657
+                                  \end{bmatrix} $   \\
+            [0.5em]
+            \hline
+            \rule{0pt}{1.5em}
+            $ \begin{bmatrix}
+                    0.175 & -0.644 & 0.745
+              \end{bmatrix} $  & $ \begin{bmatrix}
+                                        -0.175 & 0.644 & -0.745
+                                    \end{bmatrix} $ \\
+            [0.5em]
+            \hline
+        \end{tabular}
+
+    \end{center}
+    \caption{Comparaci\'on de resultados de Eigen\_3x3.txt}\label{tab:evecs3x3_latest}
+\end{table}
+
+
+\begin{center}
+  \texttt{make run-p4 ARGS="t5a/Eigen\_5x5.txt t5a/phi0\_5.txt 1e-12 10000 c\_eigenvalues.txt c\_eigenvectors.txt"}
+\end{center}
+
+\begin{table}[H]
+    \begin{center}
+        \begin{tabular}{|c|c|}
+            \multicolumn{2}{c}{Eigenvalores}   \\
+            \hline
+            Numpy             & Iter. de subespacio\\
+            \hline
+
+            0.057074741004227 & 0.057074741004193 \\
+            \hline
+            3.745330627417469 & 3.745330627417476 \\
+            \hline
+            8.338447114875077 & 8.338447114875084 \\
+            \hline
+        \end{tabular}
+    \end{center}
+    \caption{Comparaci\'on de eigenvalores 5x5}\label{tab:evals_comparison_small3}
+\end{table}
+
+\begin{table}[H]
+    \begin{center}
+        \begin{tabular}{|c|c|}
+            \multicolumn{2}{c}{Eigenvectores}               \\
+            \hline
+            Numpy                   & M. de Potencia        \\
+            \hline
+            \rule{0pt}{1.5em}
+            $ \begin{bmatrix}
+                    -0.992 & -0.003 & 0.016 & 0.126 & -0.001
+              \end{bmatrix} $ &
+            $ \begin{bmatrix}
+                    -0.992 & -0.003 & 0.016 & 0.126 & -0.001
+              \end{bmatrix} $                        \\
+            [0.5em]
+            \hline
+            \rule{0pt}{1.5em}
+            $ \begin{bmatrix}
+                    0.031 & -0.974 & -0.018 & 0.224 & -0.003
+              \end{bmatrix} $ & $ \begin{bmatrix}
+                                      0.031 & -0.974 & -0.018 & 0.224 & -0.003
+                                  \end{bmatrix} $   \\
+            [0.5em]
+            \hline
+            \rule{0pt}{1.5em}
+            $ \begin{bmatrix}
+                    -0.122 & -0.226 & -0.002 & -0.966 & 0.005
+              \end{bmatrix} $  & $ \begin{bmatrix}
+                                        -0.122 & -0.226 & -0.002 & -0.966 & 0.005
+                                    \end{bmatrix} $ \\
+            [0.5em]
+            \hline
+        \end{tabular}
+
+    \end{center}
+    \caption{Comparaci\'on de resultados de Eigen\_5x5.txt}\label{tab:evecs3x5_identical}
+\end{table}
+
+
+
+\begin{center}
+  \texttt{make run-p4 ARGS="t5a/Eigen\_50x50.txt t5a/phi0\_50.txt 1e-12 10000 c\_eigenvalues.txt c\_eigenvectors.txt"}
+\end{center}
+
+\begin{table}[H]
+    \begin{center}
+        \begin{tabular}{|c|c|}
+            \multicolumn{2}{c}{Eigenvalores}   \\
+            \hline
+            Numpy             & M. de Potencia \\
+            \hline
+
+            9.998050174885066 & 9.998050174885130 \\
+            \hline
+            19.998793857960756 & 19.998793857960724 \\
+            \hline
+            29.998930953123583 & 29.998930953123381 \\
+            \hline
+            39.999763292782198 & 39.999763292782021 \\
+            \hline
+            49.998366378355584 & 49.998366378355612 \\
+            \hline
+            59.999844677982182 & 59.999844677982381 \\
+            \hline
+            69.999135451279130 & 69.999135451279230 \\
+            \hline
+        \end{tabular}
+    \end{center}
+    \caption{Comparaci\'on de eigenvalores 50x50}\label{tab:evals_comparison_large3}
+\end{table}
+
+
+
+
+\begin{table}[H]
+    \begin{center}
+        \begin{tabular}{|c|c|}
+            \multicolumn{2}{c}{Norma del residuo} \\
+            \hline
+            $n$ & $\lVert Ax - \lambda x \rVert$ \\
+            \hline
+            1 & $5.817 \times 10^{-9}$ \\
+            \hline
+            2 & $6.999 \times 10^{-7}$ \\
+            \hline
+            3 & $6.577 \times 10^{-9}$ \\
+            \hline
+            4 & $1.845 \times 10^{-9}$ \\
+            \hline
+            5 & $1.944 \times 10^{-10}$ \\
+            \hline
+            6 & $3.323 \times 10^{-10}$ \\
+            \hline
+            7 & $9.247 \times 10^{-10}$ \\
+            \hline
+        \end{tabular}
+    \end{center}
+    \caption{Comparaci\'on de la norma del residuo $\lVert Ax - \lambda x \rVert$ 50x50}\label{tab:residual_norms_varied}
+\end{table}
+
+  
+\begin{center}
+  \texttt{make run-p4 ARGS="t5a/Eigen\_125x125.txt t5a/phi0\_125.txt 1e-6 10000 c\_eigenvalues.txt c\_eigenvectors.txt"}
+\end{center}
+
+\begin{table}[H]
+    \begin{center}
+        \begin{tabular}{|c|c|}
+            \multicolumn{2}{c}{Eigenvalores}   \\
+            \hline
+            Numpy             & Iter. de subespacio\\
+            \hline
+
+            0.000001862755663 & 0.000001948721578 \\
+            \hline
+            0.000008134856129 & 0.000008260593383 \\
+            \hline
+            0.000016501222866 & 0.000016891501668 \\
+            \hline
+            0.000017624976804 & 0.000017509493655 \\
+            \hline
+            0.000026113052404 & 0.000026125225977 \\
+            \hline
+            0.000036480135426 & 0.000037249559788 \\
+            \hline
+            0.000038289865234 & 0.000037728586215 \\
+            \hline
+        \end{tabular}
+    \end{center}
+    \caption{Comparaci\'on de eigenvalores 125x125}\label{tab:evals_comparison_small4}
+\end{table}
+
+
+\begin{table}[H]
+    \begin{center}
+        \begin{tabular}{|c|c|}
+            \multicolumn{2}{c}{Norma del residuo} \\
+            \hline
+            $n$ & $\lVert Ax - \lambda x \rVert$ \\
+            \hline
+            1 & $4.054 \times 10^{-6}$ \\
+            \hline
+            2 & $4.475 \times 10^{-6}$ \\
+            \hline
+            3 & $4.864 \times 10^{-6}$ \\
+            \hline
+            4 & $4.593 \times 10^{-6}$ \\
+            \hline
+            5 & $4.853 \times 10^{-6}$ \\
+            \hline
+            6 & $4.678 \times 10^{-6}$ \\
+            \hline
+            7 & $4.369 \times 10^{-6}$ \\
+            \hline
+        \end{tabular}
+    \end{center}
+    \caption{Comparaci\'on de la norma del residuo $\lVert Ax - \lambda x \rVert$ 125x125}\label{tab:residual_norms_small5}
+\end{table}
+
+
+
+\end{solution}
+
+\begin{problem}
+Desarrollar un programa que resuelva un sistema de ecuaciones de la forma
+$\mathbf{Ax} = \mathbf{b}$ utilizando el \textbf{m\'etodo de Gradiente
+	Conjugado. (2 puntos)}
+\end{problem}
+\begin{solution}
+  
+  Usando \texttt{make run-p5 ARGS="t5a/A1.txt t5a/b1.txt t5a/x1.txt"} obtenemos el vector
+  $$ \begin{bmatrix}
+    3.012 & -2.409 & 7.128
+\end{bmatrix} $$ 
+
+
+Con python, verificamos con \texttt{python3 p5.py t5a/A1.txt t5a/b1.txt}, que nos regresa el mismo vector:
+  $$ \begin{bmatrix}
+    3.01157697& -2.40863579& 7.12797247
+\end{bmatrix} $$
+
+Ahora, con la matriz grande, usando \texttt{make run-p5 ARGS="t5a/A2.txt t5a/b2.txt t5a/x2.txt"}, y comparando con
+\begin{center}
+  \texttt{python3 p5.py t5a/A2.txt t5a/b2.txt}
+\end{center}
+tenemos una diferencia de $ 0.00124 $.
+\end{solution}
+\end{document}
