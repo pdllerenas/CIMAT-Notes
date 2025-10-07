@@ -13,4 +13,7 @@ int main(int argc, char *argv[]) {
   get_freq_table(argv[1], &frequencies);
 
   PriorityQueue *pq = enqueue_alphabet(frequencies, 256);
+  HuffmanNode *huff_parent = huffman_tree_parent_node(pq);
+  print_huffman_tree(huff_parent, 0);
+
 }
