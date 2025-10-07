@@ -279,48 +279,58 @@ void QR_factorization(const Matrix *A, Matrix **Q_out, Matrix **R_out) {
   int n = A->rows;
   int m = A->cols;
 
-  // minimum between m and n
-  int mn_min = (m < n ? m : n);
-
-  Matrix *Q = identity_matrix(n);
+  // Create R = copy of A
   Matrix *R = matrix_create_double(n, m);
   copy_matrix(R, A);
 
-  for (int k = 0; k < mn_min; k++) {
-    // Extract column k from row k downward
-    Vector *x = create_vector(n);
-    for (int i = 0; i < n; i++) {
-      ((double *)x->data)[i] = (i < k) ? 0.0 : ((double *)R->data)[i * m + k];
-    }
+  // Q = identity
+  Matrix *Q = identity_matrix(n);
+
+  for (int k = 0; k < (n < m ? n : m); k++) {
+    // Build Householder vector
+    Vector *x = create_vector(n - k);
+    for (int i = k; i < n; i++)
+      ((double *)x->data)[i - k] = ((double *)R->data)[i * m + k];
 
     double normx = l2_norm(x);
-
-    // normx if xk < 0, -normx if xk > 0
-    double alpha = -copysign(normx, ((double *)x->data)[k]);
-
-    Vector *v = create_vector(n);
-    for (int i = 0; i < n; i++) {
-      ((double *)v->data)[i] = ((double *)x->data)[i];
+    if (normx == 0.0) {
+      free_vector(x);
+      continue;
     }
 
-    ((double *)v->data)[k] -= alpha;
+    double alpha = -copysign(normx, ((double *)x->data)[0]);
+
+    Vector *v = create_vector(n - k);
+    for (int i = 0; i < n - k; i++)
+      ((double *)v->data)[i] = ((double *)x->data)[i];
+    ((double *)v->data)[0] -= alpha;
+
     double vnorm = l2_norm(v);
-    vector_scalar_product_inplace(v, 1.0 / vnorm);
+    if (vnorm != 0.0)
+      vector_scalar_product_inplace(v, 1.0 / vnorm);
 
-    // m = I - 2v v^T
-    Matrix *H = vmul(v);
+    // Apply Householder: R[k:n, k:m] = (I - 2 vv^T) R[k:n, k:m]
+    for (int i = k; i < n; i++) {
+      for (int j = k; j < m; j++) {
+        double dot = 0.0;
+        for (int l = 0; l < n - k; l++)
+          dot += ((double *)v->data)[l] * ((double *)R->data)[(k + l) * m + j];
+        ((double *)R->data)[i * m + j] -= 2 * ((double *)v->data)[i - k] * dot;
+      }
+    }
 
-    Matrix *HR = matrix_product(H, R);
-    matrix_free(R);
-    R = HR;
-
-    Matrix *QH = matrix_product(Q, H);
-    matrix_free(Q);
-    Q = QH;
+    // Apply to Q: Q[:, k:n] = Q[:, k:n] * (I - 2 vv^T)
+    for (int i = 0; i < n; i++) {
+      double dot = 0.0;
+      for (int l = 0; l < n - k; l++)
+        dot += ((double *)v->data)[l] * ((double *)Q->data)[i * n + (k + l)];
+      for (int j = 0; j < n - k; j++)
+        ((double *)Q->data)[i * n + (k + j)] -=
+            2 * ((double *)v->data)[j] * dot;
+    }
 
     free_vector(x);
     free_vector(v);
-    matrix_free(H);
   }
 
   *Q_out = Q;
