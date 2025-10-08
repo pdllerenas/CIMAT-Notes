@@ -188,7 +188,6 @@ Vector *gauss_seidel_iterative(Matrix *A, Vector *b, Vector *x0, double TOL,
   int n = b->dim;
   Vector *x_next = create_vector(A->cols);
   Vector *x_prev = x0;
-  FILE *diff = fopen("lin_sys/gaussian_seidel_convergence.txt", "w");
 
   while (k <= MAX_ITER) {
     for (int i = 0; i < n; i++) {
@@ -207,15 +206,16 @@ Vector *gauss_seidel_iterative(Matrix *A, Vector *b, Vector *x0, double TOL,
       ((double *)x_next->data)[i] = (((double *)b->data)[i] - sum) /
                                     (((double *)A->data)[i * A->cols + i]);
     }
-
-    fprintf(diff, "%d %.15lf\n", k,
-            vector_norm_squared(vector_diff(x_next, x_prev)));
-    if (vector_norm_squared(vector_diff(x_next, x_prev)) < TOL) {
+    Vector *d = vector_diff(x_next, x_prev);
+    if (vector_norm_squared(d) < TOL) {
+      free_vector(d);
       return x_next;
     }
+    free_vector(d);
     k++;
     copy_data(x_prev, x_next);
   }
+  free_vector(x_next);
   fprintf(stderr, "Method failed at %d iterations.\n", k);
   return NULL;
 }

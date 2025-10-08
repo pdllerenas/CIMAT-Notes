@@ -96,6 +96,49 @@ void cholesky_symmetric_banded(const Matrix *A, Matrix *L) {
   }
 }
 
+void cholesky_symmetric_banded_5(const Matrix *A, Matrix *L) {
+  int i;
+  double l_diag, m_off_diag;
+
+  // the first diagonal term does not need the sum (due to the tridiagonal
+  // hypothesis)
+  l_diag = ((double *)A->data)[0];
+  if (l_diag <= 0) {
+    fprintf(stderr, "Matrix A is not positive-definite.\n");
+    return;
+  }
+
+  ((double *)L->data)[0] = sqrt(l_diag);
+
+  ((double *)L->data)[L->cols] =
+      ((double *)A->data)[1] / ((double *)L->data)[0];
+
+  // rest of the terms
+  for (i = 1; i < A->rows; i++) {
+    // since it is tridiagonal, the only non-zero term on the sum is the one
+    // before the diagonal, which incidentally, is also the last term in the sum
+    m_off_diag = ((double *)L->data)[i * L->cols + (i - 1)];
+
+    l_diag = ((double *)A->data)[i * 2] - (m_off_diag * m_off_diag);
+    if (l_diag <= 0) {
+      fprintf(stderr, "Matrix A is not positive-definite.\n");
+      return;
+    }
+
+    ((double *)L->data)[i * L->cols + i] = sqrt(l_diag);
+
+    // the non-diagonal terms of L have a zero sum, so we only have
+    // L[i][j] = A[i][j]/L[j][j]. Since only A[j+1][j] is non-zero (for the
+    // lower terms), we only calculate for this specific value
+    if (i < A->rows - 1) {
+      m_off_diag = ((double *)A->data)[i * 2 + 1];
+      ((double *)L->data)[(i + 1) * L->cols + i] =
+          m_off_diag / ((double *)L->data)[i * L->cols + i];
+    }
+  }
+}
+
+
 /*
 
 decomposition of A = LU, where L has diagonal equal to only 1's.

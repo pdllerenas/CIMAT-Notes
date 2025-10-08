@@ -48,6 +48,7 @@ double iterative_power(const Matrix *A, const Vector *x0, const double TOL,
 
       free_vector(x_prev);
       free_vector(x_curr);
+      printf("Method converged at %d iterations\n", k);
       return lambda_curr;
     }
 
