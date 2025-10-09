@@ -62,9 +62,9 @@
     return array;                                                              \
   }
 
-DEFINE_READER_FUNCTION(flat_double_array_from_txt, double, "%lf");
-DEFINE_READER_FUNCTION(int_array_from_txt, int, "%d");
-DEFINE_READER_FUNCTION(float_array_from_txt, float, "%f");
+DEFINE_READER_FUNCTION(flat_double_array_from_txt, double, "%lf")
+DEFINE_READER_FUNCTION(int_array_from_txt, int, "%d")
+DEFINE_READER_FUNCTION(float_array_from_txt, float, "%f")
 
 /*
 
