@@ -195,7 +195,13 @@ void copy_data(Vector *v1, const Vector *v2) {
 
 void print_vector(Vector *v) {
   for (int i = 0; i < v->dim; i++) {
-    printf("%.3lf ", ((double *)v->data)[i]);
+    printf("%.14lf ", ((double *)v->data)[i]);
+  }
+  printf("\n");
+}
+void fprint_vector(Vector *v, FILE *file) {
+  for (int i = 0; i < v->dim; i++) {
+    fprintf(file, "%.14lf ", ((double *)v->data)[i]);
   }
   printf("\n");
 }

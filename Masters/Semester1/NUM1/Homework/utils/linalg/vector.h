@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stddef.h>
+#include <stdio.h>
 
 typedef struct {
   int dim;
@@ -25,6 +26,7 @@ Vector *vdiv(Vector *x, double d);
 void vector_swap_rows(Vector *, int, int);
 void copy_data(Vector *, const Vector *);
 void print_vector(Vector *);
+void fprint_vector(Vector *v, FILE *file);
 void print_tex_table(Vector *);
 void free_vector(Vector *);
 int vector_arg_max(const Vector *);
