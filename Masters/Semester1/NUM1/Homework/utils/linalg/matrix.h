@@ -13,7 +13,6 @@ typedef enum {
 typedef struct {
   int rows;
   int cols;
-  size_t element_size;
   void *data;
 } Matrix;
 

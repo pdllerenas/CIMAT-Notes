@@ -13,7 +13,6 @@
                                                                                \
     m->rows = rows;                                                            \
     m->cols = cols;                                                            \
-    m->element_size = sizeof(TYPE);                                            \
     m->data = calloc(rows * cols, sizeof(TYPE));                               \
     if (m->data == NULL) {                                                     \
       free(m);                                                                 \
