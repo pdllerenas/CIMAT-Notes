@@ -1,9 +1,10 @@
 CC = gcc
-CFLAGS = -Wall -pedantic -O4
+CFLAGS = -Wall -pedantic -O4 
 LDFLAGS = -lm
 
-LIB_DIR = ../../utils/linalg
-LIBS_SRCS = $(addprefix $(LIB_DIR)/, eigenvalues.c matrix.c vector.c matrix_factorization.c matrix_io.c matrix_operations.c linear_system.c)
+LINALG_DIR = ../../utils/linalg
+ROOTS_DIR  = ../../utils/roots
+LIBS_SRCS = $(wildcard $(LINALG_DIR)/*.c) $(wildcard $(ROOTS_DIR)/*.c)
 
 TARGETS = p1 p2 p3 p4 p5 p6
 

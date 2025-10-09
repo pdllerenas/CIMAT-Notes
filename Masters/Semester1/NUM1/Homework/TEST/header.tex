@@ -1,0 +1,61 @@
+\documentclass{article}
+\newcommand\numberthis{\addtocounter{equation}{1}\tag{\theequation}}
+\usepackage{geometry}
+\usepackage{bm}
+\usepackage[colorlinks=true, urlcolor=blue, pdfborder={0 0 0}]{hyperref}
+\usepackage[yyyymmdd]{datetime}
+\usepackage[inline,shortlabels]{enumitem}
+\usepackage{mathtools}
+\usepackage[dvipsnames]{xcolor}
+\usepackage[framemethod=TikZ]{mdframed}
+\usepackage{amsfonts}
+\usepackage{float}
+\usepackage{subcaption}
+\usepackage{amsthm}
+\usepackage{multirow}
+\usepackage{amsmath}
+\newtheoremstyle{problemstyle}{3pt}{3pt}{\normalfont}{}{\bfseries}{\normalfont\bfseries:}{.5em}{}
+\theoremstyle{problemstyle}
+\newmdtheoremenv[
+  linewidth=1pt,
+  linecolor=RoyalBlue,
+  backgroundcolor=RoyalBlue!10,
+  roundcorner=5pt,
+  innertopmargin=6pt,
+  innerbottommargin=6pt,
+  innerleftmargin=6pt,
+  innerrightmargin=6pt,
+  nobreak=true
+]{problem}{Problema}
+
+% Solution
+\newenvironment{solution}{%
+  \begin{mdframed}[linewidth=0.8pt,roundcorner=5pt]%
+  \noindent\textbf{Soluci\'on.}%
+}{%
+\hfill $ \diamond $ 
+  \end{mdframed}%
+}
+
+% Make header with name and date etc.
+\usepackage{fancyhdr}
+\chead{\large M\'etodos Numericos I}
+\lhead{Pedro D. Llerenas\quad \\\href{mailto:pedro.llerenas@cimat.mx}{pedro.llerenas@cimat.mx}}
+\rhead{\today\\Examen Parcial I}
+\thispagestyle{fancy}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\setlength{\parindent}{0pt} % Don't indent new paragraphs
+\setlength{\headheight}{24pt} 
+
+\newcommand{\Z}{\mathbb Z}
+\newcommand{\Q}{\mathbb Q}
+\newcommand{\R}{\mathbb R}
+\newcommand{\C}{\mathbb C}
+\newcommand{\N}{\mathbb N}
+\newcommand{\abs}[1]{\lvert #1 \rvert}
+\newcommand{\norm}[1]{\lVert #1 \rVert}
+\newcommand{\pde}[2]{\frac{\partial #1}{\partial #2}}
+\newcommand{\bV}[1]{\mathbf{#1}}
+\newcommand{\bmV}[1]{\mb{#1}}
