@@ -261,6 +261,8 @@ Matrix *jacobi_eigenvalue(Matrix *S, double *eigenvalues, double TOL,
     double maxval = 0.0;
     int k = 0, l = 1;
     double *adata = (double *)A->data;
+
+    // find max val off-diagonal
     for (int i = 0; i < n; i++) {
       for (int j = i + 1; j < n; j++) {
         double v = fabs(adata[i * n + j]);
@@ -272,21 +274,29 @@ Matrix *jacobi_eigenvalue(Matrix *S, double *eigenvalues, double TOL,
       }
     }
 
-    if (maxval < TOL)
+    // if max val off-diagonal is close to zero, we are done (diagonalized)
+    if (maxval < TOL) {
+      printf("Method converged after %d iterations\n", k);
       break;
+    }
 
+    // grab diagonal elements of maxval's row and column
     double a_kk = adata[k * n + k];
     double a_ll = adata[l * n + l];
+
+    // if akl is zero, the rotation is trivial
     double p = adata[k * n + l];
     if (p == 0.0)
       continue;
 
+    // calculate sin, cos and tan of angle
     double theta = (a_ll - a_kk) / (2.0 * p);
     double sign = (theta >= 0.0) ? 1.0 : -1.0;
     double t = sign / (fabs(theta) + sqrt(1.0 + theta * theta));
     double c = 1.0 / sqrt(1.0 + t * t);
     double s = t * c;
 
+    // perform rotations
     for (int i = 0; i < n; i++) {
       if (i == k || i == l)
         continue;
@@ -303,6 +313,7 @@ Matrix *jacobi_eigenvalue(Matrix *S, double *eigenvalues, double TOL,
     adata[k * n + l] = 0.0;
     adata[l * n + k] = 0.0;
 
+    // update eigenvectors and eigenvalues
     double *edata = (double *)E->data;
     for (int i = 0; i < n; i++) {
       double eik = edata[i * n + k];
@@ -319,14 +330,14 @@ Matrix *jacobi_eigenvalue(Matrix *S, double *eigenvalues, double TOL,
     return NULL;
   }
 
-  // Extract all eigenvalues
+  // extract all eigenvalues
   double *all_evals = malloc(n * sizeof(double));
   double *adata_final = (double *)A->data;
   for (int i = 0; i < n; i++)
     all_evals[i] = adata_final[i * n + i];
 
   if (largest == true) {
-    // Sort descending and pick top m
+    // sort descending and pick top m
     for (int g = 0; g < m; g++) {
       int w = g;
       for (int h = g + 1; h < n; h++)
@@ -344,7 +355,7 @@ Matrix *jacobi_eigenvalue(Matrix *S, double *eigenvalues, double TOL,
       eigenvalues[g] = all_evals[g];
     }
   } else {
-    // Sort descending and pick top m
+    // sort descending and pick top m
     for (int g = 0; g < m; g++) {
       int w = g;
       for (int h = g + 1; h < n; h++)
@@ -374,32 +385,43 @@ double *subspace_iteration(const Matrix *A, Matrix *Phi_0, double TOL,
 
   Matrix *Phi = matrix_deep_copy(Phi_0);
   Matrix *Q, *R;
+  // perform a qr factorization, where Q is orthonormal
   QR_factorization(Phi, &Q, &R);
   matrix_free(Phi);
+  // Phi is now the orthonormal component of the qr decomposition
   Phi = Q;
   matrix_free(R);
 
+  // keep track of current and previous eigenvalues for stop condition
   double *eigenvals = malloc(m * sizeof(double));
   double *prev_eigenvals = malloc(m * sizeof(double));
 
   for (int k = 0; k < MAX_ITER; k++) {
+    // A * Phi
     Matrix *Z = matrix_product(A, Phi);
 
+    // get a qr factorization of A * Phi
     QR_factorization(Z, &Q, &R);
     matrix_free(Z);
     matrix_free(R);
 
+    // reduce dimension of A using the orthonormal matrix from QR decomposition
     Matrix *B = conjugate_m_by_a(A, Q); // B = Q^T * A * Q
 
+    // solve eigenvalue problem for mxm submatrix
     Matrix *U = jacobi_eigenvalue(B, eigenvals, TOL, MAX_ITER, m, largest);
     matrix_free(B);
 
+    // new phi for next iteration is the product of the matrix of eigenvectors
+    // given by jacobi and orthonormal Q
     Matrix *Phi_new = matrix_product(Q, U);
     matrix_free(U);
     matrix_free(Q);
     matrix_free(Phi);
     Phi = Phi_new;
 
+    // if all eigenvalues are close enough, we conclude that the method has
+    // converged
     bool converged = true;
     if (k > 0) {
       for (int i = 0; i < m; i++) {
@@ -417,6 +439,7 @@ double *subspace_iteration(const Matrix *A, Matrix *Phi_0, double TOL,
       return eigenvals;
     }
 
+    // copy values of current eigenvalues to previous eigenvalues
     memcpy(prev_eigenvals, eigenvals, m * sizeof(double));
   }
 
