@@ -55,3 +55,12 @@ void pprint_tree(TreeNode *root, int depth) {
   printf("%d\n", root->info);
   pprint_tree(root->left, depth + 1);
 }
+
+void print_inorder(TreeNode * root) {
+  if (!root) {
+    return;
+  }
+  print_inorder(root->left);
+  printf("%d ", root->info);
+  print_inorder(root->right);
+}
