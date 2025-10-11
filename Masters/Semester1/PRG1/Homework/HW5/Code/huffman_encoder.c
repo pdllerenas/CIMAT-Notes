@@ -1,6 +1,19 @@
 #include "huffman_encoder.h"
 #include "queue.h"
 #include <stdio.h>
+#include <stdlib.h>
+
+void print_bits(uint64_t n, int length) {
+  uint64_t i;
+  i = 1UL << (length - 1);
+  while (i > 0) {
+    if (n & i)
+      printf("1");
+    else
+      printf("0");
+    i >>= 1;
+  }
+}
 
 PriorityQueue *enqueue_alphabet(int *frequencies, int size) {
   // this priority queue will (initially) hold all image pixels, which is why we
@@ -34,6 +47,39 @@ HuffmanNode *huffman_tree_parent_node(PriorityQueue *heap) {
   return heap->items[0];
 }
 
+HuffmanCode *innit_huffman_code() {
+  HuffmanCode *hc = malloc(sizeof(HuffmanCode));
+  hc->code = 0;
+  hc->length = 0;
+  return hc;
+}
+
+int huffman_code_table(HuffmanNode *root, uint64_t code, uint8_t depth,
+                       HuffmanCode **table) {
+  if (!root) {
+    return 0;
+  }
+
+  int leaf_count = 0;
+  // leaf node
+  if (!root->left && !root->right) {
+    // printf("%lu %d\n", code, depth);
+    // print_bits(code, depth);
+    // printf("\n");
+    table[root->c]->code = code;
+    table[root->c]->length = depth;
+    leaf_count += 1;
+  } else {
+    // add 0 to left code
+    leaf_count += huffman_code_table(root->left, code, depth + 1, table);
+
+    // add 1 to right code
+    leaf_count += huffman_code_table(root->right, code | (1ULL << depth),
+                                     depth + 1, table);
+  }
+  return leaf_count;
+}
+
 void print_huffman_tree(HuffmanNode *root, int depth) {
   if (!root)
     return;
@@ -47,4 +93,14 @@ void print_huffman_tree(HuffmanNode *root, int depth) {
     printf("%d\n", root->freq);
   }
   print_huffman_tree(root->left, depth + 1);
+}
+
+void print_tree(HuffmanNode *node, int depth) {
+  if (!node)
+    return;
+  for (int i = 0; i < depth; i++)
+    putchar(' ');
+  printf("%d\n", node->freq);
+  print_tree(node->left, depth + 1);
+  print_tree(node->right, depth + 1);
 }
