@@ -138,7 +138,6 @@ void cholesky_symmetric_banded_5(const Matrix *A, Matrix *L) {
   }
 }
 
-
 /*
 
 decomposition of A = LU, where L has diagonal equal to only 1's.
@@ -322,18 +321,20 @@ void QR_factorization(const Matrix *A, Matrix **Q_out, Matrix **R_out) {
   int n = A->rows;
   int m = A->cols;
 
-  // Create R = copy of A
+  // R = copy(A)
   Matrix *R = matrix_create_double(n, m);
   copy_matrix(R, A);
 
-  // Q = identity
+  // Q = id
   Matrix *Q = identity_matrix(n);
 
-  for (int k = 0; k < (n < m ? n : m); k++) {
-    // Build Householder vector
-    Vector *x = create_vector(n - k);
-    for (int i = k; i < n; i++)
-      ((double *)x->data)[i - k] = ((double *)R->data)[i * m + k];
+  int min_nm = (n < m) ? n : m;
+  for (int k = 0; k < min_nm; k++) {
+    int sub_n = n - k; // number of rows in the current subvector
+    // x = R[k:n-1, k]
+    Vector *x = create_vector(sub_n);
+    for (int i = 0; i < sub_n; i++)
+      ((double *)x->data)[i] = ((double *)R->data)[(k + i) * m + k];
 
     double normx = l2_norm(x);
     if (normx == 0.0) {
@@ -341,35 +342,49 @@ void QR_factorization(const Matrix *A, Matrix **Q_out, Matrix **R_out) {
       continue;
     }
 
-    double alpha = -copysign(normx, ((double *)x->data)[0]);
+    // alpha = -sgn(x0)*||x||
+    double x0 = ((double *)x->data)[0];
+    double alpha = -copysign(normx, x0);
 
-    Vector *v = create_vector(n - k);
-    for (int i = 0; i < n - k; i++)
+    // v = x; v[0] -= alpha; then normalize v
+    Vector *v = create_vector(sub_n);
+    for (int i = 0; i < sub_n; i++)
       ((double *)v->data)[i] = ((double *)x->data)[i];
     ((double *)v->data)[0] -= alpha;
 
     double vnorm = l2_norm(v);
-    if (vnorm != 0.0)
+    if (vnorm != 0.0) {
+      // normalize v to unit length (so H = I - 2 v v^T)
       vector_scalar_product_inplace(v, 1.0 / vnorm);
+    } else {
+      free_vector(x);
+      free_vector(v);
+      continue;
+    }
 
-    // Apply Householder: R[k:n, k:m] = (I - 2 vv^T) R[k:n, k:m]
-    for (int i = k; i < n; i++) {
-      for (int j = k; j < m; j++) {
-        double dot = 0.0;
-        for (int l = 0; l < n - k; l++)
-          dot += ((double *)v->data)[l] * ((double *)R->data)[(k + l) * m + j];
-        ((double *)R->data)[i * m + j] -= 2 * ((double *)v->data)[i - k] * dot;
+    for (int j = k; j < m; j++) {
+      double dot = 0.0;
+      // dot = v^T * R[k:n-1, j]
+      for (int l = 0; l < sub_n; l++) {
+        dot += ((double *)v->data)[l] * ((double *)R->data)[(k + l) * m + j];
+      }
+      // R[k + i, j] -= 2 * v[i] * dot
+      for (int i = 0; i < sub_n; i++) {
+        ((double *)R->data)[(k + i) * m + j] -=
+            2.0 * ((double *)v->data)[i] * dot;
       }
     }
 
-    // Apply to Q: Q[:, k:n] = Q[:, k:n] * (I - 2 vv^T)
     for (int i = 0; i < n; i++) {
       double dot = 0.0;
-      for (int l = 0; l < n - k; l++)
+      for (int l = 0; l < sub_n; l++) {
         dot += ((double *)v->data)[l] * ((double *)Q->data)[i * n + (k + l)];
-      for (int j = 0; j < n - k; j++)
+      }
+      // Q[i, k + j] -= 2 * v[j] * dot
+      for (int j = 0; j < sub_n; j++) {
         ((double *)Q->data)[i * n + (k + j)] -=
-            2 * ((double *)v->data)[j] * dot;
+            2.0 * ((double *)v->data)[j] * dot;
+      }
     }
 
     free_vector(x);
