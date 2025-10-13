@@ -4,6 +4,7 @@ include/
 lib64/
 share/
 bin/
+lib/
 pyvenv.cfg
 *.aux
 *.fdb_latexmk
