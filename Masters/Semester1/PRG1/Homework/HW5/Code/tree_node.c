@@ -45,6 +45,16 @@ int tn_height(TreeNode *root) {
   return (l_depth > r_depth ? l_depth : r_depth) + 1;
 }
 
+void store_inorder(TreeNode *root, int **nodes, int size) {
+  if (!root) {
+    return;
+  }
+
+	store_inorder(root->left, nodes, size + 1);
+	*nodes[size] = root->info;
+	store_inorder(root->right, nodes, size + 1);
+}
+
 void pprint_tree(TreeNode *root, int depth) {
   if (!root)
     return;
@@ -56,7 +66,7 @@ void pprint_tree(TreeNode *root, int depth) {
   pprint_tree(root->left, depth + 1);
 }
 
-void print_inorder(TreeNode * root) {
+void print_inorder(TreeNode *root) {
   if (!root) {
     return;
   }

@@ -67,7 +67,7 @@ int huffman_code_table(HuffmanNode *root, uint64_t code, uint8_t depth,
     // print_bits(code, depth);
     // printf("\n");
     table[root->c]->code = code;
-    table[root->c]->length = depth;
+    table[root->c]->length = depth - 1;
     leaf_count += 1;
   } else {
     // add 0 to left code
