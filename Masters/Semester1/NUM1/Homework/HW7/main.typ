@@ -15,13 +15,13 @@
   $bold(A x) = bold(b)$ utilizando el *método QR*. (*10 puntos*)
 ]
 
-El método QR se caracteriza por descomponer una matriz cuadrada $A$ de
-dimensiones $m times m$ en el producto de dos matrices $Q R$, donde $Q$ es una
-matriz ortonormal ) de tamaño $m times m$, y $R$ es una matriz triangular
-superior de tamaño $m times m$.
+El método QR se caracteriza por descomponer una matriz cuadrada $bold(A)$ de
+dimensiones $m times m$ en el producto de dos matrices $bold(Q R)$, donde $bold(Q)$ es una
+matriz ortonormal ) de tamaño $m times m$, y $bold(R)$ es una matriz triangular
+superior de tamaño $m times m$. 
 
-Una vez realizada la descomposición, podemos utilizar el hecho de que $Q^(-1) =
-Q^(T)$ para simplificar el sistema de ecuaciones lineales $bold(A x) = bold(b)$
+Una vez realizada la descomposición, podemos utilizar el hecho de que $bold(Q)^(-1) =
+bold(Q)^(T)$ para simplificar el sistema de ecuaciones lineales $bold(A x) = bold(b)$
 de la siguiente manera:
 #align(
   center,
@@ -79,6 +79,7 @@ Obtenemos la siguiente descomposición de $bold(A)$:
   ).$],
 ))
 Solucionando el sistema anteriormente mencionado, obtenemos
+
 #align(
   center,
   $
@@ -96,12 +97,15 @@ Solucionando el sistema anteriormente mencionado, obtenemos
     ).
   $,
 )
-Podemos validar con las tareas anteriores que, efectivamente, el sistema se resuelve correctamente.
+Podemos validar con las tareas anteriores que, efectivamente, el sistema se
+resuelve correctamente. Alternativamente, podemos observar que el mismo codigo
+valida que $norm(bold(A x - b))_(l^2) = 1.475 times 10^(-14)$.
 
+#pagebreak()
 - *Sistema de $125 times 125$*:
 En este sistema, realizamos el mismo procedimiento. Para correr el programa, usamos
 ```
 make run-p1 ARGS="ex/A2.txt ex/b2.txt"
 ```
-
-dfkajsfdlk
+Ahora, el programa calcula nuevamente $norm(bold(A x - b))_(l^2) = 6.153 times
+10^(-19)$.
