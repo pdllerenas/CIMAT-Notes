@@ -1,4 +1,5 @@
 #include "stack.h"
+#include "tree_node.h"
 #include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -11,7 +12,7 @@ Stack *create_stack(unsigned int capacity) {
   }
   s->capacity = capacity;
   s->top = -1;
-  s->items = malloc(s->capacity * sizeof(int));
+  s->items = malloc(s->capacity * sizeof(TreeNode *));
   if (!s->items) {
     perror("[stack]: Unable to allocate memory.\n");
     return NULL;
@@ -23,7 +24,7 @@ int isFull(Stack *s) { return s->top == s->capacity - 1; }
 
 int isEmpty(Stack *s) { return s->top == -1; }
 
-void push(Stack *s, int val) {
+void push(Stack *s, TreeNode *val) {
   if (isFull(s)) {
     fprintf(stderr, "[stack] Stack overflow\n");
     return;
@@ -32,19 +33,19 @@ void push(Stack *s, int val) {
   s->items[++s->top] = val;
 }
 
-int pop(Stack *s) {
+TreeNode *pop(Stack *s) {
   if (isEmpty(s)) {
     fprintf(stderr, "[stack] Stack underflow\n");
-    return INT_MIN;
+    return NULL;
   }
   // return top item, then decrement s->top
   return s->items[s->top--];
 }
 
-int peek(Stack *s) {
+TreeNode *peek(Stack *s) {
   if (isEmpty(s)) {
     fprintf(stderr, "[stack] Stack is empty\n");
-    return INT_MIN;
+    return NULL;
   }
   // return top item, without decrementing top
   return s->items[s->top];
@@ -59,6 +60,6 @@ void free_stack(Stack *s) {
 
 void print_stack(Stack *s) {
   for (int i = s->top; i >= 0; i--) {
-    printf("%d\n", s->items[i]);
+    printf("%d\n", s->items[i]->info);
   }
 }
