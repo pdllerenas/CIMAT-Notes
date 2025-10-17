@@ -1,10 +1,12 @@
 #include <iostream>
 #include <regex>
+#include <string>
 
 int main(int argc, char *argv[]) {
-  const std::regex pattern("[\\+\\-]?\\d\\d+[.\\d\\d+[eE][\\+\\-]?\\d\\d+]?");
-  std::smatch p_match;
+	// [+-]?\d+[\.\d+[eE][+-]?\d+]?
+  const std::regex pattern("[+-]?\\d+(\\.\\d+[eE][+-]?\\d+)?");
+	std::string s = "1.2e10";
 
-  std::cout << "1.2e10" << ": " << std::regex_match("1.2e10", pattern)
+  std::cout << s << ": " << std::regex_match(s, pattern)
             << std::endl;
 }
