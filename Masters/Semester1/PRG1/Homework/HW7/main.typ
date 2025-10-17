@@ -2,7 +2,6 @@
 #import "@preview/tyniverse:0.2.3": homework
 #import "@preview/fletcher:0.5.8" as fletcher: diagram, edge, node
 #let question = homework.complex-question
-#let proof = homework.proof
 
 #show: pset.with(
   class: "Programación y Algoritmos I",
@@ -45,4 +44,44 @@ Consideremos la siguiente máquina de estado finito.
   edge(<q7>, "-", label-size: 8pt, <q8>, label-side: left, [Scientific Notation]),
   node((7, 1), $q_8$, shape: circle, name: <q8>, extrude: (-1, -3)),
 )))
-
+/*
+states
+s0
+s1
+s2
+s3
+s4
+s5
+s6
+s7
+s8
+s9
+s10
+initial
+s0
+accepting
+s8
+s9
+s10
+alphabet
+d
+.
+e
++
+transitions
+s0:+>s1
+s1:d>s2
+s2:d>s2
+s2:.>s3
+s1:$>s10
+s3:d>s4
+s4:d>s4
+s4:$>s9
+s4:e>s5
+s5:e>s2
+s5:+>s6
+s5:d>s7
+s6:d>s7
+s7:d>s7
+s7:$>s8
+*/
