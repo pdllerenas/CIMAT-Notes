@@ -10,6 +10,55 @@
   date: datetime.today(),
 )
 
+En este reporte, buscamos implementar un programa que reciba una cadena de
+caracteres y determine si esta tiene el formato de *notación científica*. En caso
+de que no sea así, el programa realizará la conversión correspondiente a su
+forma en notación científica.
+
+La *notación científica* se utiliza para expresar números demasiado _grandes_ (o
+_pequeños_) que resultan inconvenientes de escribir en forma decimal.
+Generalmente, esta notación emplea la base 10 para dichas representaciones. Por
+ejemplo:
+
+#align(center, table(
+  columns: (auto, auto),
+  [*Decimal*], [*Notación Cientifíca*],
+  $100$, $1 times 10^2$,
+  $0.0003$, $3 times 10^(-4)$,
+  $12.345$, $1.2345 times 10^1$,
+))
+
+Como primer solución, utilizaremos *expresiones regulares*. Las expresiones
+regulares consisten de constantes, que denotan conjuntos de strings, y
+operadores, que actúan sobre estos conjuntos de strings. Para nuestro objetivo,
+utilizaremos la siguiente expresión:
+#align(center, "[+-]?\d+(\.\d+)?([eE][+-]?\d+)?")
+En order, explicamos cada uno de los componentes:
+#align(center, table(
+  columns: (auto, 1fr),
+  [*Expresión*], [*Descripción*],
+  `[+-]?`, "Busca 0 o 1 ocurrencias de alguno de los caracteres '+' o '-'.",
+  `\d+`, "Busca una o más ocurrencias de un dígito (0-9)",
+  `(\.\d+)?`, "Busca 0 o 1 ocurrencias de la combinación de un '.' y una o más ocurrencias de un dígito (0-9)",
+  `[eE]`, "Busca una ocurrencia de 'e' o 'E'",
+))
+
+Nótese que los parentesis se utilizan para agrupar expresiones. De esta manera,
+podemos marcar como opcionales un conjunto de caracteres, pero si se presentan,
+deben aparecer de la manera descrita dentro de los parentesis.
+
+Para compilar el código solución, usamos
+```
+g++ main.c -o main
+```
+y ejecutamos usando
+```
+./main
+```
+Una vez ejecutado, iniciará un bucle infinito, esperando expresiones dadas por
+el usuario, clasificandolas como válidas o no. Por ejemplo, si 
+
+
 Consideremos la siguiente máquina de estado finito.
 
 #align(center, rect(inset: -5pt, outset: 10pt, diagram(
@@ -17,7 +66,7 @@ Consideremos la siguiente máquina de estado finito.
   node((0, 0.5)),
   edge("-|>", label-pos: -50%, label-side: center, label-anchor: "north", label-size: 8pt, [Input]),
   node((0, 0), $q_0$, name: <q0>),
-  edge(<q0>, "-", <q2>,label-size: 8pt, bend: -45deg, [D]),
+  edge(<q0>, "-", <q2>, label-size: 8pt, bend: -45deg, [D]),
   edge("-", label-size: 8pt, $+ slash -$),
   node((1, 0), $q_1$, name: <q1>),
   edge("-", label-size: 8pt, [D]),
