@@ -24,3 +24,5 @@ void tn_free(TreeNode *root);
 void dtn_free(DepthTreeNode *root);
 int depth(DepthTreeNode *n);
 int get_balance(DepthTreeNode *n);
+int tn_size(TreeNode *root);
+TreeNode *delete_node(TreeNode *root, int val);

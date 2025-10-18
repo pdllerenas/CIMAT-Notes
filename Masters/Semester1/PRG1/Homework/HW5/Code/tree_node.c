@@ -186,3 +186,58 @@ void dtn_free(DepthTreeNode *root) {
   dtn_free(root->right);
   free(root);
 }
+
+
+int tn_size(TreeNode *root) {
+  if (!root) {
+    return 0;
+  }
+  return 1 + tn_size(root->left) + tn_size(root->right);
+}
+
+
+/*
+ *
+ * Deletes note with info == val
+ *
+ * */
+TreeNode *delete_node(TreeNode *root, int val) {
+  if (!root) {
+    return root;
+  }
+
+  if (root->info > val) {
+    root->left = delete_node(root->left, val);
+    return root;
+  } else if (root->info < val) {
+    root->right = delete_node(root->right, val);
+    return root;
+  }
+
+  if (!root->left) {
+    TreeNode *temp = root->right;
+    free(root);
+    return temp;
+  } else if (root->right == NULL) {
+    TreeNode *temp = root->left;
+    free(root);
+    return temp;
+  } else {
+    TreeNode *succParent = root;
+    TreeNode *succ = root->right;
+    while (succ->left != NULL) {
+      succParent = succ;
+      succ = succ->left;
+    }
+
+    if (succParent != root) {
+      succParent->left = succ->right;
+    } else {
+      succParent->right = succ->right;
+    }
+
+    root->info = succ->info;
+    free(succ);
+    return root;
+  }
+}

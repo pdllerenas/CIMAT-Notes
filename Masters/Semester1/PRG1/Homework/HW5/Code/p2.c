@@ -1,27 +1,74 @@
-#include "tree_node.h"
 #include "hashtable.h"
+#include "tree_node.h"
 #include <stdio.h>
 
-int main(int argc, char *argv[]) { 
-  TreeNode *test = tn_create_node(4);
-  tn_insert_node(test, 8);
-  tn_insert_node(test, 1);
-  tn_insert_node(test, 3);
-  tn_insert_node(test, 7);
-  tn_insert_node(test, 2);
-  print_inorder(test);
+void show_menu() {
+  printf("\n=== HASH TABLE MENU ===\n");
+  printf("1. Insert value\n");
+  printf("2. Delete value\n");
+  printf("3. Print table\n");
+  printf("4. Find maximum tree depth\n");
+  printf("5. Exit\n");
+  printf("Choose an option: ");
+}
 
-  HashTable *ht = hashtable_innit(5);
+int main(int argc, char *argv[]) {
+  int initial_capacity;
+  printf("Enter initial hash table capacity: ");
+  scanf("%d", &initial_capacity);
 
-  hashtable_insert_node(ht, 8);
-  hashtable_insert_node(ht, 3);
-  hashtable_insert_node(ht, 4);
-  hashtable_insert_node(ht, 6);
-  hashtable_insert_node(ht, 1);
-  hashtable_insert_node(ht, 2);
-  hashtable_insert_node(ht, 9);
-  hashtable_insert_node(ht, 12);
+  HashTable *ht = hashtable_innit(initial_capacity);
+  if (!ht) {
+    fprintf(stderr, "Error: could not initialize hash table.\n");
+    return 1;
+  }
 
-  hashtable_print(ht);
+  int choice, value;
+  int index;
+  while (1) {
+    show_menu();
+    if (scanf("%d", &choice) != 1) {
+      printf("Invalid input.\n");
+      break;
+    }
 
+    switch (choice) {
+    case 1: // Insert
+      printf("Enter value to insert: ");
+      scanf("%d", &value);
+      hashtable_insert_node(&ht, value);
+      printf("Inserted %d.\n", value);
+      break;
+
+    case 2: // Delete
+      printf("Enter value to delete: ");
+      scanf("%d", &value);
+      hashtable_delete_node(ht, value);
+      printf("Deleted %d (if it existed).\n", value);
+      break;
+
+    case 3: // Print
+      printf("\nHash table contents:\n");
+      hashtable_print(ht);
+      break;
+
+    case 4: // Find max
+			printf("\nMAX TREE: ");
+			TreeNode *max = find_max_depth_tree(ht, &index);
+			printf("%d ", index);
+      print_inorder(max);
+			printf("\n");
+      break;
+
+    case 5: // Exit
+      free_hashtable(ht);
+      return 0;
+
+    default:
+      printf("Invalid option. Try again.\n");
+    }
+  }
+
+  free_hashtable(ht);
+  return 0;
 }
