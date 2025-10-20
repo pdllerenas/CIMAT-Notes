@@ -22,7 +22,7 @@ ejemplo:
 
 #align(center, table(
   columns: (auto, auto),
-  [*Decimal*], [*Notación Cientifíca*],
+  [*Decimal*], [*Notación Científica*],
   $100$, $1 times 10^2$,
   $0.0003$, $3 times 10^(-4)$,
   $12.345$, $1.2345 times 10^1$,
@@ -81,7 +81,7 @@ Consideremos la siguiente máquina de estado finito.
   edge(<q4>, "-|>", <q4>, label-size: 8pt, bend: 130deg, loop-angle: 90deg, [D]),
   edge(<q4>, "-", <q5>, label-size: 8pt, [E/e]),
   node((5, 0), $q_5$, name: <q5>),
-  edge(<q5>, "-|>", <q2>, label-size: 8pt, bend: -65deg, [E/e]),
+  edge(<q2>, "-|>", <q5>, label-size: 8pt, bend: 65deg, [E/e]),
   edge(<q5>, "-", <q6>, label-size: 8pt, $+ slash -$),
   edge(<q5>, "-", <q9>, label-size: 8pt, [Floating point]),
   node((5, 1), $q_9$, shape: circle, name: <q9>, extrude: (-1, -3)),
