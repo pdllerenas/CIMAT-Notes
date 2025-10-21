@@ -1,0 +1,2 @@
+/usr/bin/ar qc libc-mat.a "CMakeFiles/c-mat.dir/src/interpolate/taylor.cpp.o"
+/usr/bin/ranlib libc-mat.a

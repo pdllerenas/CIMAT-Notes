@@ -1,0 +1,3 @@
+/home/pdllerenas/Documents/Obsidian Vault/CIMAT/Masters/c-mat/build/CMakeFiles/c-mat.dir
+/home/pdllerenas/Documents/Obsidian Vault/CIMAT/Masters/c-mat/build/CMakeFiles/edit_cache.dir
+/home/pdllerenas/Documents/Obsidian Vault/CIMAT/Masters/c-mat/build/CMakeFiles/rebuild_cache.dir
