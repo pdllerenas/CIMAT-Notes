@@ -32,7 +32,7 @@ Como primer solución, utilizaremos *expresiones regulares*. Las expresiones
 regulares consisten de constantes, que denotan conjuntos de strings, y
 operadores, que actúan sobre estos conjuntos de strings. Para nuestro objetivo,
 utilizaremos la siguiente expresión:
-#align(center, "[+-]?\d+(\.\d+)?([eE][+-]?\d+)?")
+#align(center, "[+-]?\d+(\.\d+)?([eE][+-]?\d+)")
 En order, explicamos cada uno de los componentes:
 #align(center, table(
   columns: (auto, 1fr),
@@ -47,19 +47,10 @@ Nótese que los parentesis se utilizan para agrupar expresiones. De esta manera,
 podemos marcar como opcionales un conjunto de caracteres, pero si se presentan,
 deben aparecer de la manera descrita dentro de los parentesis.
 
-Para compilar el código solución, usamos
-```
-g++ main.c -o main
-```
-y ejecutamos usando
-```
-./main
-```
-Una vez ejecutado, iniciará un bucle infinito, esperando expresiones dadas por
-el usuario, clasificandolas como válidas o no. Por ejemplo, si 
-
-
-Consideremos la siguiente máquina de estado finito.
+La siguiente forma de resolver este problema, con la utilidad añadida de
+covertir/corregir ciertas expresiones a una notación científica normalizada,
+se hace a partir de una máquina de estado finito. Entonces, consideremos la
+siguiente:
 
 #align(center, rect(inset: -5pt, outset: 10pt, diagram(
   node-stroke: 1pt,
@@ -83,8 +74,8 @@ Consideremos la siguiente máquina de estado finito.
   node((5, 0), $q_5$, name: <q5>),
   edge(<q2>, "-|>", <q5>, label-size: 8pt, bend: 65deg, [E/e]),
   edge(<q5>, "-", <q6>, label-size: 8pt, $+ slash -$),
-  edge(<q5>, "-", <q9>, label-size: 8pt, [Floating point]),
-  node((5, 1), $q_9$, shape: circle, name: <q9>, extrude: (-1, -3)),
+  edge(<q4>, "-", <q9>, label-size: 8pt, [Floating point]),
+  node((4, 1), $q_9$, shape: circle, name: <q9>, extrude: (-1, -3)),
   node((6, 0), $q_6$, name: <q6>),
   edge(<q6>, "-", <q7>, label-size: 8pt, [D]),
   node((7, 0), $q_7$, name: <q7>),
@@ -93,44 +84,77 @@ Consideremos la siguiente máquina de estado finito.
   edge(<q7>, "-", label-size: 8pt, <q8>, label-side: left, [Scientific Notation]),
   node((7, 1), $q_8$, shape: circle, name: <q8>, extrude: (-1, -3)),
 )))
-/*
-states
-s0
-s1
-s2
-s3
-s4
-s5
-s6
-s7
-s8
-s9
-s10
-initial
-s0
-accepting
-s8
-s9
-s10
-alphabet
-d
-.
-e
-+
-transitions
-s0:+>s1
-s1:d>s2
-s2:d>s2
-s2:.>s3
-s1:$>s10
-s3:d>s4
-s4:d>s4
-s4:$>s9
-s4:e>s5
-s5:e>s2
-s5:+>s6
-s5:d>s7
-s6:d>s7
-s7:d>s7
-s7:$>s8
-*/
+
+Este diagrama se puede explicar de la siguiente manera:
+
+#table(
+  columns: (auto, 1fr),
+  [*Nodo*], [*Descripción*],
+  $q_0$, "Recibe string a analizar. Se dirige a " + $q_1$ + "si el primer caracter es +/-, a " + $q_2$ + " si es un dígito.",
+  $q_1$, "Si el siguiente caracter del string es entero, avanzar a " + $q_2$,
+  $q_2$, "Realiza un bucle hasta que se dejen de encontrar dígitos contiguos. Si ya no hay más caracteres, el dígito es un entero, y se dirige a  " + $q_10$ + ". Si el caracter es e/E, avanza a " + $q_5$ + ". Si es un punto decimal, avanza a " + $q_3$,
+  $q_3$, "El caracter debe ser un dígito. Si lo es, avanza a " + $q_4$ , 
+  $q_4$, "Un bucle que encuentre dígitos hasta que se acaben los caracteres (punto flotante), avanza a " + $q_9$ + ", o se encuentre una e/E, se avanza a " + $q_5$,
+  $q_5$, "Busca +/- o un dígito. Si encuentra un signo, avanza a " + $q_6$ + ". Si encuentra un dígito, avanza a " + $q_7$,
+  $q_6$, "Busca un dígito. Si lo es, avanza a " + $q_7$,
+  $q_7$, "Bucle que encuentra dígitos, hasta que se terminen los caracteres. Avanza a " + $q_8$,
+  $q_8$, "Regresa que el string es notación científica",
+  $q_9$, "Regresa que el string es de punto flotante",
+  $q_10$, "Regresa que el string es un entero",
+)
+
+En particular, esta nos permite ver qué tipo de expresión se leyó: entera, de punto flotante, o en notación científica.
+Notemos que este sistema clasifica expresiones como $11.1 e 10$ como notación científica. Nosotros buscamos 
+normalizar esta representación.
+
+El siguiente programa utiliza ambas técnicas para validar e intenta corregir las expresiones que no se encuentran
+en notación científica. Se compila usando 
+
+```
+g++ main.cpp -o main
+```
+Y se ejecuta usando
+```
+./main
+```
+Un ejemplo de interacción con el programa es el siguiente:
+```
+=============================================
+Enter a number in scientific notation:
+12.2
+Regex says: Invalid.
+Finite state machine says: 1.22e1
+=============================================
+=============================================
+Enter a number in scientific notation:
+1.22e1
+Regex says: Valid.
+Finite state machine says: 1.22e1
+=============================================
+=============================================
+Enter a number in scientific notation:
++12.2
+Regex says: Invalid.
+Finite state machine says: +1.22e1
+=============================================
+=============================================
+Enter a number in scientific notation:
++1.22e1
+Regex says: Valid.
+Finite state machine says: +1.22e1
+=============================================
+=============================================
+Enter a number in scientific notation:
+-0.023e-2
+Regex says: Valid.
+Finite state machine says: -0.023e-2
+=============================================
+=============================================
+Enter a number in scientific notation:
+-23.23e-3
+Regex says: Valid.
+Finite state machine says: -2.323e-2
+=============================================
+```
+Notemos que el regex nos dice si la notación es válida o no, mientras que la máquina
+de estado finito nos normaliza la expresión. 
