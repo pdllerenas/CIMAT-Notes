@@ -61,15 +61,22 @@
   combustible de hidrógeno que produce electricidad. Una manera de verificar el
   rendimiento experimental es analizando la denominada curva de polarización,
   voltage (V) vs densidad de corriente (*I*). Un electroquímico experimental
-  tomó observaciones a distintas densidades de corriente y los presentóen la 
+  tomó observaciones a distintas densidades de corriente y los presentóen la
   siguiente tabla.
 
   Su jefe le solicida conocer los voltajes para $I = 0.0075, 0.0125$ y $0.0175$ $A c m^(-2)$.
   Observa que él no tomó medidas a esos valores, entonces debe realizar nuevamente el
   experimento. Con ayuda de tus habilidades aprendidas en esta tarea ayuda
   al electroquímico a no tener que realizar nuevamente el experimento.
+
+  #table(
+    columns: (auto, auto, auto, auto, auto, auto, auto),
+    $I (A slash c m ^2)$, $0.001$, $0.005$, $0.010$, $0.015$, $0.019$, $0.022$,
+    [Voltage (V)], $0.7252$, $0.62625$, $0.57969$, $0.53438$, $0.43906$, $0.28125$
+  )
+
   - Elige alguno de los métodos de los incisos 2), 3) y 4) para hallar los
-  valores de voltage que necesita el electroquímico y que le ayudarán  a no tener 
+  valores de voltage que necesita el electroquímico y que le ayudarán  a no tener
   que realizar el experimento nuevamente.
   - Grafica la curva de polarización (I vs V) de la tabla de datos experimentales
   y añade los valores interpolados.
