@@ -11,5 +11,8 @@ add_library(c-mat
 
 target_include_directories(c-mat
 	PUBLIC
-		${CMAKE_CURRENT_SOURCE_DIR}/include
+		${CMAKE_SOURCE_DIR}/include
 )
+
+add_executable(main main.cpp)
+target_link_libraries(main PRIVATE c-mat)
