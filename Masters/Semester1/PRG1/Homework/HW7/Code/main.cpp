@@ -1,6 +1,18 @@
+/*
+ * TAREA 2 C++
+ * PEDRO DAVID LLERENAS GONZALEZ
+ */
+
 #include <iostream>
 #include <regex>
 #include <string>
+
+/*
+ *
+ * takes a string and outputs a corrected / revised version matching a normalized scientific notation
+ *
+ * TODO: handle '0' prefix strings
+ */
 
 std::string fsm(std::string &s) {
   if (s.empty()) {
@@ -223,7 +235,6 @@ std::string fsm(std::string &s) {
 }
 
 int main(int argc, char *argv[]) {
-
   const std::regex pattern(R"([+-]?\d+(\.\d+)?([eE][+-]?\d+))");
   std::string s;
   while (true) {
