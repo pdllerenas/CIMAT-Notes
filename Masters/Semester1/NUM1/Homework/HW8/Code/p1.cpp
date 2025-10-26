@@ -37,4 +37,5 @@ int main(int argc, char *argv[]) {
       outFile << n[j] << "," << z[i] << "," << t << "," << std::abs(std::exp(z[i]) - t) << "\n";
     }
   }
+	outFile.close();
 }
