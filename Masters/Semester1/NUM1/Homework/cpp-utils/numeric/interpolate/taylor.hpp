@@ -15,8 +15,7 @@ namespace interp {
  *
  * @return The approximate value of f at z.
  */
-template <std::floating_point T>
-T taylor(T z, T x0, T *df, std::size_t n) {
+template <std::floating_point T> T taylor(T z, T x0, T *df, std::size_t n) {
   T result = df[0];
   T term = df[0];
   for (int i = 1; i < n; i++) {
