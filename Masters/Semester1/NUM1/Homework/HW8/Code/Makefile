@@ -5,7 +5,7 @@ LDFLAGS =
 LIB_DIR =
 LIBS_SRCS = 
 
-TARGETS = p1
+TARGETS = p1 p2 p3 p4 p5
 
 all: $(TARGETS)
 
