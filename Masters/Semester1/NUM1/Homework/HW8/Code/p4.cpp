@@ -26,9 +26,6 @@ int main(int argc, char *argv[]) {
 
   outFile << "z,P(z)\n";
   std::vector coeff = divided_difference(x, y);
-	for (double c : coeff) {
-		std::cout << c << std::endl;
-	}
   for (double zi : z) {
     double ft = evaluate(zi, x, coeff);
     outFile << zi << "," << ft << "\n";
