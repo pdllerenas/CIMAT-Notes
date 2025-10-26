@@ -2,6 +2,7 @@
 #import "@preview/tyniverse:0.2.3": homework
 #import "@preview/cetz:0.4.2": canvas, draw
 #import "@preview/cetz-plot:0.1.3": plot
+#import "@preview/lilaq:0.5.0" as lq
 #let question = homework.complex-question
 #let proof = homework.proof
 
@@ -10,6 +11,10 @@
   student: "Pedro D. Llerenas\npedro.llerenas@cimat.mx",
   title: "Tarea 8",
   date: datetime.today(),
+)
+#set par(
+  justify: true,
+  leading: 0.52em,
 )
 
 #question[
@@ -184,6 +189,8 @@ Esto nos genera el archivo `ex/neville/table.csv`, que se ve de la siguiente man
   ..results_neville.flatten(),
 ))
 
+#pagebreak()
+
 #question[
   Crear un código en `C++` para interpolar un valor $x$ de una función $f(x)$ en
   $n+1$ puntos utilizando interpolación progresiva por diferencias divididas de
@@ -221,6 +228,7 @@ Esto nos genera el archivo `ex/newton/table.csv`, que se ve de la siguiente mane
   ..results_newton.flatten(),
 ))
 
+
 #question[
   *Validación*. Con los códigos creados en los incisos 2), 3) y 4), realiza
   las interpolaciones correspondientes y llena la siguiente tabla. Utiliza la
@@ -228,21 +236,29 @@ Esto nos genera el archivo `ex/newton/table.csv`, que se ve de la siguiente mane
   como valores nodales de interpolación. Nota: Los errores son absolutos.
 ]
 
+Las explicaciones de cada método se encuentran en suc correspondientes incisos.
+Para crear la tabla comparativa, usamos
+```
+make run-p5 ARGS="ex/all/z.txt ex/all/x.txt ex/all/y.txt"
+```
+Esto nos genera el archivo `ex/all/table.csv`, que se ve de la siguiente manera:
+
+
 #let results_all = csv("Code/ex/all/table.csv", row-type: array).slice(1)
 
 #align(center, table(
   columns: 8,
-  table.header($bold(z)$, $bold(f (z))$, [*I. Lagrange*], [*Error L.*], [*I. Neville*], [*Error N.*], [*I. Diferencias divididas*], [*Error DD*]),
+  table.header(
+    $bold(z)$,
+    $bold(f (z))$,
+    [*I. Lagrange*],
+    [*Error L.*],
+    [*I. Neville*],
+    [*Error N.*],
+    [*I. Diferencias divididas*],
+    [*Error DD*],
+  ),
   ..results_all.flatten(),
-))
-#align(center, table(
-  columns: (auto, auto, auto, auto, auto, auto, auto, auto),
-  $z$, $f(z)$, [I. Lagrange], [Error L.], [I. Neville], [Error N.], [I. Diferencias divididas], [Error DD],
-  $0.4$, [], [], [], [], [], [], [],
-  $0.8$, [], [], [], [], [], [], [],
-  $1.2$, [], [], [], [], [], [], [],
-  $1.6$, [], [], [], [], [], [], [],
-  $1.9$, [], [], [], [], [], [], [],
 ))
 
 #question[
@@ -258,18 +274,59 @@ Esto nos genera el archivo `ex/newton/table.csv`, que se ve de la siguiente mane
   experimento. Con ayuda de tus habilidades aprendidas en esta tarea ayuda
   al electroquímico a no tener que realizar nuevamente el experimento.
 
-  #table(
+  #align(center, table(
     columns: (auto, auto, auto, auto, auto, auto, auto),
     $I (A slash c m^2)$, $0.001$, $0.005$, $0.010$, $0.015$, $0.019$, $0.022$,
     [Voltaje (V)], $0.7252$, $0.62625$, $0.57969$, $0.53438$, $0.43906$, $0.28125$,
-  )
+  ))
 
   - Elige alguno de los métodos de los incisos 2), 3) y 4) para hallar los
-  valores de voltaje que necesita el electroquímico y que le ayudarán  a no tener
-  que realizar el experimento nuevamente.
-  - Grafica la curva de polarización (I vs V) de la tabla de datos experimentales
-  y añade los valores interpolados.
+    valores de voltaje que necesita el electroquímico y que le ayudarán  a no
+    tener que realizar el experimento nuevamente.
+  - Grafica la curva de polarización (I vs V) de la tabla de datos
+    experimentales y añade los valores interpolados.
   - Reflexión: ¿Qué puedes decir del método o la solución?
 ]
 
+Compararemos todos los métodos, como lo hicimos en el ejercicio 5. Para
+compilar y ejecutar el programa correspondiente, usamos
+```
+make run-p6 ARGS="ex/six/z.txt ex/six/x.txt ex/six/y.txt"
+```
+Esto nos genera el archivo `ex/six/table.csv`, que se ve de la siguiente
+manera:
+#let results_six = csv("Code/ex/six/table.csv", row-type: array).slice(1)
 
+#align(center, table(
+  columns: 4,
+  table.header($bold(z)$, [*I. Lagrange*], [*I. Neville*], [*I. Diferencias divididas*]),
+  ..results_six.flatten(),
+))
+Todos los métodos nos proporcionan el mismo valor interpolado (con la precisión
+dada).
+
+La siguiente gráfica representa los valores conocidos, y los valores
+interpolados.
+
+#align(center, lq.diagram(
+  title: [Interpolación de datos],
+  xlabel: $I$, 
+  ylabel: $V$,
+  lq.plot(
+    label: [Conocidos],
+    (0.001, 0.005, 0.0075, 0.010, 0.0125, 0.015, 0.0175, 0.019, 0.022),
+    (0.7252, 0.62625, 0.598054, 0.57969, 0.561617, 0.53438, 0.485709, 0.43906, 0.28125),
+  ),
+  lq.plot(
+    label: [Interpolados],
+    stroke: none,
+    mark: "s",
+    (0.0075, 0.0125, 0.0175),
+    (0.598054, 0.561617,0.485709),
+  ),
+))
+Con esto, podemos decir que el método parece acercarse a lo que ocurre en
+realidad en los puntos solicitados. Podemos decir, además, que por la
+apariencia de la curva, se acerca a un polinomio cúbico (o al menos, a un
+polinomio de grado impar). Al comportarse de manera _bonita_, los métodos utilizados
+son seguros de obtener resultados satisfactorios.
