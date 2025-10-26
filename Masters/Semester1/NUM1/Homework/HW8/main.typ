@@ -8,7 +8,7 @@
 #show: pset.with(
   class: "Métodos Numéricos I",
   student: "Pedro D. Llerenas\npedro.llerenas@cimat.mx",
-  title: "Tarea 7",
+  title: "Tarea 8",
   date: datetime.today(),
 )
 
@@ -101,20 +101,125 @@ archivo `ex/taylor/table.csv`, que se ve de la siguiente manera:
 )
 
 #question[
-  Crear un código en `C++` para calcular el valor el polinomio de Lagrange de grado
-  $n$ en el punto $x$ generado por $n+1$ puntos de prueba.
+  Crear un código en `C++` para calcular el valor del polinomio de Lagrange de
+  grado $n$ en el punto $x$ generado por $n+1$ puntos de prueba.
 ]
+
+Dados $k+1$ nodos ${x_0, x_1, dots, x_n}$, todos distintos, la base de Lagrange
+para polinomios de grado menor que $k$ es dada por el conjunto ${ell_0 (x),
+  ell_1 (x), dots, ell_k (x)}$, cada uno de grado $k$. Cada uno toma los valores
+$ell_j (x_m) = delta_(j m)$, donde $delta_(j m)$ denota la delta de Kronecker.
+
+Explícitamente, estos se ven de la siguiente manera:
+#show stack: set text(size: 7pt)
+$
+  ell_j (x) &= (x-x_0)/(x_j-x_0) dots.h.c (x-x_(j-1))/(x_j - x_(j-1)) dot (x-x_(j+1))/(x_j-x_(j+1)) dots.h.c (x-x_k)/(x_j-x_k)\
+  &= product_(#stack(spacing: 4pt, $0<=m<=k$, $m != j$)) (x-x_m)/(x_j - x_m).
+$
+
+Para este ejercicio, interpolaremos el valor en $x = 1$, usando como ejemplo
+los puntos $ (-2,2), (0,4), (2,3), (5,4). $
+Por las definiciones anteriores, el polinomio que se generará tendrá la forma
+$ P_3 (x) = 2ell_0 (x) + 4ell_1 (x) + 3ell_2 (x) + 4 ell_3 (x). $
+
+Para ejecutar el código correspondiente, usamos
+```
+make run-p2 ARGS="ex/lagrange/z.txt ex/lagrange/x.txt ex/lagrange/y.txt"
+```
+Esto nos genera el archivo `ex/lagrange/table.txt`, que contiene los puntos insertados
+por el archivo `ex/lagrange/z.txt`, y su respectiva evaluación en el polinomio
+de Lagrange generado por los puntos dados. La tabla generada es la siguiente:
+
+#let results_lagrange = csv("Code/ex/lagrange/table.csv", row-type: array).slice(1)
+
+#grid(
+  columns: (1fr, 1fr),
+  align: center,
+  table(
+    columns: 2,
+    table.header($bold(z)$, $bold(P_n (z))$),
+    ..results_lagrange.slice(0, 5).flatten(),
+  ),
+  table(
+    columns: 2,
+    table.header($bold(z)$, $bold(P_n (z))$),
+    ..results_lagrange.slice(5).flatten(),
+  ),
+)
+
+Como podemos observar, el polinomio coincide con los puntos originalmente dados,
+por lo que podemos concluir que el método funciona correctamente.
 
 #question[
   Crear un código en `C++` para interpolar un valor $x$ de una función $f(x)$
   en $n+1$ puntos utilizando interpolación de Neville.
 ]
 
+Dados $n+1$ puntos (con cada coordenada $x$ distinta), existe un único polinomio de grado a lo más $n$ que pasa por los puntos dados.
+El algoritmo consiste en resolver la relación de recurrencia
+#set math.cases(gap: 1em)
+$
+  p_(i,j) = cases(
+    y_i "if" j = i " and " 0 <= i <= n,
+    ((x-x_i)p_(i+1,j) (x) - (x-x_j) p_(i, j-1) (x))/(x_j - x_i) "if" 0<=i<j<=n
+  )
+$
+El valor buscado es $p_(0,n)$. Para este ejercicio, usaremos el ejemplo de $f(x) = log(x)$, con los puntos
+$ x_0 = 2.0, quad x_1 = 2.2,quad x_2 = 2.3. $
+Las evaluaciones de estos puntos en $f$ son
+$ f(x_0) = 0.6931, quad f(x_1) = 0.7885,quad f(x_2) = 0.8329 $
+Para ejecutar nuestro programa, usamos
+```
+make run-p3 ARGS="ex/neville/z.txt ex/neville/x.txt ex/neville/y.txt"
+```
+Esto inserta los valores de $x$ y $f(x)$ dados. El archivo `z.txt` contiene los puntos a interpolar.
+Esto nos genera el archivo `ex/neville/table.csv`, que se ve de la siguiente manera:
+
+// #let results_neville = csv("Code/ex/neville/table.csv", row-type: array).slice(1)
+#let results_neville = csv("Code/ex/neville/table.csv", row-type: array).slice(1)
+
+#align(center, table(
+  columns: 3,
+  table.header($bold(z)$, $bold(P (z))$, $bold(|P(z) - log(z)|)$),
+  ..results_neville.flatten(),
+))
+
 #question[
   Crear un código en `C++` para interpolar un valor $x$ de una función $f(x)$ en
   $n+1$ puntos utilizando interpolación progresiva por diferencias divididas de
   Newton.
 ]
+
+Dados $n+1$ puntos con coordenadas $x$ distintas, la diferencias divididas se definen recursivamente mediante
+$
+  [y_k] &:= y_k, & k in {0,dots,n}\
+  [y_k, dots, y_(k+j)] &:= ([y_(k+1), dots, y_(k+j)] - [y_k, dots, y_(k+j-1)])/(x_(k+j) - x_k) &#h(5em) k in {0,dots, n-j}, j in {1,dots,n}\
+$
+
+Algunas propiedades de estos objetos son linealidad e interpolación de polinomios. Es decir, si $P$ es una
+función polinomial de grado a lo más $n$, y $p[x_0, dots, x_n]$ son las diferencias divididas, entonces
+$
+  P_(n-1) (x) = & p[x_0] \
+                & +p[x_0, x_1](x-x_0) \
+                & +p[x_0, x_1, x_2](x-x_0)(x-x_1) \
+                & +dots.h.c+p[x_0, dots, x_n](x-x_0)(x-x_1) dots.h.c (x-x_(n-1))
+$
+
+Como ejemplo, tomaremos los puntos $ (1,2), (3,3), (4,2), (8,10). $
+
+Corremos nuestro programa con el siguiente comando:
+```
+make run-p4 ARGS="ex/newton/z.txt ex/newton/x.txt ex/newton/y.txt"
+```
+Esto nos genera el archivo `ex/newton/table.csv`, que se ve de la siguiente manera:
+
+#let results_newton = csv("Code/ex/newton/table.csv", row-type: array).slice(1)
+
+#align(center, table(
+  columns: 2,
+  table.header($bold(z)$, $bold(P (z))$),
+  ..results_newton.flatten(),
+))
 
 #question[
   *Validación*. Con los códigos creados en los incisos 2), 3) y 4), realiza
@@ -123,7 +228,14 @@ archivo `ex/taylor/table.csv`, que se ve de la siguiente manera:
   como valores nodales de interpolación. Nota: Los errores son absolutos.
 ]
 
-#table(
+#let results_all = csv("Code/ex/all/table.csv", row-type: array).slice(1)
+
+#align(center, table(
+  columns: 8,
+  table.header($bold(z)$, $bold(f (z))$, [*I. Lagrange*], [*Error L.*], [*I. Neville*], [*Error N.*], [*I. Diferencias divididas*], [*Error DD*]),
+  ..results_all.flatten(),
+))
+#align(center, table(
   columns: (auto, auto, auto, auto, auto, auto, auto, auto),
   $z$, $f(z)$, [I. Lagrange], [Error L.], [I. Neville], [Error N.], [I. Diferencias divididas], [Error DD],
   $0.4$, [], [], [], [], [], [], [],
@@ -131,7 +243,7 @@ archivo `ex/taylor/table.csv`, que se ve de la siguiente manera:
   $1.2$, [], [], [], [], [], [], [],
   $1.6$, [], [], [], [], [], [], [],
   $1.9$, [], [], [], [], [], [], [],
-)
+))
 
 #question[
   *Aplicación*. Consideremos el problema de un experimento para una celda de
