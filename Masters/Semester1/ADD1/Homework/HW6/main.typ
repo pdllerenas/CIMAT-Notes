@@ -197,3 +197,28 @@ $
   visualizaciones informativas que vimos en clase para diferentes elecciones de
   $CC$.
 ]
+
+#figure(
+  image("p1.png", width: 80%),
+  caption:[Pair plot de las 4 variables]
+)
+
+#figure(
+  image("p2.png", width: 80%),
+  caption:[Ejes horizontales, no se distingue nada (normalmente distribuida)]
+)
+
+#figure(
+  image("p3.png", width: 100%),
+  caption:[En 3d, con y4 como el color (ver plt.html)]
+)
+
+#figure(
+  image("p4.png", width: 100%),
+  caption:[En 3d, con y4 como el color (ver plt.html)]
+)
+
+#figure(
+  image("p5.png", width: 100%),
+  caption:[En 3d, con y4 como el color (ver plt.html)]
+)
