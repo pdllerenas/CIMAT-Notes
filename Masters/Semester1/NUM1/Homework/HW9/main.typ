@@ -72,17 +72,37 @@ make run-p1 ARGS="0 ex/taylor/n.txt ex/taylor/z.txt ex/taylor/x0.txt"
     (1.3, 1.5, 1.85, 2.1, 2.6, 2.7, 2.4, 2.15, 2.05, 2.1, 2.25, 2.3, 2.25, 1.95, 1.4, 0.9, 0.7, 0.6, 0.5, 0.4, 0.25)
   )
 ))
+]
+*Nota*: Para la interpolación puedes utilizar secciones o quitar puntos. La idea
+es que se acerque a la forma adecuada. Sólo debes explicar tu procedimiento en
+el reporte. Si alguno desea recrear al pato completo se le puede hacer llegar
+los puntos a interpolar.
 
+#question[
+  Genera un código que realice interpolación cúbica fijo so sujeto, puedes basarte en el algoritmo visto en clase.
+  Con este algoritmo recrea la parte superior de Snoopy, dados los puntos de la tabla.
 ]
 
-Dada una función $f:[a,b] -> RR$, $n$ veces diferenciable, su _polinomio de
-  Taylor_ de grado $n$ centrado en el punto $x_0 in (a,b)$ está dado por $ P_n
-(x) = f(x_0) + f^((1))(x_0)(x-x_0) + dots.h.c + f^((n))(x_0)((x-x_0)^n)/n!. $
-En general, este polinomio aproxima la función localmente, por lo que si el
-valor que tratamos de evaluar está fuera del radio de convergencia del
-polinomio, el valor devuelto no corresponderá al valor real de la función.
+#align(center, table(columns: 4, 
+  $i$, $x_i$, $f(x_i)$, $f'(x_i)$,
+  $0$, $1$, $3.0$, $1.0$,
+  $1$, $1$, $3.0$, $1.0$,
+  $2$, $1$, $3.0$, $1.0$,
+  $3$, $1$, $3.0$, $1.0$,
+  $4$, $1$, $3.0$, $1.0$,
+  $5$, $1$, $3.0$, $1.0$,
+  $6$, $1$, $3.0$, $1.0$,
+  $7$, $1$, $3.0$, $1.0$,
+  $8$, $1$, $3.0$, $1.0$,
+))
 
-Para compilar y ejecutar el programa, usamos
-```
-make run-p1 ARGS="0 ex/taylor/n.txt ex/taylor/z.txt ex/taylor/x0.txt"
-```
+#align(center, table(columns: 4, 
+  $i$, $x_i$, $f(x_i)$, $f'(x_i)$,
+  $0$, $1$, $3.0$, $1.0$,
+  $1$, $1$, $3.0$, $1.0$,
+  $2$, $1$, $3.0$, $1.0$,
+  $3$, $1$, $3.0$, $1.0$,
+  $4$, $1$, $3.0$, $1.0$,
+  $5$, $1$, $3.0$, $1.0$,
+  $6$, $1$, $3.0$, $1.0$,
+))
