@@ -39,7 +39,7 @@ polinomio, el valor devuelto no corresponderá al valor real de la función.
 
 Para compilar y ejecutar el programa, usamos
 ```
-make run-p1 ARGS="0 ex/taylor/n.txt ex/taylor/z.txt ex/taylor/x0.txt"
+make run-p1 ARGS="0 ex/taylor/n.txt ex/taylor/z.txt ex/taylor/fx.txt"
 ```
 Este comando evaluará los valores del archivo `ex/taylor/z.txt` en el polinomio
 de Taylor centrado en $x_0 = 0$, y usará los valores de las $n$ derivadas de

@@ -1,6 +1,5 @@
 *.zip
 venv/
-include/
 lib64/
 share/
 bin/

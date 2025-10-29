@@ -1,0 +1,14 @@
+[
+{
+  "directory": "/home/pdllerenas/Documents/Obsidian Vault/CIMAT/Masters/c-mat/build",
+  "command": "/usr/bin/c++  -I\"/home/pdllerenas/Documents/Obsidian Vault/CIMAT/Masters/c-mat/include\" -std=c++20 -o CMakeFiles/c-mat.dir/src/interpolate/taylor.cpp.o -c \"/home/pdllerenas/Documents/Obsidian Vault/CIMAT/Masters/c-mat/src/interpolate/taylor.cpp\"",
+  "file": "/home/pdllerenas/Documents/Obsidian Vault/CIMAT/Masters/c-mat/src/interpolate/taylor.cpp",
+  "output": "CMakeFiles/c-mat.dir/src/interpolate/taylor.cpp.o"
+},
+{
+  "directory": "/home/pdllerenas/Documents/Obsidian Vault/CIMAT/Masters/c-mat/build",
+  "command": "/usr/bin/c++  -I\"/home/pdllerenas/Documents/Obsidian Vault/CIMAT/Masters/c-mat/include\" -std=c++20 -o CMakeFiles/main.dir/main.cpp.o -c \"/home/pdllerenas/Documents/Obsidian Vault/CIMAT/Masters/c-mat/main.cpp\"",
+  "file": "/home/pdllerenas/Documents/Obsidian Vault/CIMAT/Masters/c-mat/main.cpp",
+  "output": "CMakeFiles/main.dir/main.cpp.o"
+}
+]
