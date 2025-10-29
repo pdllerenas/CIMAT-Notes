@@ -2,6 +2,16 @@
 #include <regex>
 #include <string>
 
+int compare(std::string n, std::string m) {
+  if (n.length() < m.length() || (n.length() == m.length() && n < m)) {
+    return 1;
+  } else if (n == m) {
+    return 0;
+  } else {
+    return -1;
+  }
+}
+
 /*
  * Performs the integer difference n - m.
  */
@@ -91,7 +101,7 @@ std::string BigProduct(std::string n, std::string m, unsigned int base) {
     m = m.substr(1);
   }
 
-	// remove redundant 0's
+  // remove redundant 0's
   while (n.size() > 1 && n[0] == '0') {
     n.erase(0, 1);
   }
@@ -135,17 +145,36 @@ std::string BigProduct(std::string n, std::string m, unsigned int base) {
 }
 
 std::string BigDivision(std::string n, std::string m, unsigned int base) {
-	if (n.length() < m.length() || n < m) {
-		return "0";
-	}
-	if (n == m) {
-		return "1";
-	}
-	unsigned int q, r;
-	for (int i = 0; i < n.length(); i++) {
-		r = n[i] - '0';
+  int c = compare(n, m);
+  std::cout << "here" << std::endl;
+  if (c == 1) {
+    return "0";
+  } else if (c == 0) {
+    return "1";
+  }
+  std::cout << "here" << std::endl;
+  int i;
+  int len_n = n.length(), len_m = m.length();
+  int cc;
+  std::string t = "1";
+  std::string result = "";
 
-	}
+  for (i = len_n - 1;
+       compare(BigSum(t + "0", std::string(n[i], 1), 10), m) ==
+       1;
+       i--) {
+    t += "0";
+    t = BigSum(t, std::string(1, n[i]), 10);
+  }
+  for (; i >= 0; i--) {
+    t += "0"; 
+    t = BigSum(t, std::string(1, n[i]), 10);
+    for (cc = 9; compare(BigProduct(std::to_string(cc), m, 10), t) == -1; cc--)
+      ;
+    t = BigDifference(t, BigProduct(std::to_string(cc), m, 10), 10);
+    result.push_back(cc + '0');
+  }
+  return result;
 }
 
 int main(int argc, char *argv[]) {
@@ -182,7 +211,7 @@ int main(int argc, char *argv[]) {
       result = BigProduct(n, m, 10);
       break;
     case '/':
-      result = BigSum(n, m, 10);
+      result = BigDivision(n, m, 10);
       break;
     default:
       std::cout << "Error: Invalid operator.\n" << std::endl;
@@ -202,4 +231,3 @@ int main(int argc, char *argv[]) {
     std::cout << result << std::endl;
   }
 }
-
