@@ -58,21 +58,21 @@ Para realizar conversiones de decimal a _flyte_, debemos tomar en cuenta que
 un nivel de precisión se perderá. Por ejemplo, para convertir el número 3.42
 a _flyte_, primero lo normalizamos a que tenga la forma 1.x. Notemos que
 $ 
-3 &= 011_2,\
-0.42 &= 0.84 times 2^(-1) = 1.68 times 2^(-2) = 3.36 times 2^(-3) = 011_2
+3 &= 11_2,\
+0.42 &= 0.84 times 2^(-1) = 1.68 times 2^(-2) = 3.36 times 2^(-3) = 11_2
 $
 Con esto, tenemos 
 $ 
-3.42 = 11.011_2 times 2^(0) = 1.1011_2times 2^1.
+3.42 = 11.111_2 times 2^(0) = 1.1111_2times 2^1.
 $ 
-Como $1 = 0001_2$, el exponente que usamos en la representacion es $1 - 7 =
--6$, mientras que la mantisa es 101 (truncando el bit menos significativo, ya
+Como $1 = 1_2$, el exponente que usamos en la representacion es $1 + 7 = 8 = 0100_2$, 
+mientras que la mantisa es $111_2$ (truncando el bit menos significativo, ya
 que solo tenemos 3 bits disponibles). Es decir, el numero en sistema _flyte_ es
 $ 
-3.42 = 00001101_2.
+3.42 = 00100111_2.
 $ 
 Sin embargo, para convertirlo de vuelta a decimal, notemos lo siguiente:
 $ 
-00001101_2 = 2^1 times 1.625 = 3.25,
+00100111_2 = 2^(8-7) times 1.875 = 3.75,
 $ 
 es decir, perdimos el valor que inicialmente habiamos ingresado.
