@@ -1,14 +1,29 @@
+/*
+ *
+ * TAREA 3
+ * PEDRO DAVID LLERENAS GONZALEZ
+ *
+ */
+
 #include <iostream>
 #include <regex>
 #include <string>
 
+std::string BigSum(std::string, std::string, unsigned int);
+std::string BigDifference(std::string, std::string, unsigned int);
+std::string BigProduct(std::string, std::string, unsigned int);
+std::string BigDivision(std::string, std::string);
+
+// returns -1 if m > n
+// returns 0 if m == n
+// returns 1 if n > m
 int compare(std::string n, std::string m) {
   if (n.length() < m.length() || (n.length() == m.length() && n < m)) {
-    return 1;
+    return -1;
   } else if (n == m) {
     return 0;
   } else {
-    return -1;
+    return 1;
   }
 }
 
@@ -16,16 +31,42 @@ int compare(std::string n, std::string m) {
  * Performs the integer difference n - m.
  */
 std::string BigDifference(std::string n, std::string m, unsigned int base) {
+	if (n[0] == '-' && m[0] == '-') {
+		n = n.substr(1);
+		m = m.substr(1);
+		swap(n,m);
+	}
+	if (n[0] == '+' && m[0] == '-') {
+		return BigSum(n.substr(1), m.substr(1), base);
+	}
+
+	if (m[0] == '-' && n[0] != '-' && n[0] != '+') {
+		return BigSum(n, m.substr(1), base);
+	}
+
+	if (m[0] == '+' && n[0] != '-' && n[0] != '+') {
+		m = m.substr(1);
+	}
+
+	if (n[0] == '-' && m[0] != '-' && m[0] != '+') {
+		return '-' + BigSum(n.substr(1), m, base);
+	}
+
+	if (n[0] == '+' && m[0] != '-' && m[0] != '+') {
+		n = n.substr(1);
+	}
+
   char sign = ' ';
   // this simplifies the computation of the sign, as this
   // calculates the absolute value, then adds the correspoding sign
-  if (m.length() > n.length() || m > n) {
+  if (compare(n, m) == -1) {
     sign = '-';
-    std::swap(n, m);
+    swap(n, m);
   }
   std::size_t max_idx = std::max(n.length(), m.length());
   unsigned int carry = 0;
   std::string result;
+
   // TODO: since m > n, an if statement is redundant
   for (int i = 0; i < max_idx; i++) {
     if (i >= n.length()) {
@@ -51,18 +92,57 @@ std::string BigDifference(std::string n, std::string m, unsigned int base) {
       }
     }
   }
+
   if (carry > 0) {
     result += char(carry + '0');
   }
+  // remove leading 0's (before reversing, so the last digits)
+  while (result.size() > 1 && result.back() == '0') {
+    result.pop_back();
+  }
+
   std::string reversed;
-  reversed += sign;
+  if (sign == '-') {
+    reversed += sign;
+  }
   for (int i = result.length() - 1; i >= 0; i--) {
     reversed += result[i];
   }
+  // remove leading 0's
   return reversed;
 }
 
 std::string BigSum(std::string n, std::string m, unsigned int base) {
+	// TODO: refactor so BigSum does not concern itself with
+	// deferring these cases
+	if (n[0] == '-' && m[0] != '-' && m[0] != '+') {
+		return BigDifference(m, n.substr(1), base);
+	}
+
+	if (m[0] == '-' && n[0] != '-' && n[0] != '+') {
+		return BigDifference(n, m.substr(1), base);
+	}
+
+	char sign;
+	if (m[0] == '-' && n[0] == '-') {
+		sign = '-';
+		m = m.substr(1);
+		n = n.substr(1);
+	}
+	if (m[0] == '+' && n[0] == '+') {
+		m = m.substr(1);
+		n = n.substr(1);
+	}
+
+	// remove leading 0's
+	while (m.size() > 1 && m[0] == '0') {
+		m.erase(m.begin());
+	}
+
+	while (n.size() > 1 && n[0] == '0') {
+		n.erase(n.begin());
+	}
+
   std::size_t max_idx = std::max(n.length(), m.length());
   unsigned int carry = 0;
   std::string result;
@@ -89,10 +169,14 @@ std::string BigSum(std::string n, std::string m, unsigned int base) {
   for (int i = result.length() - 1; i >= 0; i--) {
     reversed += result[i];
   }
+	if (sign == '-') {
+		reversed.insert(0, 1, sign);
+	}
   return reversed;
 }
 
 std::string BigProduct(std::string n, std::string m, unsigned int base) {
+	// choose sign
   char sign = (n[0] == '-') ^ (m[0] == '-') ? '-' : ' ';
   if (n[0] == '-' || n[0] == '+') {
     n = n.substr(1);
@@ -101,7 +185,7 @@ std::string BigProduct(std::string n, std::string m, unsigned int base) {
     m = m.substr(1);
   }
 
-  // remove redundant 0's
+  // remove leading 0's
   while (n.size() > 1 && n[0] == '0') {
     n.erase(0, 1);
   }
@@ -109,6 +193,7 @@ std::string BigProduct(std::string n, std::string m, unsigned int base) {
     m.erase(0, 1);
   }
 
+	// trivial case
   if (n == "0" || m == "0") {
     return "0";
   }
@@ -140,40 +225,66 @@ std::string BigProduct(std::string n, std::string m, unsigned int base) {
   if (carry > 0) {
     result.insert(0, 1, char(carry + '0'));
   }
-  result.insert(0, 1, sign);
+  if (sign == '-') {
+    result.insert(0, 1, sign);
+  }
   return result;
 }
 
-std::string BigDivision(std::string n, std::string m, unsigned int base) {
+/*
+ * performs n / m in long division
+ */
+std::string BigDivision(std::string n, std::string m) {
+  if (m == "0") {
+    return "Division by zero";
+  }
   int c = compare(n, m);
-  std::cout << "here" << std::endl;
-  if (c == 1) {
+  if (c == -1) {
     return "0";
-  } else if (c == 0) {
+  }
+  if (c == 0) {
     return "1";
   }
-  std::cout << "here" << std::endl;
-  int i;
-  int len_n = n.length(), len_m = m.length();
-  int cc;
-  std::string t = "1";
-  std::string result = "";
 
-  for (i = len_n - 1;
-       compare(BigSum(t + "0", std::string(n[i], 1), 10), m) ==
-       1;
-       i--) {
-    t += "0";
-    t = BigSum(t, std::string(1, n[i]), 10);
+  char sign = (n[0] == '-') ^ (m[0] == '-') ? '-' : ' ';
+  if (n[0] == '-' || n[0] == '+') {
+    n = n.substr(1);
   }
-  for (; i >= 0; i--) {
-    t += "0"; 
-    t = BigSum(t, std::string(1, n[i]), 10);
-    for (cc = 9; compare(BigProduct(std::to_string(cc), m, 10), t) == -1; cc--)
-      ;
-    t = BigDifference(t, BigProduct(std::to_string(cc), m, 10), 10);
-    result.push_back(cc + '0');
+  if (m[0] == '-' || m[0] == '+') {
+    m = m.substr(1);
   }
+  // result stores the quotient, current stores the dividends
+  // digits taken into account, then the residues
+  std::string result, current;
+
+  // loop to grab more digits of n
+  for (int i = 0; i < n.length(); i++) {
+    current.push_back(n[i]);
+    // remove leading 0's of n
+    if (current.size() > 1 && current[0] == '0') {
+      current.erase(current.begin());
+    }
+
+    // stores the amount of times m fits in current
+    int temp = 0;
+    // while current is greater than or equal to m,
+    // perform current = current - m
+    while (compare(current, m) >= 0) {
+      current = BigDifference(current, m, 10);
+      temp++;
+    }
+    // stores the calculated digit in result
+    result.push_back(temp + '0');
+  }
+
+  // remove leading 0's
+  while (result.size() > 1 && result[0] == '0') {
+    result.erase(result.begin());
+  }
+  if (sign == '-') {
+    result.insert(0, 1, sign);
+  }
+
   return result;
 }
 
@@ -200,6 +311,7 @@ int main(int argc, char *argv[]) {
       continue;
     }
 
+		// TODO: actually implement different base handling
     switch (op) {
     case '+':
       result = BigSum(n, m, 10);
@@ -211,7 +323,7 @@ int main(int argc, char *argv[]) {
       result = BigProduct(n, m, 10);
       break;
     case '/':
-      result = BigDivision(n, m, 10);
+      result = BigDivision(n, m);
       break;
     default:
       std::cout << "Error: Invalid operator.\n" << std::endl;
