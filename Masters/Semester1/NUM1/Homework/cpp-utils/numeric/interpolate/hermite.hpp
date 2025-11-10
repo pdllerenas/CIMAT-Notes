@@ -6,9 +6,20 @@
 namespace interp {
 // allows float, double and long double
 namespace hermite {
+/*
+ * @brief Calculates the coefficients of the Hermite polynomial interpolating
+ * the given values and its derivatives
+ *
+ * @tparam T a floating point accuracy type (float, double, long double)
+ * @param x points given
+ * @param fx value of f at points given
+ * @param dfx value of derivatives at points given
+ *
+ * @return coefficients of the interpolating polynomial
+ */
 template <std::floating_point T>
 std::vector<T> polynomial(const std::vector<T> &x, const std::vector<T> &fx,
-                       const std::vector<T> &dfx) {
+                          const std::vector<T> &dfx) {
   std::size_t n = x.size();
   if (n != fx.size() || n != dfx.size()) {
     throw std::invalid_argument("x and fx or dfx have different sizes");
@@ -43,15 +54,25 @@ std::vector<T> polynomial(const std::vector<T> &x, const std::vector<T> &fx,
   return result;
 }
 
+/*
+ * @brief Given the coefficients of a polynomial, evaluate it at a point z,
+ * assuming the polynomial is centered at the points x
+ *
+ * @tparam T a floating point accuracy type (float, double, long double)
+ * @param x center of each polynomial term (see Hermite formula)
+ * @param coeff coefficients to be used for the Hermite polynomial
+ *
+ * @return evaluation of polynomial at z
+ */
 template <std::floating_point T>
 T eval(T z, const std::vector<T> &x, const std::vector<T> &coeff) {
   T result = coeff[0];
   T term = 1.0;
   for (std::size_t i = 1; i < coeff.size(); i++) {
     term *= (z - x[(i - 1) / 2]);
-		result += coeff[i] * term;
+    result += coeff[i] * term;
   }
-	return result;
+  return result;
 }
 } // namespace hermite
 
