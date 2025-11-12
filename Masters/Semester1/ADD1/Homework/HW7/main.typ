@@ -63,7 +63,7 @@
   Calcula el estimador de máxima verosimilitud para $lambda$ basado en la
   muestra ${12,9,13,10,8}$.
 ]
-Por definicion, la muestra tiene verosimilitud
+Por definición, la muestra tiene verosimilitud
 $
   L(lambda | x_(1:n)) = product_(i=1)^(n) lambda^(x_i)/(x_i !) exp(-lambda) = exp(-lambda n)product_(i=1)^n lambda^(x_i)/(x_i !).
 $
@@ -84,7 +84,7 @@ Entonces,
 $
   lambda = 1/5 (12 + 9 + 13 + 10 + 8) = #calc.round((12 + 9 + 13 + 10 + 8) / 5, digits: 4)
 $
-Para confirmar que es un maximo, notemos que $ell''(lambda) = -1/lambda^2 sum_(i=1)^n x_i < 0$.
+Para confirmar que es un máximo, notemos que $ell''(lambda) = -1/lambda^2 sum_(i=1)^n x_i < 0$.
 #{
   set align(right)
   $square$
@@ -106,11 +106,61 @@ Para confirmar que es un maximo, notemos que $ell''(lambda) = -1/lambda^2 sum_(i
   }
   Calcula los estimadores de máxima verosimilitud para las probabilidades de $X$.
 ]
-Por definicion,
+Dada la muestra de la variable (posiblemente) multinomial, tenemos las siguientes probabilidades muestrales:
+#{
+  set table(align: (x, _) => if x == 0 { left } else { right })
+  show table.cell.where(x: 0): smallcaps
+  figure(table(
+    columns: (auto, auto, auto, auto, auto, auto),
+    stroke: none,
+    table.vline(x: 1, start: 0),
+    table.header([p], $p_1$, $p_2$, $p_3$, $p_4$, $p_5$),
+    table.hline(),
+    [Valor], $2/5$, $4/25$, $2/25$, $8/25$, $1/25$,
+  ))
+}
+La función de probabilidad de esta variable esta dada por
 $
-  L(theta) & = P([20, 8, 4, 16,2] | theta) \
-           & = product_(i=1)^n f(x_i|theta) \
-           & =50!/(20!dot 8! dot 4!dot 16! dot 2!)p_1^(20) p_2^(8) p_3^(4) p_4^(16) p_5^2 \
+  f(x_1,dots,x_k;n, p_1,dots,p_k) =cases((n!)/(x_1 ! dots.c x_k !) p_1^(x_1) dots.c p_k^(x_k) & "when " sum_(i=1)^k x_i = n, 0 & "otherwise")
+$
+Entonces, si $bold(p) = (p_1,dots,p_k)$, la verosimilitud es dada por
+$
+  L(bold(p)) & = n! product_(i=1)^k p_i^(x_i)/(x_i !).
+$
+Entonces, la log-verosimilitud es
+$
+  ell(bold(p)) & = log(n! product_(i=1)^k p_i^(x_i)/(x_i !)) \
+               & = log(n!) + log(product_(i=1)^k p_i^(x_i)/(x_i !)) \
+               & = log(n!) + sum_(i=1)^k log p_i^(x_i)/(x_i !) \
+               & = log(n!) + sum_(i=1)^k x_i log p_i - sum_(i=1)^k log (x_i !)
+$
+Dada la restricción $g(bold(p)) = sum_i p_i - 1 = 0$. Entonces, la función Lagrangiana
+$
+  cal(L)(bold(p), lambda) & = ell(bold(p)) + lambda g(bold(p)) \
+                          & = log(n!) + sum_(i=1)^k x_i log p_i - sum_(i=1)^k log (x_i !) + lambda (sum_(i=1)^k p_i - 1)
+$
+es equivalente a $ell(bold(p))$ cuando $g(bold(p))$ es 0. Calculando las derivadas parciales e igualando a 0, obtenemos que
+$
+  partial/(partial p_i) cal(L)(bold(p),lambda) &= partial / (partial p_i) sum_(i=1)^k x_i log p_i + lambda partial / (partial p_i) sum_(i=1)^k p_i = 0\
+  &= x_i/p_i + lambda equiv 0 <=> p_i = -x_i/lambda.\
+  partial/(partial lambda) cal(L)(bold(p),lambda) &= sum_(i=1)^k p_i - 1= 0 <=> sum_(i=1)^k p_i = 1.
+$
+Sustituyendo $p_i = -x_i/lambda$ en (17), obtenemos
+$
+  sum_(i=1)^k -x_i / lambda = 1 quad & <=> quad -lambda = sum_(i=1)^k x_i \
+                                quad & <=> quad -lambda = n.
+$
+Sustituyendo de vuelta $lambda$ a (16), obtenemos
+$
+  p_i = x_i/n.
+$
+Es decir, las probabilidades que maximizan la verosimilitud son
+$
+  bold(p) = (p_1/n,dots,p_k/n).
+$
+En nuestro caso, este seria
+$
+  bold(p) = (2/(5), 4/(25), 2/(25), 8/(25), 1/(25)) = (#(2 / (5)), #(4 / (25)), #(2 / (25)), #(8 / (25)), #(1 / (25)))
 $
 #{
   set align(right)
@@ -133,7 +183,7 @@ Esto nos dice que si hacemos 100 muestreos, esperamos que aproximadamente 95 de 
 promedio $mu$.
 1. Falso, es posible se tengan 0 o mas de 5 televisores, con el mismo intervalo de confianza.
 2. Falso, el promedio es fijo, solo podemos decir si esta o no.
-3. Cierto. Esta es la definicion.
+3. Cierto. Esta es la definición.
 #{
   set align(right)
   $square$
@@ -152,7 +202,7 @@ promedio $mu$.
   Calcula un 95% intervalo de confianza para el tiempo promedio de ejecución.
 ]
 
-Supongamos que tienen una distribucion normal. Entonces, el promedio muestral y varianza insesgada son
+Supongamos que tienen una distribución normal. Entonces, el promedio muestral y varianza insesgada son
 #let arr = (
   9.589602,
   11.410870,
@@ -188,16 +238,20 @@ Entonces el valor
 $
   T = sqrt(n)(dash(X) - mu)/S
 $
-es una distribucion $t$ de student con $19$ grados de libertad. Ahora, tenemos
+es una distribución $t$ de student con $19$ grados de libertad. Ahora, tenemos
 $
   P(dash(X) - t_(19,0.025) S/sqrt(n) <= mu <= dash(X) + t_(19,0.025) S/sqrt(n)) = 0.95
 $
-Usando una tabla de valores, tenemos $t_(19,0.025) = 2.093$. Con la mustra proporcionada:
+Usando una tabla de valores, tenemos $t_(19,0.025) = 2.093$. Con la muestra proporcionada:
 $
   [mean - #calc.round(2.093 * sd / calc.sqrt(20), digits: 4), mean +
     #calc.round(2.093 * sd / calc.sqrt(20), digits: 4)] =
   [#calc.round(mean - 2.093 * sd / calc.sqrt(20), digits: 4), #calc.round(mean + 2.093 * sd / calc.sqrt(20), digits: 4)]
 $
+#{
+  set align(right)
+  $square$
+}
 
 #question[
   Si $hat(theta)$ es un estimador insesgado para $theta$, entonces ¿$hat(theta)^2$ es un
@@ -208,15 +262,15 @@ $
   95% de confianza para $exp(theta)$?
 ]
 
-Dado que $f(x) = x^2$ es una funcion convexa, por la desigualdad de Jensen y $EE[hat(theta)] = theta$ (estimador insesgado), tenemos
+Dado que $f(x) = x^2$ es una función convexa, por la desigualdad de Jensen y $EE[hat(theta)] = theta$ (estimador insesgado), tenemos
 $
   theta^2 = f(theta) = f(EE[hat(theta)]) <= EE[hat(theta)^2].
 $
-Dado que $f''(x) = 2 > 0$, la funcion es estrictamente convexa. Esto nos dice que la desigualdad de Jensen es estricta:
+Dado que $f''(x) = 2 > 0$, la función es estrictamente convexa. Esto nos dice que la desigualdad de Jensen es estricta:
 $
   theta^2 < EE[hat(theta)^2].
 $
-En conclusion, $hat(theta)^2$ *no* es un estimador insesgado de $theta^2$.
+En conclusión, $hat(theta)^2$ *no* es un estimador insesgado de $theta^2$.
 
 Alternativamente, $EE[hat(theta)^2] = Var(hat(theta)) + EE[hat(theta)]^2 > hat(theta)^2$.#h(18em)
 #{
@@ -225,11 +279,11 @@ Alternativamente, $EE[hat(theta)^2] = Var(hat(theta)) + EE[hat(theta)]^2 > hat(t
 }
 
 
-Sea $[hat(theta)_L, hat(theta)_R]$ un 95% intervalo de confianza para $theta$. Por definicion,
+Sea $[hat(theta)_L, hat(theta)_R]$ un 95% intervalo de confianza para $theta$. Por definición,
 $
   P([hat(theta)_L,hat(theta)_R] in.rev theta) = 0.95,
 $
-Notemos que, como $exp: RR -> RR_+$ es una funcion estrictamente creciente, tenemos
+Notemos que, como $exp: RR -> RR_+$ es una función estrictamente creciente, tenemos
 $
   hat(theta)_L <=theta <= hat(theta)_R <=> exp(hat(theta)_L) <= exp(theta) <= exp(hat(theta)_R).
 $
@@ -243,8 +297,10 @@ $
 }
 
 #question[
-  Considera los siguientes datos de un estudio en Bélgica sobre la intención de voto entre 1000 parejas. Las variables $X_1$, $X_2$ indican si la mujer y el hombre,
-  respectivamente, votara para un partido de la coalición (0) o de la oposición (1) en caso de que hubieran elecciones en ese momento.
+  Considera los siguientes datos de un estudio en Bélgica sobre la intención de
+  voto entre 1000 parejas. Las variables $X_1$, $X_2$ indican si la mujer y el
+  hombre, respectivamente, votara para un partido de la coalición (0) o de la
+  oposición (1) en caso de que hubieran elecciones en ese momento.
   #{
     set table(align: (x, _) => if x == 0 { left } else { right })
     show table.cell.where(x: 0): smallcaps
@@ -258,9 +314,9 @@ $
       $X_2 = 1$, $218$, $367$,
     ))
   }
-  1. Calcula los momios empíricos $hat(R)$ a partir de los datos observados.
+  1. Calcula los oddsratio empíricos $hat(R)$ a partir de los datos observados.
   2. Se puede mostrar que si el tamaño de la muestra va a $infinity$, la distribución
-  de $log(hat(R))$ converge a una normal con promedio $log(R)$, el verdadero log-momio de la distribución subyacente, y con varianza
+  de $log(hat(R))$ converge a una normal con promedio $log(R)$, el verdadero log-oddsratio de la distribución subyacente, y con varianza
   $
     1/n_(0,0) + 1/n_(0,1) + 1/n_(1,0) + 1/n_(1,1),
   $
@@ -269,11 +325,11 @@ $
   Calcula el valor de $p$ de la hipótesis que hombre y mujer votan de manera independiente.
 ]
 
-1. Por definicion:
+1. Por definición:
 $
   hat(R) = (245slash 170)/(218 slash 367) = #calc.round(256 / 170, digits: 4)/#calc.round(218 / 367, digits: 4) = #calc.round((256 / 170) / (218 / 367), digits: 4)
 $
-Tambien tenemos el log-oddsratio:
+También tenemos el log-oddsratio:
 $
   log(hat(R)) = #calc.round(calc.log((256 / 170) / (218 / 367)), digits: 4)
 $
@@ -282,7 +338,7 @@ $
   $triangle$
 }
 
-2. Sabemos que el oddsratio es 1 si y solo si $X_1 perp X_2$. Entonces, definimos las hipotesis de la siguiente manera:
+2. Sabemos que el oddsratio es 1 si y solo si $X_1 perp X_2$. Entonces, definimos las hipótesis de la siguiente manera:
 $
   H_0 & : R = 1, \
   H_1 & : R eq.not 1.
