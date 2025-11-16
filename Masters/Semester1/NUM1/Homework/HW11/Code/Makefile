@@ -1,11 +1,11 @@
 CC = g++
-CXXFLAGS=-g -std=c++20 -Wall -pedantic
+CXXFLAGS=-g -std=c++20 -Wall -pedantic -DPARALLEL
 LDFLAGS =
 
 LIB_DIR =
 LIBS_SRCS = 
 
-TARGETS = p1 p2 p3
+TARGETS = p3
 
 all: $(TARGETS)
 
