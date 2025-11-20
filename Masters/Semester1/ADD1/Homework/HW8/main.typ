@@ -16,7 +16,7 @@
 #show: pset.with(
   class: "Análisis de Datos I",
   student: "Pedro D. Llerenas\npedro.llerenas@cimat.mx",
-  title: "Tarea 7",
+  title: "Tarea 8",
   date: datetime.today(),
 )
 
@@ -62,11 +62,11 @@
 #question[
   Para investigar si una moneda es justa o no, alguien decide que va a lanzar
   la moneda 100 veces. Si el numero de veces de obtener sol es entre $42%$ y
-  $58%$, va a apoyar la hipotesis de que la moneda es justa. Calcula la
+  $58%$, va a apoyar la hipótesis de que la moneda es justa. Calcula la
   probabilidad de un error tipo I correspondiente.
 ]
 
-Un error de tipo I se obtiene al rechazar la hipotesis nula cuando es
+Un error de tipo I se obtiene al rechazar la hipótesis nula cuando es
 verdadera. Entonces, supongamos que, efectivamente, si $X$ es la v.a. del
 resultado de tirar una moneda es $X ~ "Bern"(0.5)$, y al lanzarla 100 veces, es
 decir, $Y ~ "Binomial"(100, 0.5)$.
@@ -74,7 +74,7 @@ Tenemos 2 casos:
 - $Y <= 42$
 - $Y >= 58$
 Es decir, queremos $1-P(42 < Y < 58) = P(Y<= 42) + P(Y >= 58)$. Notemos que como como la moneda es justa,
-$P(Y<=42) = P(Y>= 58)$ (por simetria alrededor de $Y = 50$), por lo que solo calculamos uno de ellos. Obtenemos
+$P(Y<=42) = P(Y>= 58)$ (por simetría alrededor de $Y = 50$), por lo que solo calculamos uno de ellos. Obtenemos
 $
   P(Y <= 42) & = sum_(i=0)^42 binom(100, i) 0.5^i (0.5)^(100-i) \
              & = sum_(i=0)^42 binom(100, i)0.5^(100) \
@@ -93,7 +93,7 @@ $
   ¿Cierto, falso o indecidible? Explica tu respuesta.
   1. En pruebas de hipótesis con el enfoque de Neyman-Pearson $alpha + "poder" = 1$.
   2. Al aumentar $alpha$, en general la curva de poder va a subir.
-  3. Si el tamano de la muestra disminuye, la probabilidad de un error de tipo II va a aumentar.
+  3. Si el tamaño de la muestra disminuye, la probabilidad de un error de tipo II va a aumentar.
 ]
 1. Falso. Definimos $alpha = P_(H_0)$ (error tipo I) y $"poder" = 1 - P_(H_1)$ (error tipo II). Entonces,
 $
@@ -102,12 +102,12 @@ $
 Entonces, el enunciado solo se cumple cuando los errores son iguales.
 
 2. Cierto. Cuando aumentamos $alpha$, rechazamos $H_0$ con datos menos
-  extremos, aun cuando $H_0$ es verdadero . Esto implica que tambien
+  extremos, aun cuando $H_0$ es verdadero . Esto implica que también
   rechazamos $H_0$ con datos menos extremos cuando $H_1$ es verdadero. Es
   decir, $1 - P_(H_1)$ es mayor, ya que reducimos el error de tipo II.
 
 3. Cierto. Sabemos que el poder es inversamente proporcional a $sigma /
-  sqrt(n)$ (donde el numerador de la expresion completa es la diferencia de
+  sqrt(n)$ (donde el numerador de la expresión completa es la diferencia de
   los medias, como vimos en clase). Es decir, proporcional a $sqrt(n) /
   sigma$. Entonces, si decrece $n$, el poder decrece, y por lo tanto,
   el error de tipo II incrementa.
@@ -123,11 +123,11 @@ Entonces, el enunciado solo se cumple cuando los errores son iguales.
     )),
     lq.vlines(1.5, stroke: red, min: 0, max: 0.218, label: $alpha$),
   ),
-  caption: [Comparacion de curvas con desviaciones estandar distintas, $alpha$ fijo.],
+  caption: [Curvas que indican el poder (área a la izquierda de la linea $alpha$ bajo $H_1$) y el error de tipo I (área bajo $H_0$ hacia la izquierda de $alpha$).  ],
 )
 
 #question[
-  Supongamos que se tienen muestras de dos v.a. $X$ y $Y$. Se hace la prueba de hipotesis:
+  Supongamos que se tienen muestras de dos v.a. $X$ y $Y$. Se hace la prueba de hipótesis:
   $
     H_0: EE[X] - EE[Y] eq 0 quad "vs." quad H_1: EE[X] - EE[Y] eq.not 0.
   $
@@ -137,19 +137,19 @@ Entonces, el enunciado solo se cumple cuando los errores son iguales.
   3. Observamos una diferencia grande en el promedio muestral de $X$ y $Y$.
   4. Todo lo anterior.
   5. Nada de lo anterior.
-  Elige la respuesta correcta y motiva tu eleccion.
+  Elige la respuesta correcta y motiva tu elección.
 ]
 
 2. El $p$-valor diminuto nos dice que los datos observados no soportan la
-  hipotesis nula, pero no nos dice nada de las magnitudes de lo que
+  hipótesis nula, pero no nos dice nada de las magnitudes de lo que
   comparamos, solamente si es plausible o no.
 
 #question[
-  Durante los juegos olimpicos de Salt Lake City surgio en un periodico la
-  discusion si en las pruebas de 1500m de patinaje, la persona en el carril
-  exterior no tendria ventaja sobre el carril interior. Se organizaron 24 pruebas
-  (una se cancelo por caida). Abajo los tiempos. Aplica una(s) pruebas de
-  estadistica relevante para contestar esta pregunta.
+  Durante los juegos olímpicos de Salt Lake City surgió en un periódico la
+  discusión si en las pruebas de 1500m de patinaje, la persona en el carril
+  exterior no tendría ventaja sobre el carril interior. Se organizaron 24 pruebas
+  (una se cancelo por caída). Abajo los tiempos. Aplica una(s) pruebas de
+  estadística relevante para contestar esta pregunta.
 ]
 #figure(table(
   columns: 8,
@@ -195,13 +195,69 @@ Entonces, el enunciado solo se cumple cuando los errores son iguales.
   table.hline(),
 ))
 
+Sea $H_0$ que los signos de las diferencias de tiempos son aleatorios.
+Usaremos el test 70 de Wilcoxon-Mann-Whitney. Esto hace énfasis en los signos
+de las diferencias, y sumamos los indices donde se presenten los signos con
+menor frecuencia.
+
+#figure(table(
+  columns: 2,
+  stroke: none,
+  table.hline(),
+  table.vline(),
+  table.header(
+    [*Race*], table.vline(),
+    [*Sign*],
+  ),
+  table.hline(),
+  table.vline(),
+  $1$, $+$,
+  $2$, $+$,
+  $3$, $+$,
+  $4$, $-$,
+  $5$, $+$,
+  $6$, $-$,
+  $7$, $-$,
+  $8$, $+$,
+  $9$, $+$,
+  $10$, $-$,
+  $11$, $-$,
+  $12$, $-$,
+  $14$, $-$,
+  $15$, $+$,
+  $16$, $+$,
+  $17$, $-$,
+  $18$, $+$,
+  $19$, $+$,
+  $20$, $+$,
+  $21$, $+$,
+  $22$, $+$,
+  $23$, $+$,
+  $24$, $+$,
+  table.hline(),
+))
+Esto nos da un total de 15 signos positivos y 8 signos negativos. Entonces,
+sumamos los indices donde se encuentran los signo negativos:
+$
+ R = 4 + 6 + 7 + 10 + 11 + 12 + 14 + 17 = #(4 + 6 + 7 + 10 + 11 + 12 + 14 + 17)
+$
+Calculamos
+$
+R' = 8 * (23 + 1) - 81 = 111.
+$ 
+Entonces, usamos $R$ para el test, ya que es el menor. Con la significan cía
+$alpha = 0.05$ de un lado (solo queremos saber si el de fuera tiene ventaja),
+el valor critico según la tabla 21 es $65$, por lo que *no* rechazamos la
+hipótesis nula. Es decir, los datos no indican que haya relevancia en la
+elección de carril.
+
 
 #let blue = rgb("3b00ff")     // Americano nativo
 #let orange = rgb("f90016")   // Caucasiano
 
 #question[
-  En un estudio sobre herencia genetica de Margolin [1988], se tomaron muestras de diferentes grupos etnicos. Tomaron muestras de sangre de cada individuo de
-  diferentes grupos etnicos. Tomaron muestras de sangre de cada individuo y se midieron varias substancias. nos limitamos a los grupos Americano nativo y Caucasiano
+  En un estudio sobre herencia genética de Margolin [1988], se tomaron muestras de diferentes grupos étnicos. Tomaron muestras de sangre de cada individuo de
+  diferentes grupos étnicos. Tomaron muestras de sangre de cada individuo y se midieron varias substancias. Nas limitamos a los grupos Americano nativo y Caucasiano
   y la variable MSCE (mean sister chromatid exchange). Los datos obtenidos son:
 
   #figure(table(
@@ -221,19 +277,19 @@ Entonces, el enunciado solo se cumple cuando los errores son iguales.
     table.hline(),
     [#text(fill: orange, "Caucasiano")], $8.27$, $8.20$, $8.25$, $8.14$, $9.00$, $8.10$, $7.20$, $8.32$, $7.70$,
   ))
-  Usa una prueba no parametrica para la hipotesis de que los conjuntos de datos
-  provienen de una misma distribucion. Compara tu resultado con los que se
+  Usa una prueba no para métrica para la hipótesis de que los conjuntos de datos
+  provienen de una misma distribución. Compara tu resultado con los que se
   obtienen con una prueba computacionalmente intensiva.
 
-  Hint: para permutar valores; por ejemplo en `R` se obtiene una permutacion de
+  Hint: para permutar valores; por ejemplo en `R` se obtiene una permutación de
   $1,2,dots, 9, 10$ con el comando `sample(1:10, 10)`, o sea, muestra sin
   reemplazo. En `Python` puedes usar `numpy.random.permutation`.
 ]
 
-Definimos nuestras hipotesis como
-$ 
-H_0: "misma distribucion", quad H_1: "diferente distribucion".
-$ 
+Definimos nuestras hipótesis como
+$
+  H_0: "misma distribucion", quad H_1: "diferente distribucion".
+$
 Usaremos la _Wilcoxon inversion test_ o _U-test_ (test 49). Asumimos que ambas
 distribuciones son continuas y que las muestras son aleatorias e
 independientes. Juntando y ordenando los datos, tenemos la siguiente lista:
@@ -293,7 +349,15 @@ independientes. Juntando y ordenando los datos, tenemos la siguiente lista:
 )
 Tenemos $2 + 4 + 5 + 5 + 5 + 6 + 7 = #(2 + 4 + 5 + 5 + 5 + 6 + 7)$ inversiones.
 El numero de no-inversiones es $9dot 7 - 34 = #(9 * 7 - (2 + 4 + 5 + 5 + 5 + 6
-+ 7))$ Para $alpha = 0.05$, el valor critico es 15, por lo que *no* rechazamos la hipotesis nula.
++ 7))$ Para $alpha = 0.05$, el valor critico es 15, por lo que *no* rechazamos
+la hipótesis nula.
+
+Haciéndolo computacionalmente, usamos el código en `cauc.py`. Esto nos genera los siguientes resultados:
+```
+sample median diff: 0.43
+permutation p-value: 0.088
+```
+Es decir, *no* rechazamos la hipótesis nula. Esto refuerza el test anterior.
 
 #question[
   Sea $c$ una cierta cadena binaria de longitud 100. Se quiere verificar si
@@ -303,12 +367,61 @@ El numero de no-inversiones es $9dot 7 - 34 = #(9 * 7 - (2 + 4 + 5 + 5 + 5 + 6
   la cadena.
 
   Usando muchas simulaciones de cadenas bajo $H_0$, estima y visualiza la
-  distribucion de $T = (T_1, T_2)$.
+  distribución de $T = (T_1, T_2)$.
 
-  Pide un conocido generar una cadena binaria lanzando 100 veces una mondeda y
+  Pide un conocido generar una cadena binaria lanzando 100 veces una moneda y
   otra cadena que se inventa (fake). Aplica lo anterior para distinguir cual de
   los dos es fake basado en el valor de $p$.
 ]
 
+Obtenemos la siguiente grafica al hacer 1000 experimentos de cadenas de 100 bits. (ver `bernoulli.py`)
+#figure(image("bit_dist.png", width: 66%))
 
+Ahora, dada una cadena de bits de 100 dígitos, si queremos adivinar si fue
+generada aleatoriamente (es decir, que cada bit fue generado independientemente
+con una distribución de Bernoulli), verificamos los números $T_1$ y $T_2$ y
+vemos su probabilidad según la distribución dada.
 
+Supongamos que nos proporcionan la siguiente cadena de longitud 100:
+
+#{
+  set math.equation(numbering: none)
+  $
+    1001001010\
+    1010101010\
+    0010101001\
+    0001000011\
+    1110100101\
+    0010101010\
+    1100100100\
+    1010010011\
+    1101010101\
+    0101111111\
+  $
+}
+Esto nos da el par $(68, 7)$. Este valor se encuentra fuera de los valores
+generados, por lo que tiene probabilidad 0 (en nuestra muestra).
+
+Ahora, le pedimos a nuestro amigo (#emoji.robot) que lance una moneda 100
+veces. Obtiene la siguiente secuencia:
+#{
+  set math.equation(numbering: none)
+  $
+    0110111010\
+    0101101100\
+    1000111110\
+    0101101111\
+    0001011000\
+    1010010000\
+    1111110010\
+    0101010110\
+    1010100101\
+    0110100011
+  $
+}
+Esto nos da el par (56, 7), que calculando su frecuencia en las cadenas
+generadas, tiene probabilidad 0.001. Es decir, es probable que nuestro amigo
+haya hecho trampa al generar la cadena. La siguiente gráfica muestra donde se
+ubican los puntos de las cadenas probadas (rojo y azul).
+
+#figure(image("bit_dist_extra.png", width: 66%))
