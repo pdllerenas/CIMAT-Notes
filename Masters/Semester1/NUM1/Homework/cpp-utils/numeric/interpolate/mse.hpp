@@ -1,5 +1,6 @@
 #include "../../misc/matrix.hpp"
 #include "../solvers/Cholesky.hpp"
+#include "../solvers/Crout.hpp"
 
 #include <cmath>
 #include <concepts>
@@ -21,6 +22,14 @@ inline double phi_poly(size_t k, double x) {
 
 inline double phi_rad(double x, double xi) {
   return std::exp(-(x - xi) * (x - xi));
+}
+
+inline double phi_logistic(size_t k, double t) {
+  if (k == 0)
+    return 1.0;
+  if (k == 1)
+    return std::exp(-3.0 * t);
+  return 0.0;
 }
 
 template <std::floating_point T> static inline T phi_exp(size_t k, T x) {
@@ -144,7 +153,10 @@ std::vector<T> cosine(const std::vector<T> &x, const std::vector<T> &y,
   if (lambda > 0.0)
     add_regularization(G, lambda);
 
-  return solvers::cholesky::solve(G, rhs);
+  std::vector<size_t> pivots;
+  solvers::crout::factorize(G, pivots);
+
+  return solvers::crout::solve(G, pivots, rhs);
 }
 
 template <std::floating_point T>
@@ -153,7 +165,6 @@ std::vector<T> radial(const std::vector<T> &x, const std::vector<T> &y,
   size_t n = x.size();
   matrix<T> Phi(n, n, 0);
 
-  // Build Φ_ij = exp(-(x_i - x_j)^2)
   for (size_t i = 0; i < n; ++i) {
     for (size_t j = 0; j < n; ++j) {
       T diff = x[i] - x[j];
@@ -164,12 +175,15 @@ std::vector<T> radial(const std::vector<T> &x, const std::vector<T> &y,
   if (lambda > 0.0)
     add_regularization(Phi, lambda);
 
-  return solvers::cholesky::solve(Phi, y);
+  std::vector<size_t> pivots;
+  solvers::crout::factorize(Phi, pivots);
+
+  return solvers::crout::solve(Phi, pivots, y);
 }
 
 template <std::floating_point T> T eval(T x, const std::vector<T> &coeff) {
   T result = 0;
-  T term = 1; // Represents x^i, starts at x^0
+  T term = 1;
   for (size_t i = 0; i < coeff.size(); i++) {
     result += coeff[i] * term;
     term *= x;
@@ -193,6 +207,34 @@ T eval_basis_rad(T x, const std::vector<T> &coeff, const std::vector<T> &xs) {
     result += coeff[k++] * std::exp(-(x - xi) * (x - xi));
   }
   return result;
+}
+
+template <std::floating_point T>
+std::vector<T> logistic_linearized(const std::vector<T> &x,
+                                   const std::vector<T> &y, T lambda = 0.0) {
+  size_t m = x.size();
+  if (m != y.size()) {
+    throw std::invalid_argument("x and y must have the same size");
+  }
+
+  std::vector<T> y_inv(m);
+  for (size_t i = 0; i < m; ++i) {
+    y_inv[i] = 1.0 / y[i];
+  }
+
+  size_t num_params = 2;
+  matrix<T> Phi = generate_Phi(x, phi_logistic, num_params);
+
+  matrix<T> G(num_params, num_params, 0);
+  std::vector<T> rhs(num_params, 0);
+
+  build_system(Phi, y_inv, G, rhs);
+
+  if (lambda > 0.0) {
+    add_regularization(G, lambda);
+  }
+
+  return solvers::cholesky::solve(G, rhs);
 }
 
 } // namespace mse

@@ -20,20 +20,24 @@ std::vector<T> solve(const std::vector<Func> &F, std::vector<T> x, T TOL,
   matrix<T> A = J.inverse();
 
   if (out) {
-    for (size_t i = 0; i < n - 1; i++) {
+    for (size_t i = 0; i < n - 1; i++)
       *out << 'x' << i << ',';
-    }
-    *out << 'x' << n - 1 << ',';
-    *out << "||x_prev - x||\n";
+    *out << 'x' << n - 1 << ',' << "||x_prev - x||\n";
   }
 
-  // v = F(x)
   std::vector<T> v(n);
-  for (size_t i = 0; i < n; i++) {
+  for (size_t i = 0; i < n; i++)
     v[i] = F[i](x);
-  }
 
   std::vector<T> s = -1.0 * (A * v);
+
+  double max_step = 0.5;
+  double step_mag = norm(s);
+  if (step_mag > max_step) {
+    double scale = max_step / step_mag;
+    for (auto &val : s)
+      val *= scale;
+  }
   x = x + s;
   size_t k = 2;
 
@@ -43,33 +47,35 @@ std::vector<T> solve(const std::vector<Func> &F, std::vector<T> x, T TOL,
     for (size_t i = 0; i < n; ++i)
       v[i] = F[i](x);
 
-    std::vector<T> y = v - w;
+    std::vector<T> y = v - w; // y = F(x_new) - F(x_old)
 
+    // Broyden Update (Sherman-Morrison)
     std::vector<T> z = -1.0 * (A * y);
-
     T p = -std::inner_product(s.begin(), s.end(), z.begin(), T{});
 
-    // recompute jacobian if s and z are orthogonal or nearly orthogonal
     if (std::abs(p) < 1e-14) {
+      // Reset if orthogonal
       matrix<T> J = differential::jacobian(F, x);
       A = J.inverse();
-      s = -1.0 * (A * v);
-      ++k;
-      continue;
+    } else {
+      std::vector<T> u = A.transpose() * s;
+      A = A + ((T(1) / p) * outer_product(s + z, u));
     }
 
-    std::vector<T> u = A.transpose() * s;
-
-    A = A + ((T(1) / p) * outer_product(s + z, u));
-
     s = -1.0 * (A * v);
+
+    step_mag = norm(s);
+    if (step_mag > max_step) {
+      double scale = max_step / step_mag;
+      for (auto &val : s)
+        val *= scale;
+    }
 
     x = x + s;
 
     if (out) {
-      for (size_t i = 0; i < n; i++) {
+      for (size_t i = 0; i < n; i++)
         *out << x[i] << ',';
-      }
       *out << norm(s) << '\n';
     }
 
@@ -78,8 +84,7 @@ std::vector<T> solve(const std::vector<Func> &F, std::vector<T> x, T TOL,
 
     ++k;
   }
-  throw std::runtime_error(
-      "maximum iterations reached without convergence in broyden");
+  throw std::runtime_error("maximum iterations reached without convergence");
 }
 } // namespace broyden
 

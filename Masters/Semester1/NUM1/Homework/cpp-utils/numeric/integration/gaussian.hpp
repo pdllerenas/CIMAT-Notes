@@ -26,59 +26,52 @@ namespace gaussian {
 
 template <std::floating_point T, typename F>
 static T quadrature2(T a, T b, F f) {
-  return 0.5 * (b - a) *
-         (f(((b - a) * LEGENDRE_2_ROOTS[0] + (b - a)) / 2.0) +
-          f(((b - a) * LEGENDRE_2_ROOTS[1] + (b - a)) / 2.0));
+  T c1 = (b - a) / 2;
+  T c2 = (b + a) / 2;
+
+  return c1 * (LEGENDRE_2_COEFF[0] * f(c1 * LEGENDRE_2_ROOTS[0] + c2) +
+               LEGENDRE_2_COEFF[1] * f(c1 * LEGENDRE_2_ROOTS[1] + c2));
 }
 
 template <std::floating_point T, typename F>
 static T quadrature3(T a, T b, F f) {
-  return 0.5 * (b - a) *
-         (LEGENDRE_3_COEFF[0] *
-              f(((b - a) * LEGENDRE_3_ROOTS[0] + (b + a)) / 2.0) +
-          LEGENDRE_3_COEFF[1] *
-              f(((b - a) * LEGENDRE_3_ROOTS[1] + (b + a)) / 2.0) +
-          LEGENDRE_3_COEFF[2] * f(((b - a) * LEGENDRE_3_ROOTS[2] + (b + a))) /
-              2.0);
-}
+  T c1 = (b - a) / 2;
+  T c2 = (b + a) / 2;
 
+  return c1 * (LEGENDRE_3_COEFF[0] * f(c1 * LEGENDRE_3_ROOTS[0] + c2) +
+               LEGENDRE_3_COEFF[1] * f(c1 * LEGENDRE_3_ROOTS[1] + c2) +
+               LEGENDRE_3_COEFF[2] * f(c1 * LEGENDRE_3_ROOTS[2] + c2));
+}
 template <std::floating_point T, typename F>
 static T quadrature4(T a, T b, F f) {
-  return 0.5 * (b - a) *
-         (LEGENDRE_4_COEFF[0] *
-              f(((b - a) * LEGENDRE_4_ROOTS[0] + (b + a)) / 2.0) +
-          LEGENDRE_4_COEFF[1] *
-              f(((b - a) * LEGENDRE_4_ROOTS[1] + (b + a)) / 2.0) +
-          LEGENDRE_4_COEFF[2] *
-              f(((b - a) * LEGENDRE_4_ROOTS[2] + (b + a)) / 2.0) +
-          LEGENDRE_4_COEFF[3] *
-              f(((b - a) * LEGENDRE_4_ROOTS[3] + (b + a)) / 2.0));
-}
+  T c1 = (b - a) / 2;
+  T c2 = (b + a) / 2;
 
+  return c1 * (LEGENDRE_4_COEFF[0] * f(c1 * LEGENDRE_4_ROOTS[0] + c2) +
+               LEGENDRE_4_COEFF[1] * f(c1 * LEGENDRE_4_ROOTS[1] + c2) +
+               LEGENDRE_4_COEFF[2] * f(c1 * LEGENDRE_4_ROOTS[2] + c2) +
+               LEGENDRE_4_COEFF[3] * f(c1 * LEGENDRE_4_ROOTS[3] + c2));
+}
 template <std::floating_point T, typename F>
 static T quadrature5(T a, T b, F f) {
-  return 0.5 * (b - a) *
-         (LEGENDRE_5_COEFF[0] *
-              f(((b - a) * LEGENDRE_5_ROOTS[0] + (b + a)) / 2.0) +
-          LEGENDRE_5_COEFF[1] *
-              f(((b - a) * LEGENDRE_5_ROOTS[1] + (b + a)) / 2.0) +
-          LEGENDRE_5_COEFF[2] *
-              f(((b - a) * LEGENDRE_5_ROOTS[2] + (b + a)) / 2.0) +
-          LEGENDRE_5_COEFF[3] *
-              f(((b - a) * LEGENDRE_5_ROOTS[3] + (b + a)) / 2.0) +
-          LEGENDRE_5_COEFF[4] *
-              f(((b - a) * LEGENDRE_5_ROOTS[4] + (b + a)) / 2.0));
-}
-/*
- * @brief Aproximates the integral of f from a to b
- *
- * @tparam T a floating point accuracy type (float, double, long double)
- * @param a left endpoint of the integral
- * @param b right endpoint of the integral
- * @param f function to be integrated
- *
- * @return approximation of the integral of f from a to b
- */
+  T c1 = (b - a) / 2;
+  T c2 = (b + a) / 2;
+
+  return c1 * (LEGENDRE_5_COEFF[0] * f(c1 * LEGENDRE_5_ROOTS[0] + c2) +
+               LEGENDRE_5_COEFF[1] * f(c1 * LEGENDRE_5_ROOTS[1] + c2) +
+               LEGENDRE_5_COEFF[2] * f(c1 * LEGENDRE_5_ROOTS[2] + c2) +
+               LEGENDRE_5_COEFF[3] * f(c1 * LEGENDRE_5_ROOTS[3] + c2) +
+               LEGENDRE_5_COEFF[4] * f(c1 * LEGENDRE_5_ROOTS[4] + c2));
+} /*
+   * @brief Aproximates the integral of f from a to b
+   *
+   * @tparam T a floating point accuracy type (float, double, long double)
+   * @param a left endpoint of the integral
+   * @param b right endpoint of the integral
+   * @param f function to be integrated
+   *
+   * @return approximation of the integral of f from a to b
+   */
 template <std::floating_point T, typename F>
 T quadrature(T a, T b, F f, std::size_t n) {
   if (n == 2) {

@@ -52,19 +52,27 @@ matrix<T> jacobian(const std::vector<F> &f, const std::vector<T> &x,
 
 template <std::floating_point T, typename Function>
 matrix<T> jacobian(Function f, const std::vector<T> &x, T h = 1e-6) {
+  size_t n = x.size();
   std::vector<T> fx = f(x);
   size_t m = fx.size();
-  size_t n = x.size();
+
   matrix<T> J(m, n);
 
   for (size_t j = 0; j < n; ++j) {
-    std::vector<T> xh = x;
-    xh[j] += h;
-    std::vector<T> fxh = f(xh);
+    std::vector<T> xh1 = x;
+    std::vector<T> xh2 = x;
+
+    xh1[j] += h;
+    xh2[j] -= h;
+
+    std::vector<T> fxh1 = f(xh1);
+    std::vector<T> fxh2 = f(xh2);
+
     for (size_t i = 0; i < m; ++i) {
-      J(i, j) = (fxh[i] - fx[i]) / h;
+      J(i, j) = (fxh1[i] - fxh2[i]) / (2 * h);
     }
   }
   return J;
 }
+
 } // namespace differential

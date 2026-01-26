@@ -77,7 +77,7 @@ public:
   }
 
   // ===========================
-  // Core Linear Algebra Methods
+  // Linear Algebra Methods
   // ===========================
 
   matrix<T> transpose() const {
@@ -285,4 +285,25 @@ std::vector<T> operator*(const std::vector<T> &v, T lambda) {
 template <std::floating_point T>
 std::vector<T> operator*(T lambda, const std::vector<T> &v) {
   return v * lambda;
+}
+
+template <typename T>
+std::ostream &operator<<(std::ostream &os, const matrix<T> &M) {
+  for (size_t i = 0; i < M.rows(); ++i) {
+    for (size_t j = 0; j < M.cols(); ++j) {
+      os << M(i, j);
+      if (j + 1 < M.cols())
+        os << ",";
+    }
+    os << "\n";
+  }
+  return os;
+}
+
+template <typename T> matrix<T> operator/(const matrix<T> &A, T scalar) {
+  matrix<T> result(A.rows(), A.cols());
+  for (size_t i = 0; i < A.rows(); ++i)
+    for (size_t j = 0; j < A.cols(); ++j)
+      result(i, j) = A(i, j) / scalar;
+  return result;
 }

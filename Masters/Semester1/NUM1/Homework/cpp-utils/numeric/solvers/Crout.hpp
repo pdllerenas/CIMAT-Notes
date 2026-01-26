@@ -11,7 +11,9 @@ namespace crout {
 
 template <std::floating_point T>
 void factorize(matrix<T> &A, std::vector<size_t> &P) {
-  size_t n = A.size();
+	T eps = std::numeric_limits<T>::epsilon();
+
+  size_t n = A.rows();
   P.resize(n);
   for (size_t i = 0; i < n; ++i)
     P[i] = i;
@@ -27,7 +29,7 @@ void factorize(matrix<T> &A, std::vector<size_t> &P) {
       }
     }
 
-    if (max_val == 0.0)
+    if (max_val < eps * std::abs(A(k,k)))
       throw std::runtime_error("LU factorization: singular matrix");
 
     if (pivot != k) {
@@ -47,7 +49,7 @@ void factorize(matrix<T> &A, std::vector<size_t> &P) {
 template <std::floating_point T>
 std::vector<T> solve(const matrix<T> &A, const std::vector<size_t> &P,
                         const std::vector<T> &b) {
-  size_t n = A.size();
+  size_t n = A.rows();
   if (b.size() != n)
     throw std::runtime_error("dimension mismatch in lu_solve");
 
