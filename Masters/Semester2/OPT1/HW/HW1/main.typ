@@ -1,227 +1,306 @@
-#import "@preview/adaptable-pset:0.2.0": *
-#import "@preview/ctheorems:1.1.3": *
-#show: thmrules.with(qed-symbol: $square$)
+#import "@preview/problemst:0.1.2": pset
+#import "@preview/tyniverse:0.2.3": homework
+#import "@preview/great-theorems:0.1.2": *
+#import "@preview/rich-counters:0.2.1": *
+#let question = homework.complex-question
 
-#let proof = thmproof("proof", "Proof")
-
-// Feel free to omit any of the below, just set it to "" and it won't show
-#let title = "Tarea 1"
-#let author = "Pedro D. Llerenas"
-#let collaborators = []
-#let course-id = "OPT1: Optimizacion"
-#let instructor = "Dr. Oscar Susano\nDr. Dalmau Cedeño\nDr. Thomas Batard"
-#let semester = "Enero-Julio 2026"
-#let due-time = "Enero 14 1:00"
-
-#set text(lang: "es")
-
-#show: homework.with(
-  title: title,
-  author: author,
-  collaborators: collaborators,
-  course-id: course-id,
-  instructor: instructor,
-  semester: semester,
-  due-time: due-time,
-
-  // Optional setting to change the paper size depending on region
-  // (Defaults to A4)
-  // paper-size: "us-letter",
+#show: pset.with(
+  class: "Optimization I",
+  student: "Pedro D. Llerenas\npedro.llerenas@cimat.mx",
+  title: "Homework 1",
+  date: datetime(year: 2026, month: 2, day: 6),
+)
+#show: great-theorems-init
+#let proof = proofblock()
+#let mathcounter = rich-counter(identifier: "mathblocks", inherited_levels: 1)
+#let theorem = mathblock(
+  blocktitle: "Theorem",
+  counter: mathcounter,
 )
 
-// Numbering
-#set enum(numbering: "a)")
+#show link: set text(fill: blue)
+#show link: underline
 
-#prob(title: "2.1")[
-  Prove that the effective domain of a convex function $f$ (that is, the set of
-  points $x in RR^n$ such that $f(x) < infinity$) is a convex set.
-]
-#proof[
-  Let $E$ denote the effective domain of $f$. That is,
-  $
-    E colon.eq { x in RR^n: f(x) < infinity}.
-  $
-  We must prove that
-  $
-    x,y in E => (1-alpha)x + alpha y in E quad forall alpha in [0,1].
-  $
-  By convexity of $f$, we have
-  $
-    f((1-alpha) x + alpha y) <= (1-alpha)f(x)+alpha f(y)
-  $
-  for all $x, y in E$ and all $alpha in [0,1]$. Since $x,y in E$, we have
-  $
-    f((1-alpha) x + alpha y) < infinity.
-  $
-  Therefore,
-  $
-    (1-alpha) x + alpha y in E
-  $
-  for all $x, y in E$ and all $alpha in [0,1]$, so $E$ is convex.
-]
+#set math.equation(
+  numbering: "(1)",
+  supplement: none,
+)
 
-#prob(title: "2.2")[
-  Prove that $"epi" f$ is a convex subset of $RR^n times RR$ for any convex
-  function $f$.
-]
+#set par(
+  justify: true,
+  leading: 0.52em,
+)
 
-#proof[
-  Recall that
-  $
-    "epi" f colon.eq {(x,t) in RR^n times RR | t >= f(x)}.
-  $
-  We must prove that
-  $
-    (x, t_1), (y, t_2) in "epi" f => (1-alpha)(x, t_1) + alpha (y, t_2) in "epi" f.
-  $
-  Rewriting this last expression we obtain
-  $
-    ((1-alpha) x + alpha y, (1-alpha)t_1 + alpha t_2) in "epi" f.
-  $
-  Therefore, if we have
-  $
-    t_1 >= f(x), quad t_2 >= f(y),
-  $
-  by convexity of $f$, it follows that
-  $
-    f((1-alpha)x + alpha y) <= (1-alpha)f(x) + alpha f(y) <= (1-alpha)t_1 + alpha t_2
-  $
-  for all $(x, t_1), (y, t_2) in "epi f"$ and all $alpha in [0,1]$. This proves
-  the statement.
-]
+#show ref: it => {
+  // provide custom reference for equations
+  if it.element != none and it.element.func() == math.equation {
+    // optional: wrap inside link, so whole label is linked
+    link(it.target)[(#it)]
+  } else {
+    it
+  }
+}
 
-#prob(title: "2.3")[
-  Suppose that $f:RR^n -> RR$ is convex and concave. Show that $f$ must be an
-  affine function.
-]
-#proof[
-  If $f$ is convex, we have
-  $
-    f((1-alpha)x + alpha y) <= (1-alpha)f(x) + alpha f(y).
-  $
-  If $f$ is concave, we have
-  $
-    f((1-alpha)x + alpha y) >= (1-alpha)f(x) + alpha f(y).
-  $
-  Therefore,
-  $
-    f((1-alpha)x + alpha y) = (1-alpha)f(x) + alpha f(y),
-  $
+#set enum(
+  full: true, // necessary to receive all numbers at once, so we can know which level we are at
+  numbering: (..nums) => {
+    let nums = nums.pos() // just positional args
+    let num = nums.last() // just the current level’s number
+    let level = nums.len() // level is the amount of numbers available
+
+    // format for current level (or stop at i. If going too deep)
+    let format = ("a)", "i)", "i)").at(calc.min(2, level - 1))
+    let result = numbering(format, num) // formatted number
+    if level < 3 {
+      // first 2 levels for example
+      strong(result)
+    } else {
+      result
+    }
+  },
+)
+
+
+#question[
+  Let $f_1(x_1, x_2) = x_1^2 - x_2^2$, $f_2(x_1, x_2) = 2 x_1 x_2$. Represent
+  the level sets associated with $f_1(x_1,x_2) = 12$ and $f_2 (x_1, x_2) = 16$
+  on the same figure using Python. Indicate on the figure, the points $bold(x)
+  = [x_1, x_2]^top$ for which $f(bold(x)) = [f_1(x_1, x_2), f_2(x_1,x_2)]^top = [12, 16]^top$.
 ]
 
 
-#prob(title: "2.4")[
-  Suppose that $f:RR^n -> RR$ is convex and upper-bounded. Show that $f$ must
-  be a constant function.
+#question[
+  Consider the function $f(bold(x)) = (bold(a)^top bold(x))(bold(b)^top
+    bold(x))$, where $bold(a)$, $bold(b)$ and $bold(x)$ are $n$-dimensional
+  vectors.
+
+  Compute the gradient $nabla f(bold(x))$ and the Hessian $nabla^2 f(bold(x))$.
 ]
 
 #proof[
-  Suppose $f$ is convex and non-constant. Then, there exists $x,y in RR^n$ with
-  $f(x) > f(y)$. By convexity, we have
+  We define
   $
-    f(x) <= (1-alpha)f((x-alpha y)/(1-alpha)) + alpha f(y),
+    h(bold(x)) = bold(a)^top bold(x), quad
+    g(bold(x)) = bold(b)^top bold(x).
   $
-  which implies
+  Their gradients are given by
   $
-    (f(x) - alpha f(y))/(1-alpha) <= f((x-alpha y)/(1-alpha)).
+    nabla h(bold(x)) = bold(a), quad nabla g(bold(x)) = bold(b).
   $
-  Since $f(x) > f(y)$,
+  Now, by @thm:product-rule (Product Rule), we obtain
   $
-    lim_(alpha -> 0^+)(f(x) - alpha f(y))/(1-alpha) = infinity,
+                                    nabla f(bold(x)) & = nabla ( h(bold(x)) g(bold(x))) \
+                                                     & = g(bold(x)) nabla h(bold(x)) + h(bold(x)) nabla g(bold(x)) \
+                                                     & = (bold(b)^top bold(x)) bold(a) + (bold(a)^top bold(x)) bold(b) \
+    (bold(b)^top bold(x), bold(a)^top bold(x) in RR) & = bold(a)bold(b)^top bold(x) + bold(b)bold(a)^top bold(x) \
+                                                     & = (bold(a)bold(b)^top + bold(b)bold(a)^top) bold(x).
   $
-  so $f$ is not bounded above, contradicting our assumption. Thus, $f$
-  must be constant.
-
-]
-
-#prob(title: "2.5")[
-  Suppose $f:RR^n -> RR$ is strongly convex and Lipschitz. Show that no such $f$
-  exists.
-]
-#proof[
-  If $f$ is strongly convex, we have
+  Therefore, for the Hessian, we have
   $
-    f((1-alpha)x + alpha y) <= (1-alpha)f(x) + alpha f(y) - 1/2 m alpha(1-alpha)norm(x-y)^2_2,
-  $
-  for some $m > 0$ and all $x,y$ in the domain of $f$. If it is Lipschitz, we have
-  $
-    abs(f(x) - f(y)) <= L norm(x-y).
-  $
-
-]
-
-#prob(title: "2.6")[
-  Show rigorously how (2.19) is derived from (2.18) when $f$ is continuously
-  differentiable.
-]
-#proof[
-  We must show that
-  $
-    f((1-alpha)x + alpha y) <= (1-alpha)f(x) + alpha f(y) - 1/2 m alpha(1-alpha)norm(x-y)^2_2,
-  $
-  implies
-  $
-    f(y) >= f(x) + nabla f(x)^top (y-x) + m/2 norm(y-x)^2.
-  $
-  when $f$ is differentiable.
-
-  Indeed, by Taylor's theorem, we have
-  $
-    f(x + alpha (y-x)) & = f(x) + alpha nabla f(x)^top (y-x) + o(alpha) \
-                       & <=(1-alpha)f(x) + alpha f(y) - 1/2 m alpha(1-alpha)norm(x-y)^2_2.
-  $
-  Canceling the $f(x)$ term, rearranging and dividing by $alpha$ yields
-  $
-    f(y) >= f(x)+ nabla f(x)^top (y-x) + 1/2 m (1-alpha)norm(x-y)^2_2 + o(1),
-  $
-  and when $alpha -> 0^+$, the $o(1)$ term vanishes, while $1-alpha -> 1$.
-  Therefore, we obtain
-  $
-    f(y) >= f(x)+ nabla f(x)^top (y-x) + 1/2 m norm(x-y)^2_2.
+    nabla^2 f(bold(x)) & = nabla((bold(a)bold(b)^top + bold(b)bold(a)^top) bold(x)) \
+                       & = (bold(a)bold(b)^top + bold(b)bold(a)^top)^top \
+                       & = bold(a)bold(b)^top + bold(b)bold(a)^top.
   $
 ]
 
-#prob(title: "2.7")[
-  Suppose that $f:RR^n -> RR$ is a convex function with $L$-Lipschitz gradient
-  and a minimizer $x^*$ with function value $f^* = f(x^*)$.
-  1. Show (by minimizing both sides of (2.9) with respect to $y$) that for any
-    $x in RR^n$, we have
+
+#question[
+  Compute the gradient of
   $
-    f(x) - f^* >= 1/(2L) norm(nabla f(x))^2
+    f(theta) eq.def 1/2 sum_(i=1)^(n) [g(bold(x)_i) - g(bold(A x)_i + bold(b))]^2
   $
-  2. Prove the following _co-coercivity_ property: For any $x,y in RR^n$, we have
+  with respect to $theta$, where $theta = [a_(11) , a_(12), a_(21), a_(22),
+    b_(1), b_(2)]^top$, $bold(x)_i in RR^2$, $bold(A)in RR^(2times 2)$, $bold(b)
+  in RR^2$ are defined as follows:
+
   $
-    [nabla f(x) - nabla f(y)]^top (x-y) >= 1/L norm(nabla f(x) - nabla f(y))^2.
+    bold(A) & = mat(delim: "[", a_(11), a_(12); a_(21), a_(22)) \
+    bold(b) & = [b_1, b_2]^top.
   $
+  and $g:RR^2 -> RR$ is $cal(C)^1$.
 ]
 
 #proof[
+  Define $h:RR -> RR$ by
+  $
+    h(x) = x^2,
+  $
+  then
+  $
+    f(theta) eq 1/2 sum_(i=1)^(n) h(g(bold(x)_i) - g(bold(A x)_i + bold(b))).
+  $
+  By linearity of the gradient operator and the Chain Rule,
+  $
+    nabla f(theta) &= 1/2 sum_(i=1)^(n) nabla h(g(bold(x)_i) - g(bold(A x)_i + bold(b))) nabla (g(bold(x)_i) - g(bold(A x)_i + bold(b)))\
+    &= 1/2 sum_(i=1)^(n) 2(g(bold(x)_i) - g(bold(A x)_i + bold(b))) [nabla g(bold(x)_i) - nabla g(bold(A x)_i + bold(b))bold(A) ]\
+    &= sum_(i=1)^(n) (g(bold(x)_i) - g(bold(A x)_i + bold(b))) [nabla g(bold(x)_i) - nabla g(bold(A x)_i + bold(b))bold(A) ].
+  $
 
 ]
 
-#prob(title: "2.8")[
-  Suppose that $f:RR^n->RR$ is an $m$-strongly convex function with
-  $L$-Lipschitz gradient and (unique) minimizer $x^*$ with function value $f^*
-  = f(x^*)$.
-  1. Show that the function $q(x) colon.eq f(x) - m/2 norm(x)^2$ is convex with
-    L---$m$-Lipschitz continuous gradients.
-  2. By applying the co-coercivity property of the previous question to this
-    function $q$, show that the following property holds:
-    $
-      [nabla f(x) - nabla f(y)]^top (x-y) \
-      >= (m L)/(m+L) norm(x-y)^2 + 1/(m+L) norm(nabla f(x) - nabla f(y))^2.
-    $
+#question[
+  Let $f(r,theta)$ be a function from $RR^2$ to $RR$ with $r = sqrt(x^2+y^2)$ and
+  $theta = arctan y/x$. Compute $(partial f) / (partial x)$ and $(partial f) /
+  (partial y)$.
 ]
+
 #proof[
-  The following calculation proves convexity.
+  We first compute the partial derivatives of $r(x,y)$ and $theta(x, y)$. These are given by
   $
-    q((1-alpha)x + alpha y) & = f((1-alpha)x + alpha y) - m/2 norm((1-alpha)x + alpha y)^2 \
-                            & <= (1-alpha)f(x) + alpha f(y) - m/2 alpha (1-alpha) norm(x-y)_2^2 - m/2 norm(x+alpha(y-x))^2 \
-                            & = (1-alpha)f(x)+alpha f(y) -m/2[norm(alpha (1-alpha) (x-y))^2 + norm(x+alpha(y-x))^2] \
-                            & = 
+    (partial r) / (partial x) = x/sqrt(x^2 + y^2) = x/r, quad (partial r) / (partial y) = y/sqrt(x^2 + y^2) = y/r.\
+    (partial theta) / (partial x) = -(y/x^2)/(1 + y^2/x^2) = -y/(x^2+y^2) = -y/r^2, quad (partial theta) / (partial y) = (1/x)/sqrt(1 + y^2/x^2) = x/sqrt(x^2+y^2) = x/r^2.
+  $
+  Therefore, by the chain rule,
+  $
+    (partial f) / (partial x) = (partial f) / (partial r) (partial r) / (partial x) + (partial f) / (partial theta) (partial theta) / (partial x)
+    = (partial f) / (partial r) x/r - (partial f) / (partial theta) y/r^2,\
+    (partial f) / (partial y) = (partial f) / (partial r) (partial r) / (partial y) + (partial f) / (partial theta) (partial theta) / (partial y)
+    = (partial f) / (partial r) y/r+ (partial f) / (partial theta) x/r^2.
+  $
+]
+
+#question[
+  The directional derivatives $(partial f)/(partial v)(x_0, y_0, z_0)$ of a
+  differentiable function $f$ are $3/sqrt(2)$, $1/sqrt(2)$, $-1/sqrt(2)$ in the
+  directions of the vectors $[0, 1/sqrt(2), 1/sqrt(2)]^top$, $[1/sqrt(2), 0,
+    1/sqrt(2)]^top$ and $[1/sqrt(2), 1/sqrt(2), 0]^top$. Compute $nabla f(x_0,
+    y_0, z_0)$.
+]
+
+#proof[
+  Note that the three directions form a basis for $RR^3$, and thus the gradient can be completely determined.
+  Given that $f$ is $cal(C)^1$ and each $v$ is a unit vector,
+  $
+    nabla f(x_0, y_0, z_0) dot v = D_v f(x_0, y_0, z_0),
+  $
+  Let $nabla f(x_0, y_0, z_0) = (x,y,z)$, then we have a system of three equations:
+  $
+    0x + y/sqrt(2) + z/sqrt(2) & = 3/sqrt(2) \
+    x/sqrt(2) + 0y + z/sqrt(2) & = 1/sqrt(2) \
+    x/sqrt(2) + y/sqrt(2) + 0z & = -1/sqrt(2) \
+  $
+  which simplifies to
+  $
+    y + z & = 3 \
+    x + z & = 1 \
+     x+ y & = -1 \
+  $
+  and thus
+  $
+    nabla f(x_0, y_0, z_0) = (-3/2, 1/2, 5/2).
+  $
+]
+
+
+#question[
+  Show that the level curves of the function $f(x,y) = x^2 + y^2$ are
+  orthogonal to the level curves of $g(x,y) = y/x$ for all $(x,y)$.
+]
+
+#proof[
+  The level curves of $f$ at $l in RR$ are given by
+  $
+    S_f = {(x,y) : x^2+y^2 = l}.
+  $
+  Similarly,
+  $
+    S_g = {(x,y) : y/x = l}.
+  $
+  That is, we must verify if the curves
+  $
+    y^2 = l - x^2 quad y = l x
+  $
+  are orthogonal. Their derivatives (slopes) are
+  $
+    m_1 = (d y)/( d x) = -x/y, quad m_2 = (d y) / (d x) = l
+  $
+  and thus their product is
+  $
+    m_1 m_2 = -(l x) /y.
+  $
+  Substituting $y = l x$, we have
+  $
+    m_1 m_2 = - 1.
+  $
+  That is, the curves are orthogonal.
+]
+
+
+
+#question[
+  Let $f,g,h$ be differentiable functions, with $f:RR^n -> RR^3$, $g:RR^n -> RR^3$ and $h:RR^n->RR$
+  $
+    h(bold(x)) = f(bold(x))^top g(bold(x))
+  $
+  show that
+  $
+    D h(bold(x)) = f(bold(x))^top D g(bold(x)) + g(bold(x))^top D f(bold(x)).
+  $
+]
+
+#proof[
+  We have that
+  $
+    lim_(norm(k)->0) abs(h(a+k) - h(a) - D h(a) k) / norm(k) &= lim_(norm(k)->0) abs(f(a+k)g(a+k) - f(a)g(a) - D f(a)g(a) k) / norm(k)\
+  $<lim:diff>
+  Now, note that
+  $
+    f(a+k)g(a+k) - f(a)g(a) & = f(a+k)g(a+k) + f(a)g(a+k) - f(a)g(a+k) - f(a)g(a) \
+                            & = f(a)[g(a+k) - g(a)] + g(a+k)[f(a+k) - f(a)].
+  $
+  Thus, @lim:diff is equivalent to
+  $
+   lim_(norm(k)->0) abs(f(a)[g(a+k) - g(a)] + g(a+k)[f(a+k) - f(a)] - D f(a)g(a) k ) / norm(k)
+  $
+  Since both $f,g$ are differentiable, we have
+  $
+   lim_(norm(k)->0) abs(f(a) D g(a) + g(a) D f(a) - D f(a)g(a) k ) / norm(k)
   $
 
 ]
 
+#question[
+  Consider the *induced matrix norm*
+  $
+    norm(bold(A))_p = max_(bold(x) eq.not 0) norm(bold(A x))_p / norm(bold(x))_p
+  $
+  where $norm(dot)_p$ is the $ell_p$ norm, i.e.
+  $
+    norm(bold(x))_p = (abs(x_1)^p + abs(x_2)^p + dots.c + abs(x_n)^p)^(1/p)
+  $
+  Show that
+  $
+    norm(bold(A B))_p <= norm(bold(A))_p norm(bold(B))_p.
+  $
+]
 
-#pagebreak(weak: true)
+#proof[
+  We first note that by definition, $norm(bold(A x))_p / norm(bold(x))_p <= norm(bold(A))_p$ for all $bold(x) eq.not 0$. Therefore,
+  $
+    norm(bold(A x))_p <= norm(bold(A))_p norm(bold(x))_p, quad bold(x) eq.not 0.
+  $
+  Thus,
+  $
+    norm(bold(A B x))_p = norm(bold(A (B x)))_p <= norm(bold(A))_p norm(bold(B x))_p <= norm(bold(A))_p norm(bold(B))_p norm(bold(x))_p.
+  $
+  Equivalently,
+  $
+    norm(bold(A B x))_p/norm(bold(x))_p <= norm(bold(A))_p norm(bold(B))_p, quad bold(x) eq.not 0.
+  $
+  Since $bold(x) in RR^n backslash {0}$ was arbitrary, we may conclude that
+  $
+    norm(bold(A B))_p = max_(bold(x) eq.not 0) norm(bold(A B x))_p/norm(bold(x))_p <= norm(bold(A))_p norm(bold(B))_p.
+  $
+]
+
+#theorem(title: "Product Rule")[
+  Let $bold(f):RR^n -> RR^m$, $bold(g): RR^n -> RR^m$ be two differentiable functions. Define the function $h: RR^n -> RR$ by
+  $h(bold(x)) = bold(f)(bold(x))^top bold(g)(bold(x))$ then
+  $
+    D_x h(bold(x)) = bold(f)(bold(x))^top D bold(g)(bold(x)) + bold(g)(bold(x))^top D bold(f)(bold(x))in RR^(1 times n),
+  $
+  where $D bold(g)(bold(x))$ and $D bold(f)(bold(x))$ are matrices (the Jacobian matrix). Equivalently,
+  $
+    nabla h(bold(x)) = nabla bold(f)(bold(x)) bold(g)(bold(x)) + nabla bold(g)(bold(x)) bold(f)(bold(x)) in RR^(n).
+  $
+]<thm:product-rule>
