@@ -34,9 +34,10 @@ int main(void) {
 
   std::vector<int> res(N * N);
 
-// one parallel for is enough, as omp would ignore the nested omp for at
-// compilation
+
+// Paralelize the outer loop. Parallelizing the inner loops is disabled on compilation:
 // http://ppc.cs.aalto.fi/ch3/nested/
+// Other alternatives are using collapse or enabling nested parallelization
 #pragma omp parallel for
   for (int i = 0; i < N; i++) {
     for (int j = 0; j < N; j++) {
@@ -48,6 +49,7 @@ int main(void) {
     }
   }
 
+	std::cout << "result:\n";
   for (int i = 0; i < N; i++) {
     for (int j = 0; j < N; j++) {
       std::cout << res[N * i + j] << " ";
