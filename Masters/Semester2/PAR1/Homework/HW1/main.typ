@@ -11,7 +11,7 @@
 #let course-id = "PAR1: Cómputo Paralelo"
 #let instructor = "Dr. Francisco J. Hernández López"
 #let semester = "Enero-Julio 2026"
-#let due-time = "Febrero 2"
+#let due-time = "Febrero 6"
 
 #set text(lang: "es")
 
@@ -75,7 +75,7 @@ siguiente tabla muestra la asignación:
 Entonces, dado que usamos `firstprivate` en la directiva, el valor de $x$ es
 inicializado a $x = 1$ para cada thread, y la privacidad hace que el
 comportamiento sea bien definido, ya que cada thread tiene un estado
-unico del valor de $x$.
+único del valor de $x$.
 
 Entonces, dada esta partición, en el thread 0 tenemos
 #figure(
@@ -117,13 +117,21 @@ Entonces, dada esta partición, en el thread 0 tenemos
   caption: [Asignaciones del thread 2],
 )
 
-Las threads 3 y 4 tienen un comportamiento identico, resultando en la lista
+Las threads 3 y 4 tienen un comportamiento idéntico, resultando en la lista
 previamente mencionada.
 
 #prob(title: "", color: rgb("#009999"))[
   La suma de los elementos de un vector de tamaño $N$.
 ]
-
+#figure(
+  ```cpp
+  #pragma omp parallel for reduction(+ : sum)
+    for (int i = 0; i < N; i++) {
+      sum += v[i];
+    }
+  ```,
+)
+Notemos que usamos `reduction` para resolver la _race condition_ en la variable `sum`.
 #figure(
   ```
   g++ p2.cpp -fopenmp -o p2
@@ -159,6 +167,25 @@ Genera el siguiente output
 #prob(title: "", color: rgb("#009999"))[
   La multiplicación de dos matrices cuadradas de tamaño $N times N$.
 ]
+
+#figure(
+  ```cpp
+  #pragma omp parallel for
+    for (int i = 0; i < N; i++) {
+      for (int j = 0; j < N; j++) {
+        int sum = 0;
+        for (int k = 0; k < N; k++) {
+          sum += m1[N * i + k] * m2[N * k + j];
+        }
+        res[N * i + j] = sum;
+      }
+    }
+  ```,
+)
+En este caso, usamos una sola instrucción de paralelización para el loop. Esto
+nos paraleliza el loop de la variable `i`. Notemos que, a pesar de que tenemos
+una suma dentro de los loops, no debemos usar `reduction`. Esto se debe a la
+independencia de la variable `sum` entre cada `i`.
 
 #figure(
   ```
