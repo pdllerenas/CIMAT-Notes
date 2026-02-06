@@ -67,6 +67,15 @@
   on the same figure using Python. Indicate on the figure, the points $bold(x)
   = [x_1, x_2]^top$ for which $f(bold(x)) = [f_1(x_1, x_2), f_2(x_1,x_2)]^top = [12, 16]^top$.
 ]
+We may analytically solve the system
+$
+  cases(x_1^2 - x_2^2 &= 12, 2x_1 x_2 &= 16)
+$
+to find that the intersection points are $(4,2)$ and $(-4,-2)$.
+#figure(
+  image("p1.png"),
+  caption: [In #text("blue", blue), $x_1^2 - x_2^2 = 12$ and in #text("red", red), $2 x_1 x_2 = 16$. The intersection points are given by {(4,2), (-4, -2)}. ],
+)
 
 
 #question[
@@ -121,21 +130,34 @@
 ]
 
 #proof[
-  Define $h:RR -> RR$ by
+  Define
   $
-    h(x) = x^2,
+    epsilon_i(theta) = g(bold(x)_i) - g(bold(A x)_i + bold(b)).
   $
-  then
+  Thus, we write
   $
-    f(theta) eq 1/2 sum_(i=1)^(n) h(g(bold(x)_i) - g(bold(A x)_i + bold(b))).
+    f(theta) = 1/2 sum_i epsilon_i (theta)^2.
   $
-  By linearity of the gradient operator and the Chain Rule,
+  We have that
   $
-    nabla f(theta) &= 1/2 sum_(i=1)^(n) nabla h(g(bold(x)_i) - g(bold(A x)_i + bold(b))) nabla (g(bold(x)_i) - g(bold(A x)_i + bold(b)))\
-    &= 1/2 sum_(i=1)^(n) 2(g(bold(x)_i) - g(bold(A x)_i + bold(b))) [nabla g(bold(x)_i) - nabla g(bold(A x)_i + bold(b))bold(A) ]\
-    &= sum_(i=1)^(n) (g(bold(x)_i) - g(bold(A x)_i + bold(b))) [nabla g(bold(x)_i) - nabla g(bold(A x)_i + bold(b))bold(A) ].
+    nabla_theta epsilon_i^2 (theta) & = 2 epsilon_i (theta) nabla_theta epsilon_i (theta).
   $
+  Therefore,
+  $
+    nabla f(theta) & = sum_i epsilon_i (theta) nabla_theta epsilon_i (theta).
+  $
+  Now note that
+  $
+    nabla_theta epsilon_i (theta) &= nabla_theta [g(bold(x)_i) - g(bold(A x)_i + bold(b))]\
+    &= -nabla g(bold(A x)_i + bold(b)) nabla_theta (bold(A x)_i + bold(b))\
+    &= -nabla g(bold(A x)_i + bold(b)) [e_1 bold(x)_i, e_2 bold(x)_i, e_3 bold(x)_i, e_4 bold(x)_i, e_5, e_6]^top\
+    &= vec(delim: "[", -nabla g(bold(A x)_i + bold(b))bold(x)_i^top, -nabla g(bold(A x)_i + bold(b))).
+  $
+  Therefore, we conclude
 
+  $
+    nabla f(theta) = sum_i (g(bold(x)_i) - g(bold(A x)_i + bold(b))) vec(delim: "[", -nabla g(bold(A x)_i + bold(b))bold(x)_i^top, -nabla g(bold(A x)_i + bold(b))).
+  $
 ]
 
 #question[
@@ -250,11 +272,11 @@
   $
   Thus, @lim:diff is equivalent to
   $
-   lim_(norm(k)->0) abs(f(a)[g(a+k) - g(a)] + g(a+k)[f(a+k) - f(a)] - D f(a)g(a) k ) / norm(k)
+    lim_(norm(k)->0) abs(f(a)[g(a+k) - g(a)] + g(a+k)[f(a+k) - f(a)] - D f(a)g(a) k) / norm(k)
   $
   Since both $f,g$ are differentiable, we have
   $
-   lim_(norm(k)->0) abs(f(a) D g(a) + g(a) D f(a) - D f(a)g(a) k ) / norm(k)
+    lim_(norm(k)->0) abs(f(a) D g(a) + g(a) D f(a) - D f(a)g(a) k) / norm(k)
   $
 
 ]
@@ -292,6 +314,8 @@
     norm(bold(A B))_p = max_(bold(x) eq.not 0) norm(bold(A B x))_p/norm(bold(x))_p <= norm(bold(A))_p norm(bold(B))_p.
   $
 ]
+
+== Appendix
 
 #theorem(title: "Product Rule")[
   Let $bold(f):RR^n -> RR^m$, $bold(g): RR^n -> RR^m$ be two differentiable functions. Define the function $h: RR^n -> RR$ by
