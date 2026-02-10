@@ -136,10 +136,26 @@ $
   low-speed line, or no line. If it takes 100 ms of computer time to generate and
   inspect each topology, how long will it take to inspect all of them?
 ]
+There are five routers, and thus the complete graph of them has $(5 dot 4)/2 =
+10$ edges. Since each edge can be any of the four possible lines of connection,
+there are $4^(10)$ different line configurations. Therefore, to inspect all
+permutations, we need $ 100 * 4^(10) "ms" = 104,857,600 "ms" = 29.13 "hrs". $ 
+
 
 #question[
   What are two reasons for using layered protocols? What is one possible disadvantage of using layered protocols?
 ]
+
+One reason for using layered protocols is to hide the implementation of one
+layer from the others. That is, their concerns are separated, and programmers
+may implement a single layer without having to worry about how other
+programmers implement adjacent layers.
+
+Similar to the previous reason, the standarization of these layers allows
+servers to communicate without worrying about output formats.
+
+A disadvantage could be that since the implementations are independent, a layer
+may be doing work which has been done by other layers, such as error checking.
 
 #question[
   Two networks each provide reliable connection-oriented service. One of them
@@ -155,17 +171,26 @@ $
 #question[
   In some networks, the data link layer handles transmission errors by
   requesting that damaged frames be retransmitted. If the probability of a
-  frame's being damaged is p, what is the mean number of transmissions required
+  frame's being damaged is $p$, what is the mean number of transmissions required
   to send a frame? Assume that acknowledgements are never lost.
 ]
 
+This follows a Geometric distribution with parameter $1-p$ (probability of
+success), so the mean is $1/(1-p)$. Thus, if $p = 0$, we only need 1
+transmission. If $p = 1$, we need an infinite amount of transmissions.
+
 #question[
-  A system has an $n$-layer protocol hierarchy. Applications generate messages of length $M$  bytes. At each of the layers, an h-byte header is added. What fraction of the network bandwidth is filled with headers?
+  A system has an $n$-layer protocol hierarchy. Applications generate messages
+  of length $M$ bytes. At each of the layers, an $h$-byte header is added. What
+  fraction of the network bandwidth is filled with headers?
 ]
 
 #question[
   What is the main difference between TCP and UDP?
 ]
+
+Reliability. TCP ensures that what was sent by the server is what is received
+by the client. On the other hand, UDP does not concern itself with this.
 
 #question[
   An image is 1600 × 1200 pixels with 3 bytes/pixel. Assume the image is
@@ -173,3 +198,5 @@ $
   channel? Over a 1-Mbps cable modem? Over a 10-Mbps Ethernet? Over 100-Mbps
   Ethernet? Over gigabit Ethernet?
 ]
+
+
