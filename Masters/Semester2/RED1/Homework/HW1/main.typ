@@ -5,7 +5,7 @@
 #let question = homework.complex-question
 
 #show: pset.with(
-  class: "Optimization I",
+  class: "Programación de Redes 1",
   student: "Pedro D. Llerenas\npedro.llerenas@cimat.mx",
   title: "Homework 1",
   date: datetime(year: 2026, month: 2, day: 6),
@@ -72,7 +72,7 @@
 
 - A high bandwidth, high latency network example is a WAN. A concrete example
   can be AWS Direct Connect, which is a direct connection over Ethernet
-  fiber-optic cable to some (possibly far) location. fiber-optic cable allows for
+  fiber-optic cable to some (possibly far) location. Fiber-optic cable allows for
   a high stream of data at once, but the distance traveled may be of the order of kilometers.
 - A low bandwidth, low latency network example is device I/O, such as a mouse
   or a keyboard, where the data transmitted to the computer is of the order of
@@ -139,7 +139,7 @@ $
 There are five routers, and thus the complete graph of them has $(5 dot 4)/2 =
 10$ edges. Since each edge can be any of the four possible lines of connection,
 there are $4^(10)$ different line configurations. Therefore, to inspect all
-permutations, we need $ 100 * 4^(10) "ms" = 104,857,600 "ms" = 29.13 "hrs". $ 
+permutations, we need $ 100 * 4^(10) "ms" = 104,857,600 "ms" = 29.13 "hrs". $
 
 
 #question[
@@ -151,7 +151,7 @@ layer from the others. That is, their concerns are separated, and programmers
 may implement a single layer without having to worry about how other
 programmers implement adjacent layers.
 
-Similar to the previous reason, the standarization of these layers allows
+Similar to the previous reason, the standardization of these layers allows
 servers to communicate without worrying about output formats.
 
 A disadvantage could be that since the implementations are independent, a layer
@@ -164,9 +164,18 @@ may be doing work which has been done by other layers, such as error checking.
   example of how they differ.
 ]
 
+They are not identical. A reliable byte stream does not concern itself with
+message boundaries. On the other hand, if two 1024-byte messages are sent, the
+reliable message stream will ensure that there is a boundary to distinguish a
+message from the other.
+
 #question[
   What does "negotiation" mean when discussing network protocols? Give an example.
 ]
+
+A negotiation consists of the sender, receiver and subnet agreeing upon certain
+communication parameters. For example, maximum message size, quality of service
+required.
 
 #question[
   In some networks, the data link layer handles transmission errors by
@@ -175,7 +184,7 @@ may be doing work which has been done by other layers, such as error checking.
   to send a frame? Assume that acknowledgements are never lost.
 ]
 
-This follows a Geometric distribution with parameter $1-p$ (probability of
+This follows a geometric distribution with parameter $1-p$ (probability of
 success), so the mean is $1/(1-p)$. Thus, if $p = 0$, we only need 1
 transmission. If $p = 1$, we need an infinite amount of transmissions.
 
@@ -184,19 +193,52 @@ transmission. If $p = 1$, we need an infinite amount of transmissions.
   of length $M$ bytes. At each of the layers, an $h$-byte header is added. What
   fraction of the network bandwidth is filled with headers?
 ]
+The total amount of information of the packet is $M + n h$ bytes, where $n h$
+represents the header information after all $n$ layers have added their data.
+Therefore,
+$
+  (n h)/(M+n h)
+$
+of the total bandwidth belongs to the header.
 
 #question[
   What is the main difference between TCP and UDP?
 ]
 
 Reliability. TCP ensures that what was sent by the server is what is received
-by the client. On the other hand, UDP does not concern itself with this.
+by the client. On the other hand, UDP does not concern itself with this. Instead,
+it prioritizes speed.
 
 #question[
-  An image is 1600 × 1200 pixels with 3 bytes/pixel. Assume the image is
+  An image is $1600 times 1200$ pixels with 3 bytes/pixel. Assume the image is
   uncompressed. How long does it take to transmit it over a 56-kbps modem
   channel? Over a 1-Mbps cable modem? Over a 10-Mbps Ethernet? Over 100-Mbps
   Ethernet? Over gigabit Ethernet?
 ]
 
+- 56-kbps modem: 56 kilobytes is 56,000 bytes. Thus, the speed of transmission
+  is 56,000 bytes per second. Since there are $1600 times 1200 times 3 =
+  #{ 1600 * 1200 * 3 }$ bytes of information, it takes
+$
+  (#{ 1600 * 1200 * 3 }" bytes")/(56000 " bytes/s") approx #calc.round(1600 * 1200 * 3 / 56000, digits: 3) "s"
+$
 
+- 1-Mbps modem: 1 Mb = 125000 bytes, so we need
+$
+  (#{ 1600 * 1200 * 3 }" bytes")/(125000 " bytes/s") approx #calc.round(1600 * 1200 * 3 / 125000, digits: 3) "s"
+$
+
+- 10-Mbps modem: 10 Mb = 1250000 bytes, so we need
+$
+  (#{ 1600 * 1200 * 3 }" bytes")/(1250000 " bytes/s") approx #calc.round(1600 * 1200 * 3 / 1250000, digits: 3) "s"
+$
+
+- 100-Mbps modem: 100 Mb = 12500000 bytes, so we need
+$
+  (#{ 1600 * 1200 * 3 }" bytes")/(12500000 " bytes/s") approx #calc.round(1600 * 1200 * 3 / 12500000, digits: 3) "s"
+$
+
+- 1-Gbps modem: 1 Gb = 125000000 bytes, so we need
+$
+  (#{ 1600 * 1200 * 3 }" bytes")/(125000000 " bytes/s") approx #calc.round(1600 * 1200 * 3 / 125000000, digits: 3) "s"
+$
