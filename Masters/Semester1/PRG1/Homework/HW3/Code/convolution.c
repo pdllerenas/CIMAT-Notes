@@ -1,10 +1,11 @@
-#include "convolution.h"
-#include "compare.h"
-#include "kernel_io.h"
 #include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include "convolution.h"
+#include "compare.h"
+#include "kernel_io.h"
 
 /*
 
@@ -45,20 +46,22 @@ unsigned char **apply_sobel(unsigned char **input, int rows, int cols,
   Kernel *k_x = kx();
   Kernel *k_y = ky();
 
-  int *gx = malloc(rows * cols * sizeof(int));
-  int *gy = malloc(rows * cols * sizeof(int));
+  int *gx = (int *)malloc(rows * cols * sizeof(int));
+  int *gy = (int *)malloc(rows * cols * sizeof(int));
 
   if (!gx || !gy) {
     perror("Could not allocate memory.\n");
     return NULL;
   }
 
-  unsigned char **output = malloc(rows * sizeof(unsigned char *));
+  unsigned char **output =
+      (unsigned char **)malloc(rows * sizeof(unsigned char *));
   if (!output) {
     perror("Could not allocate memory.\n");
     return NULL;
   }
-  unsigned char *temp_ptr = malloc(rows * cols * sizeof(unsigned char));
+  unsigned char *temp_ptr =
+      (unsigned char *)malloc(rows * cols * sizeof(unsigned char));
   if (!temp_ptr) {
     perror("Could not allocate memory.\n");
     return NULL;
@@ -100,12 +103,14 @@ unsigned char **apply_sobel(unsigned char **input, int rows, int cols,
 unsigned char **apply_gaussian(unsigned char **input, int rows, int cols,
                                Kernel *(k)()) {
   Kernel *kernel = k();
-  unsigned char **output = malloc(rows * sizeof(unsigned char *));
+  unsigned char **output =
+      (unsigned char **)malloc(rows * sizeof(unsigned char *));
   if (!output) {
     perror("Could not allocate memory.\n");
     return NULL;
   }
-  unsigned char *temp_ptr = malloc(rows * cols * sizeof(unsigned char));
+  unsigned char *temp_ptr =
+      (unsigned char *)malloc(rows * cols * sizeof(unsigned char));
   if (!temp_ptr) {
     perror("Could not allocate memory.\n");
     return NULL;
@@ -145,12 +150,14 @@ unsigned char **apply_mean(unsigned char **input, int rows, int cols,
   // creates the mean kernel of k_dim * k_dim
   Kernel *kernel = k(k_dim);
 
-  unsigned char **output = malloc(rows * sizeof(unsigned char *));
+  unsigned char **output =
+      (unsigned char **)malloc(rows * sizeof(unsigned char *));
   if (!output) {
     perror("Could not allocate memory.\n");
     return NULL;
   }
-  unsigned char *temp_ptr = malloc(rows * cols * sizeof(unsigned char));
+  unsigned char *temp_ptr =
+      (unsigned char *)malloc(rows * cols * sizeof(unsigned char));
   if (!temp_ptr) {
     perror("Could not allocate memory.\n");
     return NULL;
@@ -180,7 +187,8 @@ static unsigned char sub_matrix_median(unsigned char **input, int rows,
   int arr_dim = median_dim * median_dim;
 
   // helper array to sort and then find median
-  unsigned char *sorted_arr = malloc(arr_dim * sizeof(unsigned char));
+  unsigned char *sorted_arr =
+      (unsigned char *)malloc(arr_dim * sizeof(unsigned char));
   if (!sorted_arr) {
     perror("Could not allocate memory.\n");
     exit(1);
@@ -215,12 +223,13 @@ applies the median filter of size median_dim * median_dim to the input image
 
 unsigned char **median_filter_nxn(unsigned char **input, int rows, int cols,
                                   int median_dim) {
-  unsigned char **output = malloc(rows * sizeof(unsigned char *));
+  unsigned char **output =
+      (unsigned char **)malloc(rows * sizeof(unsigned char *));
   if (!output) {
     perror("Could not allocate memory.\n");
     return NULL;
   }
-  unsigned char *temp_ptr = malloc(rows * cols * sizeof(unsigned char));
+  unsigned char *temp_ptr = (unsigned char*)malloc(rows * cols * sizeof(unsigned char));
   if (!temp_ptr) {
     perror("Could not allocate memory.\n");
     return NULL;
@@ -245,12 +254,12 @@ applies the gradient filter to the given image
  */
 
 unsigned char **apply_gradient(unsigned char **input, int rows, int cols) {
-  unsigned char **output = malloc(rows * sizeof(unsigned char *));
+  unsigned char **output = (unsigned char **)malloc(rows * sizeof(unsigned char *));
   if (!output) {
     perror("Could not allocate memory.\n");
     return NULL;
   }
-  unsigned char *temp_ptr = malloc(rows * cols * sizeof(unsigned char));
+  unsigned char *temp_ptr = (unsigned char*)malloc(rows * cols * sizeof(unsigned char));
   if (!temp_ptr) {
     perror("Could not allocate memory.\n");
     return NULL;
@@ -264,7 +273,7 @@ unsigned char **apply_gradient(unsigned char **input, int rows, int cols) {
     for (x = 0; x < cols; x++) {
       int gx, gy;
 
-      // handle horizontal derivative 
+      // handle horizontal derivative
       if (x < cols - 1) {
         gx = abs(input[y][x + 1] - input[y][x]);
       } else {

@@ -33,14 +33,14 @@ and the divisor is its size.
  */
 
 Kernel *create_mean_nxn(int dim) {
-  Kernel *k = malloc(sizeof(Kernel));
+  Kernel *k = (Kernel *)malloc(sizeof(Kernel));
   if (!k) {
     return NULL;
   }
 
   k->dimension = dim;
   k->divisor = dim * dim;
-  k->data = malloc(dim * dim * sizeof(int));
+  k->data = (int *)malloc(dim * dim * sizeof(int));
   if (!k->data) {
     free(k);
     return NULL;
@@ -63,14 +63,14 @@ creates a Kernel pointer containing data for the Laplacian with center 4
  */
 
 Kernel *create_laplacian_4() {
-  Kernel *k = malloc(sizeof(Kernel));
+  Kernel *k = (Kernel *)malloc(sizeof(Kernel));
   if (!k) {
     return NULL;
   }
 
   k->dimension = 3;
   k->divisor = 1;
-  k->data = malloc(k->dimension * k->dimension * sizeof(int));
+  k->data = (int *)malloc(k->dimension * k->dimension * sizeof(int));
   if (!k->data) {
     free(k);
     return NULL;
@@ -87,14 +87,14 @@ creates a Kernel pointer containing data for the Laplacian with center 20
 
  */
 Kernel *create_laplacian_20() {
-  Kernel *k = malloc(sizeof(Kernel));
+  Kernel *k = (Kernel *)malloc(sizeof(Kernel));
   if (!k) {
     return NULL;
   }
 
   k->dimension = 3;
   k->divisor = 1;
-  k->data = malloc(k->dimension * k->dimension * sizeof(int));
+  k->data = (int *)malloc(k->dimension * k->dimension * sizeof(int));
   if (!k->data) {
     free(k);
     return NULL;
@@ -106,19 +106,20 @@ Kernel *create_laplacian_20() {
 }
 /*
 
-creates a Kernel pointer containing data for the horizontal part of the scharr operator 
+creates a Kernel pointer containing data for the horizontal part of the scharr
+operator
 
  */
 
 Kernel *create_horizontal_schar() {
-  Kernel *k = malloc(sizeof(Kernel));
+  Kernel *k = (Kernel *)malloc(sizeof(Kernel));
   if (!k) {
     return NULL;
   }
 
   k->dimension = 3;
   k->divisor = 1;
-  k->data = malloc(k->dimension * k->dimension * sizeof(int));
+  k->data = (int *)malloc(k->dimension * k->dimension * sizeof(int));
   if (!k->data) {
     free(k);
     return NULL;
@@ -131,18 +132,19 @@ Kernel *create_horizontal_schar() {
 
 /*
 
-creates a Kernel pointer containing data for the vertical part of the scharr operator 
+creates a Kernel pointer containing data for the vertical part of the scharr
+operator
 
  */
 Kernel *create_vertical_schar() {
-  Kernel *k = malloc(sizeof(Kernel));
+  Kernel *k = (Kernel *)malloc(sizeof(Kernel));
   if (!k) {
     return NULL;
   }
 
   k->dimension = 3;
   k->divisor = 1;
-  k->data = malloc(k->dimension * k->dimension * sizeof(int));
+  k->data = (int *)malloc(k->dimension * k->dimension * sizeof(int));
   if (!k->data) {
     free(k);
     return NULL;
@@ -159,14 +161,14 @@ creates a Kernel pointer containing data for the 3x3 gaussian operator
 
  */
 Kernel *create_gaussian_3x3() {
-  Kernel *k = malloc(sizeof(Kernel));
+  Kernel *k = (Kernel *)malloc(sizeof(Kernel));
   if (!k) {
     return NULL;
   }
 
   k->dimension = 3;
   k->divisor = 16;
-  k->data = malloc(k->dimension * k->dimension * sizeof(int));
+  k->data = (int *)malloc(k->dimension * k->dimension * sizeof(int));
   if (!k->data) {
     free(k);
     return NULL;
@@ -179,18 +181,18 @@ Kernel *create_gaussian_3x3() {
 
 /*
 
-creates a Kernel pointer containing data for the 5x5 gaussian operator 
+creates a Kernel pointer containing data for the 5x5 gaussian operator
 
  */
 Kernel *create_gaussian_5x5() {
-  Kernel *k = malloc(sizeof(Kernel));
+  Kernel *k = (Kernel *)malloc(sizeof(Kernel));
   if (!k) {
     return NULL;
   }
 
   k->dimension = 5;
   k->divisor = 273;
-  k->data = malloc(k->dimension * k->dimension * sizeof(int));
+  k->data = (int *)malloc(k->dimension * k->dimension * sizeof(int));
   if (!k->data) {
     free(k);
     return NULL;
@@ -203,18 +205,18 @@ Kernel *create_gaussian_5x5() {
 
 /*
 
-creates a Kernel pointer containing data for the 7x7 gaussian operator 
+creates a Kernel pointer containing data for the 7x7 gaussian operator
 
  */
 Kernel *create_gaussian_7x7() {
-  Kernel *k = malloc(sizeof(Kernel));
+  Kernel *k = (Kernel *)malloc(sizeof(Kernel));
   if (!k) {
     return NULL;
   }
 
   k->dimension = 7;
   k->divisor = 1003;
-  k->data = malloc(k->dimension * k->dimension * sizeof(int));
+  k->data = (int *)malloc(k->dimension * k->dimension * sizeof(int));
   if (!k->data) {
     free(k);
     return NULL;
@@ -257,7 +259,7 @@ Kernel *read_kernel_from_file(const char *filename) {
   if (!file) {
     return NULL;
   }
-  Kernel *k = malloc(sizeof(Kernel));
+  Kernel *k = (Kernel *)malloc(sizeof(Kernel));
 
   if (!k) {
     fclose(file);
@@ -273,7 +275,7 @@ Kernel *read_kernel_from_file(const char *filename) {
     return NULL;
   }
 
-  k->data = malloc(k->dimension * k->dimension * sizeof(int));
+  k->data = (int *)malloc(k->dimension * k->dimension * sizeof(int));
   if (!k->data) {
     free(k);
     fclose(file);
