@@ -8,7 +8,7 @@
   class: "Optimization I",
   student: "Pedro D. Llerenas\npedro.llerenas@cimat.mx",
   title: "Homework 2",
-  date: datetime(year: 2026, month: 2, day: 6),
+  date: datetime(year: 2026, month: 2, day: 17),
 )
 #show: great-theorems-init
 #let proof = proofblock()
