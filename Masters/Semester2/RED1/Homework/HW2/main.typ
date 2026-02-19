@@ -10,5 +10,22 @@
 )
 
 #question[
-
+  Dada una imagen de entrada, obtenga la frecuencia de cada uno de sus pixeles
+  usando 1, 2 y 4 procesos.
+  1. Determine el tiempo de ejecución para cada caso (ver ANEXO 1);
+  2. ¿El tiempo de ejecución con 2 y 4 procesos es 2 y 4 veces menor que un solo proceso?
 ]
+
+#question[
+  Implementar la suma y multiplicación de matrices 3D mediante J procesos
+  creados con la función *fork()*. Usar matrices cuadradas cuyas dimensión y
+  número de procesos son dados como línea de comando y presentar una tabla
+  comparativa de los tiempos de ejecución.
+]
+
+#question[
+  Dada una imagen de entrada, calcular el filtro de la media y mediana usando $N
+  ={1, 2, 4,9}$ procesos. Presentar una tabla comparativa con los tiempos de
+  ejecución.
+]
+
