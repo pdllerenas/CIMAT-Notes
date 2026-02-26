@@ -3,8 +3,10 @@ using DataFrames
 using LinearAlgebra
 using ForwardDiff
 using Random
+using Plots
+using Statistics
 
-include("gradient.jl")
+#include("gradient.jl")
 
 """
 Cargar los archivos
@@ -66,17 +68,6 @@ end
 
 
 """
-Inicializacion
-"""
-#numero de puntos
-m = size(X,1)
-#Semilla al azar
-rng = MersenneTwister(2026)
-#Iniciamos un punto inicial de forma aleatoria (m vectores de dimension 2)
-z0 = randn(rng, 2m)
-
-
-"""
 Gradiente descendente con Armijo
 """
 #Aqui usamos el metodo que desarrollamos en el ejercicio 1
@@ -84,62 +75,122 @@ Gradiente descendente con Armijo
 
 #z_opt = GradientDescent(z -> MDS_stress(z, D), z0)
 
+"""
+Armijo condition for step size
+"""
+function ArmijoStep(f, x, d, ∇f; σ=1e-4, ρ=0.5)
+  α = 1.0
+  fx = f(x)   # evitar evaluarlo muchas veces
+  while f(x .+ α .* d) > fx + σ * α * dot(∇f, d)
+    α *= ρ
+  end
+  return α
+end
 
 """
 Modficacion de gradiente descendente con Armijo, pero guardando cada iteracion
 """
 #Es la misma funcion del ejercicio 1, solo que estamos guardando cada iteracion
-function GradientDescentHistory(f, x₀; TOL=1e-6, MAX_ITER=1000, step_function=ArmijoStep)
+function GradientDescentHistory(f, x₀; TOL=1e-6, MAX_ITER=1500, step_function=ArmijoStep)
 
-  xₖ = copy(x₀)
-  #guardamos los valores de f
-  history_stress = Float64[]
-  #guardamos los valores del gradiente
-  history_grad = Float64[]
+    xₖ = copy(x₀)
+    #guardamos los valores de f
+    history_stress = Float64[]
+    #guardamos los valores del gradiente
+    history_grad = Float64[]
+    stop_reason=""
 
-  for k in 1:MAX_ITER
-    gₖ = ForwardDiff.gradient(f, xₖ)
+    for k in 1:MAX_ITER
+        gₖ = ForwardDiff.gradient(f, xₖ)
 
-    #Guardamos los valores
-    push!(history_stress, f(xₖ))
-    push!(history_grad, norm(gₖ))
+        #Guardamos los valores
+        push!(history_stress, f(xₖ))
+        push!(history_grad, norm(gₖ))
 
-    if norm(gₖ) < TOL
-      println("Converged at iteration ", k)
-      break
+        if norm(gₖ) < TOL
+            println("Converged at iteration ", k)
+            stop_reason="grad<TOL"
+            break
+        end
+
+        pₖ = -gₖ
+        αₖ = step_function(f, xₖ, pₖ, gₖ)
+        xₖ += αₖ .* pₖ
+        if(k==MAX_ITER)
+            stop_reason="max_iter"
+        end
+
     end
 
-    pₖ = -gₖ
-    αₖ = step_function(f, xₖ, pₖ, gₖ)
-    xₖ += αₖ .* pₖ
-  end
-
-  #Regresamos la solucion y los historiales
-  return xₖ, history_stress, history_grad
+    #Regresamos la solucion y los historiales
+    return xₖ, history_stress, history_grad, stop_reason
 end
 
 """
-Evaluacion y guardado de las iteraciones
+Evaluacion con varias semillas y guardado de las iteraciones
 """
-z_opt, stress_hist, grad_hist =GradientDescentHistory(z -> MDS_stress(z, D), z0)
+#Semillas
+seeds = [2026, 1234, 42]
+#DataFrame donde guaradamos semilla, iteraciones, tiempo, valor final de la funcion, valor final del gradiente
+#y la razon de paro
+results = DataFrame(seed=Int[], iters=Int[], time_s=Float64[], stress_final=Float64[], grad_norm_final=Float64[], stop_reason=String[])
 
 
-#graficamos
-using Plots
+for s in seeds
+    """
+    Inicializacion
+    """
+    #numero de puntos
+    m = size(X,1)
+    #Semilla al azar
+    rng = MersenneTwister(s)
+    #Iniciamos un punto inicial de forma aleatoria (m vectores de dimension 2)
+    z0 = randn(rng, 2m)
+    
+    #Medimos el tiempo y evaluamos
+    t_start = time()
+    z_opt, stress_hist, grad_hist, reason = GradientDescentHistory(z -> MDS_stress(z, D), z0)
+    t_end = time()
+    
+    #Observar que aqui no se guarda el fotograma de cada valor de f y gradiente, solo los valores finales
+    push!(results, (
+        s,
+        length(stress_hist),
+        t_end - t_start,
+        stress_hist[end],
+        grad_hist[end],
+        reason
+    ))
 
-#Hacer m vecotres de dimension 2 cada uno
-Z = reshape(z_opt, m, 2)
+    """
+    Graficamos cada una de las soluciones
+    """    
+    #Hacer m vecotres de dimension 2 cada uno
+    Z = reshape(z_opt, m, 2)
 
-#Especies
-species_unique = unique(Species)
-colors = Dict(species_unique .=> [:red, :blue, :green])
+    #Especies
+    species_unique = unique(Species)
+    colors = Dict(species_unique .=> [:red, :blue, :green])
 
-scatter()
-for s in species_unique
-    idx = findall(Species .== s)
-    scatter!(Z[idx,1], Z[idx,2],
-             color=colors[s],
-             label=s)
+    scatter(title = "MDS - Iris (seed = $s)")
+    for sp in species_unique
+        idx = findall(Species .== sp)
+        scatter!(Z[idx,1], Z[idx,2],
+                color=colors[sp],
+                label=sp)
+    end
+
+    savefig("iris_mds_seed$(s).png")
+
 end
 
-savefig("iris_mds.png")
+"""
+Estadisticas
+"""
+mean_stress = mean(results.stress_final)
+std_stress = std(results.stress_final)
+
+println("Resultados por semilla:")
+println(results)
+println("Media stress final: ", mean_stress)
+println("Desviacion estandar stress final: ", std_stress)

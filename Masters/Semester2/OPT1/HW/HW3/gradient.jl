@@ -22,7 +22,7 @@ end
 Generic gradient descent. We can plug in any step finding function. Default is
 Armijo condition
 """
-function GradientDescent(f, x₀, file_out; TOL=1e-6, MAX_ITER=10000, step_function=ArmijoStep)::Vector{Float64}
+function GradientDescent(f, x₀, file_out; TOL=1e-6, MAX_ITER=50000, step_function=ArmijoStep)::Vector{Float64}
   step_io = open("$file_out step_log.csv", "w")
   println(step_io, "iter,step,backtrack")
   k::Int = 0
@@ -39,7 +39,7 @@ function GradientDescent(f, x₀, file_out; TOL=1e-6, MAX_ITER=10000, step_funct
       fₖ = f(xₖ) # only used for logging
       gₖ = ForwardDiff.gradient(f, xₖ)
       nrm = norm(gₖ)
-      if (norm(gₖ) < TOL) 
+      if (nrm < TOL) 
         t₁ = time_ns()
         s = (t₁ - t₀) / 1e9 # to seconds
         @printf(io, "%d,%.6f,%.6e,%.8f\n", k,s,fₖ,nrm)

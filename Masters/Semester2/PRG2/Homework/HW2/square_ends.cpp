@@ -1,10 +1,9 @@
-#include <vector>
+#undef _GLIBCXX_DEBUG
 
-using std::min;
-using std::swap;
-using std::vector;
+#include <bits/stdc++.h>
+
+using namespace std;
 using ll = long long;
-
 const ll INF = 4e18;
 
 struct Line
@@ -95,3 +94,49 @@ public:
     return query(x, L, R, root);
   }
 };
+
+int main()
+{
+  ios::sync_with_stdio(false);
+  cin.tie(0);
+
+  int N, K;
+  cin >> N >> K;
+  vector<ll> A(N);
+  for (int i = 0; i < N; i++)
+  {
+    cin >> A[i];
+  }
+  vector<ll> prev(N + 1, INF), curr(N + 1, INF);
+
+  prev[0] = 0;
+
+  for (int k = 1; k <= K; k++)
+  {
+    LiChaoTree lct(0, 1 + 1e6);
+    fill(curr.begin(), curr.end(), INF);
+
+    if (prev[0] != INF)
+    {
+      ll m = -2LL * A[0];
+      ll b = prev[0] + A[0] * A[0];
+      lct.add_line(m, b);
+    }
+    for (int i = 1; i <= N; i++)
+    {
+      ll best = lct.query(A[i - 1]);
+      curr[i] = 1LL * A[i - 1] * A[i - 1] + best;
+
+      if (i < N && prev[i] != INF)
+      {
+        ll m = -2LL * A[i];
+        ll b = prev[i] + 1LL * A[i] * A[i];
+        lct.add_line(m, b);
+      }
+    }
+    prev = curr;
+  }
+  cout << prev[N] << "\n";
+
+  return 0;
+}

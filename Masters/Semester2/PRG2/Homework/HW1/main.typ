@@ -7,6 +7,7 @@
   title: "Tarea 1",
   date: datetime(year: 2026, month: 2, day: 18),
 )
+#set text(lang: "es")
 
 #show link: set text(fill: blue)
 #show link: underline
