@@ -151,6 +151,7 @@ int main(int argc, char *argv[])
     exit(1);
   }
   end_t = clock();
+
   total_t = (double)(end_t - start_t) / CLOCKS_PER_SEC;
   printf("Total time taken by CPU: %f seconds\n", total_t);
 

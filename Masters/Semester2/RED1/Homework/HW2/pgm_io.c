@@ -153,6 +153,7 @@ int pgmWrite(char *filename, int rows, int cols, unsigned char **image,
     nwritten += fwrite((void *)image[i], sizeof(unsigned char), cols, file);
   }
   printf("nwritten = %ld,", nwritten);
+  printf("\n");
 
   fclose(file);
   return (1);
