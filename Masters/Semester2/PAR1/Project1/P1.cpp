@@ -57,40 +57,26 @@ void suavizado_serie(double *f, double *g, int N, int M, double lambda, double t
   }
 }
 
-/*
-int main(){
-    double* img = (double*) malloc(200*300*sizeof(double));
-    double* sm = (double*) malloc(200*300*sizeof(double));
-    for(int i = 0; i < 200*300; i++){
-        img[i] = sqrt(i);
-        sm[i] = img[i];
-    }
-
-    auto ti = chrono::steady_clock::now();
-    suavizado_serie(img, sm, 200, 300, 0.2, 1e-3, 200);
-    auto tf = chrono::steady_clock::now();
-
-    chrono::duration<double> t = tf - ti;
-
-    cout << "Tiempo de ejecución: " << t.count() << endl;
-
-    free(img);
-    free(sm);
-}
-*/
-
-int main()
+int main(int argc, char* argv[])
 {
-  Mat img = imread("input.webp", IMREAD_COLOR);
+  if (argc != 5)
+  {
+    fprintf(stderr, "Usage: %s <input> <output> <lambda> <max_iterations>\n", argv[0]);
+    return 1;
+  }
+  Mat img = imread(argv[1], 1);
   int N = img.rows;
   int M = img.cols;
 
   vector<Mat> channels;
   split(img, channels);
 
-  double lambda = 0.2;
+  double lambda = atof(argv[3]);
   double tol = 1e-6;
-  int max_iter = 200;
+  int max_iter = atoi(argv[4]);
+
+
+  double total_time = 0.0;
 
   for (int c = 0; c < 3; c++)
   {
@@ -108,17 +94,21 @@ int main()
     auto tf = chrono::steady_clock::now();
 
     chrono::duration<double> t = tf - ti;
+    double time = t.count();
+    total_time += time;
 
-    cout << "Tiempo de ejecución: " << t.count() << endl;
+    cout << "Tiempo de ejecución: " << time << endl;
 
     memcpy(channels[c].data, suave, N * M * sizeof(double));
     free(suave);
     channels[c].convertTo(channels[c], CV_8U);
   }
 
+ cout << "Tiempo total de ejecución: " << total_time << endl;
+
   merge(channels, img);
 
-  imwrite("output.webp", img);
+  imwrite(argv[2], img);
 
   return 0;
 }

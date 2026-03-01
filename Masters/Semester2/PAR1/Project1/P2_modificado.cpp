@@ -1,66 +1,57 @@
 #include <bits/stdc++.h>
-#include <opencv2/opencv.hpp>
 #include <vector>
 #include <omp.h>
 #include <cstring>
 #include <chrono>
-using namespace cv;
+#include <opencv2/opencv.hpp>
 using namespace std;
+using namespace cv;
 
-void suavizado_openMP(double *f, double *g, int N, int M, double lambda, double tol, int max_iter, int threads)
-{
-  omp_set_num_threads(threads);
-  double *f_ = new double[N * M];
+void suavizado_openMP(double* f, double* g, int N, int M, double lambda, double tol, int max_iter, int threads){
+    omp_set_num_threads(threads);
+    double* f_ = new double[N * M];
 
-  for (int i = 0; i < max_iter; i++)
-  {
-    double error = 0.0;
+    for(int i = 0; i < max_iter; i++){
+        double error = 0.0;
 
-#pragma omp parallel for schedule(static) reduction(+ : error)
-    for (int j = 0; j < N; j++)
-    {
-      for (int k = 0; k < M; k++)
-      {
-        int idx = M * j + k;
+        #pragma omp parallel for schedule(static) reduction(+:error) firstprivate(lambda)
+        for(int j = 0; j < N; j++){
+            for(int k = 0; k < M; k++){
+                int idx = M*j + k;
 
-        int n_vec = 0;
-        double s_vec = 0.0;
-        if (j > 0)
-        {
-          s_vec += f[idx - M];
-          n_vec++;
-        }
-        if (j < N - 1)
-        {
-          s_vec += f[idx + M];
-          n_vec++;
-        }
-        if (k > 0)
-        {
-          s_vec += f[idx - 1];
-          n_vec++;
-        }
-        if (k < M - 1)
-        {
-          s_vec += f[idx + 1];
-          n_vec++;
+                int n_vec = 0;
+                double s_vec = 0.0;
+                if(j > 0){
+                    s_vec += f[idx - M];
+                    n_vec++;
+                }
+                if(j < N - 1){
+                    s_vec += f[idx + M];
+                    n_vec++;
+                }
+                if(k > 0){
+                    s_vec += f[idx - 1];
+                    n_vec++;
+                }
+                if(k < M - 1){
+                    s_vec += f[idx + 1];
+                    n_vec++;
+                }
+
+                f_[idx] = (g[idx] + lambda * s_vec) / (1.0 + lambda * n_vec);
+                error += fabs(f_[idx] - f[idx]);
+            }
         }
 
-        f_[idx] = (g[idx] + lambda * s_vec) / (1.0 + lambda * n_vec);
-        error += fabs(f_[idx] - f[idx]);
-      }
+        double* tmp = f;
+        f = f_;
+        f_ = tmp;
+
+        if (error < tol){
+            printf("Convergencia en %d iteraciones\n", i);
+            break;
+        }
     }
-
-#pragma omp parallel for
-    for (int j = 0; j < N * M; j++)
-      f[j] = f_[j];
-
-    if (error < tol)
-    {
-      printf("Convergencia en %d iteraciones\n", i);
-      break;
-    }
-  }
 }
 
 int main(int argc, char *argv[])
