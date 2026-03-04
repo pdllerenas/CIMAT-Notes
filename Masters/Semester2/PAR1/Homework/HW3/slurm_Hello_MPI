@@ -1,0 +1,9 @@
+#!/bin/bash
+#SBATCH --partition=C1Mitad1
+#SBATCH --job-name=pedro_llerenas
+#SBATCH --ntasks-per-node=12
+#SBATCH --ntasks=20
+#SBATCH --output=result_Hello.log
+#SBATCH --mem=0
+#SBATCH --time=0
+mpirun.openmpi -np ${SLURM_NTASKS} HelloWorld
