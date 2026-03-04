@@ -1,0 +1,25 @@
+No.,Time,Source,Destination,Protocol,Length,Info
+16,20.918082,172.24.146.169,172.238.203.58,UDP,51,50283 → 33434 Len=9
+17,20.918287,172.24.144.1,172.24.146.169,ICMP,79,Time-to-live exceeded (Time to live exceeded in transit)
+18,20.918511,172.24.146.169,172.238.203.58,UDP,51,50283 → 33434 Len=9
+19,20.918671,172.24.144.1,172.24.146.169,ICMP,79,Time-to-live exceeded (Time to live exceeded in transit)
+20,20.918814,172.24.146.169,172.238.203.58,UDP,51,50283 → 33434 Len=9
+21,20.918985,172.24.144.1,172.24.146.169,ICMP,79,Time-to-live exceeded (Time to live exceeded in transit)
+22,20.919149,172.24.146.169,172.238.203.58,UDP,51,50283 → 33435 Len=9
+23,20.923059,192.168.100.1,172.24.146.169,ICMP,79,Time-to-live exceeded (Time to live exceeded in transit)
+24,20.923160,172.24.146.169,172.238.203.58,UDP,51,50283 → 33435 Len=9
+25,20.932837,192.168.100.1,172.24.146.169,ICMP,79,Time-to-live exceeded (Time to live exceeded in transit)
+26,20.932963,172.24.146.169,172.238.203.58,UDP,51,50283 → 33435 Len=9
+27,20.942770,192.168.100.1,172.24.146.169,ICMP,79,Time-to-live exceeded (Time to live exceeded in transit)
+28,20.942895,172.24.146.169,172.238.203.58,UDP,51,50283 → 33436 Len=9
+29,20.957444,10.21.160.1,172.24.146.169,ICMP,70,Time-to-live exceeded (Time to live exceeded in transit)
+30,20.957583,172.24.146.169,172.238.203.58,UDP,51,50283 → 33436 Len=9
+31,20.963877,10.21.160.1,172.24.146.169,ICMP,70,Time-to-live exceeded (Time to live exceeded in transit)
+32,20.963961,172.24.146.169,172.238.203.58,UDP,51,50283 → 33436 Len=9
+33,20.974220,10.21.160.1,172.24.146.169,ICMP,70,Time-to-live exceeded (Time to live exceeded in transit)
+34,20.974387,172.24.146.169,172.238.203.58,UDP,51,50283 → 33437 Len=9
+35,20.989977,10.180.25.25,172.24.146.169,ICMP,70,Time-to-live exceeded (Time to live exceeded in transit)
+36,20.990117,172.24.146.169,172.238.203.58,UDP,51,50283 → 33437 Len=9
+37,21.000409,10.180.25.25,172.24.146.169,ICMP,70,Time-to-live exceeded (Time to live exceeded in transit)
+38,21.000623,172.24.146.169,172.238.203.58,UDP,51,50283 → 33437 Len=9
+39,21.019899,10.180.25.25,172.24.146.169,ICMP,70,Time-to-live exceeded (Time to live exceeded in transit)

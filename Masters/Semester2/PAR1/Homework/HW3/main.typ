@@ -139,7 +139,7 @@ es necesario instalar nada; el equipo ya tiene disponible el comando.
   caption: [Ejemplo de comando de compilación de código OpenMPI.],
 )
 Esto nos genera un archivo binario `HelloWorld`.
-== SLURM
+== SLURM<sec:slurm>
 Para realizar la ejecución del archivo binario, debemos generar un archivo tipo
 Simple Linux Utility for Resource Management (SLURM). Esto es necesario para que
 se distribuya nuestra tarea (el archivo binario) se rediriga a los procesadores
@@ -163,7 +163,7 @@ siguiente comando:
   GPU             up   infinite      7  alloc g-0-[1-4,9-10,12]
   GPU             up   infinite      4   idle g-0-[5-8]
   ```,
-  caption:[Porción de los clusters disponibles.]
+  caption: [Porción de los clusters disponibles.],
 )
 
 En el mismo correo donde se comparten los datos de acceso, se nos hace saber a
@@ -171,7 +171,7 @@ qué particiones tenemos acceso. En el caso de estudiantes de posgrado, se les
 da acceso a `C0`, `C1Mitad1` y `GPU`.
 
 Dentro del mismo directorio donde comenzamos, podemos generar el archivo SLURM
-mediante el comando `touch` y editarlo mediante `vim`. Por ejemplo, 
+mediante el comando `touch` y editarlo mediante `vim`. Por ejemplo,
 
 #figure(
   ```sh
@@ -198,7 +198,7 @@ mediante el comando `touch` y editarlo mediante `vim`. Por ejemplo,
 )
 
 Notemos la siguiente línea: `#SBATCH --partition=C1Mitad1`. Esto le indica al
-front-end que deaseamos utilizar la partición `C1Mitad1` del cluster. La última
+front-end que deaseamos utilizar la partición `C1Mitad1` del cluster. El output de la tarea imprime en el archivo `result_Hello.log`. El número de procesos a utilizar son 20, solamente utilizando 12 por nodo. La última
 línea `mpirun.openmpi -np ${SLURM_NTASKS} HelloWorld` realiza la ejecución del
 archivo `HelloWorld` en la partición indicada.
 
@@ -216,5 +216,119 @@ Esto nos debería regresar el siguiente mensaje:
   ```
   Submitted batch job <job_id>
   ```,
-  caption: [],
+  caption: [Mensaje de éxito al enviar el trabajo al cluster.],
 )
+== Monitoreo
+Una vez enviado, podemos monitorear el progreso de la tarea. Utilizamos
+
+#figure(
+  ```sh
+  squeue -p C1Mitad1
+  ```,
+  caption: [Monitorear tareas actuales en la partición indicada. En este caso, como enviamos la tarea a la partición C1Mitad1, nos interesa ver ésta.],
+)
+
+#figure(
+  ```
+  est_posgrado_pedro.llerenas@el-insurgente:~$ squeue -p C1Mitad1
+  JOBID PARTITION     NAME     USER ST       TIME  NODES NODELIST(REASON)
+  176724  C1Mitad1 0_2026_A proy_sc_  R    2:22:36      1 c-1-28
+  176728  C1Mitad1  Pt14009 proy_sc_  R    1:12:57      1 c-1-29
+  176739  C1Mitad1  Pt12014 proy_sc_  R       4:43      1 c-1-24
+  176740  C1Mitad1 pdlleren est_posg  R       0:03      2 c-1-[25-26]
+  ```,
+  caption: [Resultado del comando `squeue` inmediatamente después de enviar la tarea.],
+)
+
+Podemos observar que nuestra tarea tiene nombre `pdlleren(as)`, con nuestro usuario, el tiempo de ejecución, la cantidad de nodos utilizados, y los nodos correspondientes.
+
+#figure(
+  ```
+  est_posgrado_pedro.llerenas@el-insurgente:~$ squeue -p C1Mitad1
+  JOBID PARTITION     NAME     USER ST       TIME  NODES NODELIST(REASON)
+  176724  C1Mitad1 0_2026_A proy_sc_  R    2:22:36      1 c-1-28
+  176728  C1Mitad1  Pt14009 proy_sc_  R    1:12:57      1 c-1-29
+  176739  C1Mitad1  Pt12014 proy_sc_  R       4:43      1 c-1-24
+  ```,
+  caption: [Resultado del comand `squeue` un tiempo después de haber enviado la tarea.],
+)
+== Análisis del archivo de logs
+Como fue explicado en la @sec:slurm, el output de nuestro programa fue impreso en `result_Hello.log`. Para observar el contenido, podemos utilizar
+#figure(
+  ```sh
+  cat result_Hello.log
+  ```,
+  caption: [Comando para visualizar el contenido de un archivo.],
+)
+Esto nos imprime en nuestra consola el contenido del archivo log. Como se puede observar en @fig:log, utilizamos 20 procesos. 12 de los cuales son del nodo $c-1-25$, como fue indicado en el SLURM.
+#figure(
+  ```
+ Hello world (C++)! desde el proceso 10 de 20. Se ejecuta en c-1-25
+ Hello world (C++)! desde el proceso 4 de 20. Se ejecuta en c-1-25
+ Hello world (C++)! desde el proceso 0 de 20. Se ejecuta en c-1-25
+ Hello world (C++)! desde el proceso 2 de 20. Se ejecuta en c-1-25
+ Hello world (C++)! desde el proceso 6 de 20. Se ejecuta en c-1-25
+ Hello world (C++)! desde el proceso 8 de 20. Se ejecuta en c-1-25
+ Hello world (C++)! desde el proceso 7 de 20. Se ejecuta en c-1-25
+ Hello world (C++)! desde el proceso 9 de 20. Se ejecuta en c-1-25
+ Hello world (C++)! desde el proceso 11 de 20. Se ejecuta en c-1-25
+ Hello world (C++)! desde el proceso 3 de 20. Se ejecuta en c-1-25
+ Hello world (C++)! desde el proceso 5 de 20. Se ejecuta en c-1-25
+ Hello world (C++)! desde el proceso 1 de 20. Se ejecuta en c-1-25
+ Hello world (C++)! desde el proceso 14 de 20. Se ejecuta en c-1-26
+ Hello world (C++)! desde el proceso 16 de 20. Se ejecuta en c-1-26
+ Hello world (C++)! desde el proceso 17 de 20. Se ejecuta en c-1-26
+ Hello world (C++)! desde el proceso 18 de 20. Se ejecuta en c-1-26
+ Hello world (C++)! desde el proceso 12 de 20. Se ejecuta en c-1-26
+ Hello world (C++)! desde el proceso 13 de 20. Se ejecuta en c-1-26
+ Hello world (C++)! desde el proceso 15 de 20. Se ejecuta en c-1-26
+ Hello world (C++)! desde el proceso 19 de 20. Se ejecuta en c-1-26 
+  ```,
+  caption: [Comando para visualizar el contenido de un archivo.],
+)<fig:log>
+
+= Experimentos
+== Mediciones de tiempo y pruebas con otros valores en el SLURM
+Editamos el programa para medir el tiempo de ejecución usando la función nativa de OpenMPI `MPI_Wtime`, que regresa el timepo transcurrido en el procesador llamado.
+#figure(
+  ```cpp
+  #include <iostream>
+  #include <mpi.h>
+  using namespace std;
+  int main(int argc, char *argv[]){
+    double mytime;
+    MPI_Init(&argc, &argv);
+    mytime = MPI_Wtime();
+    int numtasks;
+    MPI_Comm_size(MPI_COMM_WORLD, &numtasks);
+    int taskid;
+    MPI_Comm_rank(MPI_COMM_WORLD,&taskid);
+    char nodename[MPI_MAX_PROCESSOR_NAME+1];
+    int len;
+    MPI_Get_processor_name(nodename,&len);
+    cout << "Hello Pedro (C++)! desde el proceso " << taskid << " de " << numtasks << ". Se ejecuta en " << nodename << "\n";mytime = MPI_Wtime() - mytime;
+    mytime *= 1000;
+    cout << "Timing from node " << nodename << " is " << mytime << " ms.\n";
+    MPI_Finalize();
+  }  
+  ```,
+  caption: [Programa editado para medición de tiempo.],
+)
+
+Para 4 procesos, obtenemos el siguiente log:
+
+#figure(
+  ```
+  Hello Pedro (C++)! desde el proceso 0 de 4. Se ejecuta en c-1-25
+  Timing from node c-1-25 is 0.063661 ms.
+  Hello Pedro (C++)! desde el proceso 1 de 4. Se ejecuta en c-1-25 
+  Timing from node c-1-25 is 0.082437 ms. 
+  Hello Pedro (C++)! desde el proceso 2 de 4. Se ejecuta en c-1-25  
+  Timing from node c-1-25 is 0.063745 ms.  
+  Hello Pedro (C++)! desde el proceso 3 de 4. Se ejecuta en c-1-25   
+  Timing from node c-1-25 is 0.068062 ms.
+  ```,
+  caption: [Ejemplo de output cuando usamos 4 procesos.],
+)
+
+Los otros ejemplos se encuentran en los archivos log adjuntos.

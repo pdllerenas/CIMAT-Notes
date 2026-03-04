@@ -6,7 +6,7 @@
   class: "Programación de Redes 1",
   student: "Pedro D. Llerenas\npedro.llerenas@cimat.mx",
   title: "Homework 3",
-  date: datetime(year: 2026, month: 3, day: 6),
+  date: datetime(year: 2026, month: 3, day: 4),
 )
 
 #set par(
@@ -32,15 +32,25 @@ Connection-oriented service is better suited when we want reliability, where the
 #question[
   A router can process 2 million packets/sec. The load offered to it is 1.5 million packets/sec on average. If a route from source to destination contains 10 routers, how much time is spent being queued and serviced by the router?
 ]
-
+According to @Tanenbaum2011ComputerN5, we may calculate it via
+$
+  T = 1/mu times 1/(1-rho)  
+$
+where $rho = lambda / mu$ is the CPU utilization, where $lambda$ is the random rate of packet arrival, with  Poisson distribution, and $1/mu$ is the service with absence of competition. In this example, $mu = 2,000,000 "packets/sec"$ and $lambda = 1,500,000 "packets/sec"$. Thus, we have $rho = #{1500000/2000000}$.
+$
+  T = 1/(2000000) times 1/(1-0.75)   = 4/(2000000) = #{4/2000000} "s" = #{4*1000/2000000} "ms" = 2 mu s
+$
+Since this is for each router, in total it is $#{4*1000*1000*10/2000000} mu$s  of delay.
 
 
 
 #question[
-  An IP datagram using the Strict source routing option has to be fragmented. Do
+  An IP datagram using the strict source routing option has to be fragmented. Do
   you think the option is copied into each fragment, or is it sufficient to just
   put it in the first fragment? Explain your answer.
 ]
+
+It has to be copied into each fragment. Otherwise, the fragments other than the first one will follow arbitrary paths to its destination.
 
 #question[
   Convert the IP address whose hexadecimal representation is C22F1582 to dotted decimal notation.
@@ -103,10 +113,34 @@ We will only explain one example. We take www.berkeley.edu as the example.
   22   172.238.203.58  81.002ms  76.963ms  78.383ms
 ```
 
+The index represents the TTL of the packet sent to www.berkeley.edu. Therefore,
+it takes 22 routers to arrive to berkeley, which corresponds to the last ip
+address. The first one corresponds to our own router. The \* signify no
+response,
+ and three continuous ones usually mean that the router receiving the
+packet
+ does not allow responses to the type of packet sent. Every other router
+responding will essentially say that the TLL was exceeded. We may view this using `tcpdump` and `wireshark`:
+#let data = csv("ws.csv").slice(1,10)
+#figure(
+  table(
+    columns: 7,
+    table.header([*No.*], [*Time*], [*Source*], [*Destination*], [*Protocol*], [*Length*], [*Info*]),
+    ..data.flatten()
+  )
+  , caption: [Snippet of network traffic recorded in my router.]
+)
+
 #question[
   Both UDP and TCP use port numbers to identify the destination entity when delivering a message. Give two reasons why these protocols invented a new abstract ID (port numbers), instead of using process IDs, which already existed when these protocols were designed.
 ]
 
+Multiple processes may live inside the same computer. Moreover, these process ID's may overlap with those of another computer. A process may also expose various ports to receive communication from various sources.
+
+
 #question[
   What is a congestion window in TCP?
 ]
+It is a mechanism which regulates the amount of data a sender may transmit into the network before receiving an acknowledgment.
+
+#bibliography("ref.bib")
