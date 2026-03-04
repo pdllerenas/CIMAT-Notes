@@ -8,8 +8,8 @@
 #show: pset.with(
   class: "Optimization I",
   student: "Pedro D. Llerenas\npedro.llerenas@cimat.mx",
-  title: "Homework 2",
-  date: datetime(year: 2026, month: 2, day: 17),
+  title: "Homework 4",
+  date: datetime(year: 2026, month: 3, day: 5),
 )
 #show: great-theorems-init
 #let proof = proofblock()
@@ -127,6 +127,15 @@ Therefore, we have the following table:
   caption: [Stationary point classification for $f(x_1,x_2) = (x_1^2 + x_2^2 -1)^2 + (x_2^2 - 1)^2$],
 )
 
+#figure(
+  image("p1.png"),
+  caption: [Plot of $f(x_1, x_2) = (x_1^2 + x_2^2 -1)^2 + (x_2^2 - 1)^2$],
+)
+
+#figure(
+  image("p1_c.png"),
+  caption: [Plot of $f(x_1, x_2) = (x_1^2 + x_2^2 -1)^2 + (x_2^2 - 1)^2$],
+)
 
 #question[
   Let $A succ 0$. Show that $A_(i j) < (A_(i i) + A_(j j)) / 2$.
@@ -173,10 +182,13 @@ Therefore, we have the following table:
   $
   Determine the range of values the step size may attain to converge to the minimizer.
 ]
-
-
-
-
+#proof[
+The eigenvalues of the triangular matrix $A$ are $3/2$ with multiplicity 2. By the following theorem seen in class:
+#theorem[
+  In the steepest descent algorithm $x_(k+1) = x_k + alpha g_k$, with fixed step size $alpha_k = alpha$ for all $k$, we have that $x_k -> x^*$ for any $x_0$ iff $0 < alpha < 2/lambda_max$.
+]
+Therefore, $0 < alpha < 4/3$.
+]
 
 #question[
   Show that the set
@@ -227,9 +239,9 @@ Therefore, we have the following table:
   $
   Equating to zero, we obtain
   $
-    alpha &= (b^top Q d_k - x_k^top Q^2 d_k)/(d_k^top Q^2 d_k) \
-    &= ((b^top- x_k^top Q)Q d_k)/(d_k^top Q^2 d_k) \
-    &= -(g_k^top Q d_k)/(d_k^top Q^2 d_k).
+    alpha & = (b^top Q d_k - x_k^top Q^2 d_k)/(d_k^top Q^2 d_k) \
+          & = ((b^top- x_k^top Q)Q d_k)/(d_k^top Q^2 d_k) \
+          & = -(g_k^top Q d_k)/(d_k^top Q^2 d_k).
   $
 
 ]
