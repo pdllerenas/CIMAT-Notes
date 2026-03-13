@@ -16,24 +16,26 @@ int main(int argc, char *argv[])
 		return 1;
 	}
 
-	int N = atoi(argv[1]);
+	int N = std::stoi(argv[1]);
 
-	double xmin = atoi(argv[2]);
-	double xmax = atoi(argv[3]);
-	double ymin = atoi(argv[4]);
-	double ymax = atoi(argv[5]);
+	double xmin = std::atof(argv[2]);
+	double xmax = std::atof(argv[3]);
+	double ymin = std::atof(argv[4]);
+	double ymax = std::atof(argv[5]);
 
-	double curr_x, curr_y;
+	// step size (space between grid points)
 	double step_x = (xmax - xmin) / static_cast<double>(N);
 	double step_y = (ymax - ymin) / static_cast<double>(N);
 
 	double sum = 0.0;
 
 	auto ti = std::chrono::steady_clock::now();
-	for (curr_y = ymin; curr_y <= ymax; curr_y += step_y)
+	for (int i = 0; i < N; ++i)
 	{
-		for (curr_x = xmin; curr_x <= xmax; curr_x += step_x)
+		double curr_y = ymin + i * step_y;
+		for (int j = 0; j < N; ++j)
 		{
+			double curr_x = xmin + j * step_x;
 			sum += T(curr_x, curr_y);
 		}
 	}

@@ -25,11 +25,9 @@ int main(int argc, char *argv[])
 		return 1;
 	}
 
-	// N: grid size
 	int N = std::atoi(argv[1]);
 	double N_squared = static_cast<double>(N) * static_cast<double>(N);
 
-	// rectangle dimensions
 	double xmin = std::atof(argv[2]);
 	double xmax = std::atof(argv[3]);
 	double ymin = std::atof(argv[4]);
@@ -39,28 +37,27 @@ int main(int argc, char *argv[])
 	double step_x = (xmax - xmin) / static_cast<double>(N);
 	double step_y = (ymax - ymin) / static_cast<double>(N);
 
-	// we divide only the y coordinate in numtasks
 	int slabs = N / numtasks;
 	int remainder = N % numtasks;
 
-	// start and endpoint for each process
-	int my_start = taskid * slabs;
-	int my_end = my_start + slabs;
+	int start = taskid * slabs;
+	int end = start + slabs;
 
 	// if blocks could not be equally loaded, give the remainder to last task
 	if (taskid == numtasks - 1)
 	{
-		my_end += remainder;
+		end += remainder;
 	}
 
-	// sum is local, global_sum is what each process will communicate to
+	// local variable for each process
 	double sum = 0.0;
+
+	// global variable the parent process maintains
 	double global_sum = 0.0;
 
 	double start_time = MPI_Wtime();
 
-	// main computation of sum. may overflow if N is too big
-	for (int j = my_start; j < my_end; ++j)
+	for (int j = start; j < end; ++j)
 	{
 		double curr_y = ymin + j * step_y;
 
@@ -72,12 +69,11 @@ int main(int argc, char *argv[])
 	}
 
 	// sync sums to global sum
-	MPI_Allreduce(&sum, &global_sum, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+	MPI_Reduce(&sum, &global_sum, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
 
 	double end_time = MPI_Wtime();
 	double t = end_time - start_time;
 
-	// master node prints results
 	if (taskid == 0)
 	{
 		std::cout << "Execution time: " << t * 1000 << " ms\n";
