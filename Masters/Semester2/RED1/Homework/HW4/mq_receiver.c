@@ -1,0 +1,58 @@
+// https://www.tutorialspoint.com/inter_process_communication/inter_process_communication_message_queues.htm
+#include <stdio.h>
+#include <stdlib.h>
+#include <errno.h>
+#include <sys/types.h>
+#include <sys/ipc.h>
+#include <sys/msg.h>
+#include <string.h>
+
+#define PERMS 0644
+struct my_msgbuf
+{
+  long mtype;
+  char mtext[200];
+};
+
+int main(void)
+{
+  struct my_msgbuf buf;
+  int msqid;
+  int toend;
+  key_t key;
+  int priority;
+  int my_prio;
+
+  printf("Enter your id (this will be the message type you listen for):\n");
+  if (scanf("%d", &my_prio) != 1)
+  {
+    fprintf(stderr, "Invalid input\n");
+    exit(1);
+  }
+
+  if ((msqid = msgget(0x0abc, PERMS)) == -1)
+  { /* connect to the queue */
+    perror("msgget");
+    exit(1);
+  }
+  printf("message queue: ready to receive messages.\n");
+
+  for (;;)
+  { // normally receiving never ends but just to make conclusion
+    // this program ends with string of end
+    if (msgrcv(msqid, &buf, sizeof(buf.mtext), my_prio, 0) == -1)
+    {
+      perror("msgrcv");
+      exit(1);
+    }
+    printf("Received: \"%s\"\n", buf.mtext);
+
+    if (strcmp(buf.mtext, "end") == 0)
+    {
+      break;
+    }
+  }
+  printf("message queue: done receiving messages.\n");
+
+  return 0;
+}
