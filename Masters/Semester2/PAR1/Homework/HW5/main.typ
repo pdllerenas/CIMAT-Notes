@@ -115,7 +115,6 @@ El output de esta ejecución es
 )
 
 == OpenMPI
-=== Gather
 #figure(
   ```cpp
   double step = (b - a) / static_cast<double>(N);
@@ -182,53 +181,145 @@ El output de esta ejecución es
 )
 
 = Análisis de resultados
+
 #figure(
   table(
     stroke: none,
-    columns: 4,
+    columns: 5,
     table.hline(),
-    table.header([*Versión*], [*Tiempo (ms)*], [*Aproximación*], [*Error*]),
+    table.header(
+      [*$N$*], 
+      [*Versión*], 
+      [*Tiempo (ms)*], 
+      [*Aproximación*], 
+      [*Error*]
+    ),
     table.hline(),
-    [Secuencial], table.vline(), [0.006615], [3.14159273692313], [8.33333366756506e-08],
-    [Gather], [0.045927], [3.14159273692313], [8.33333331229369e-08],
-    [Send], [0.005472], [3.14159273692313], [8.33333335670261e-08],
-    [AllGather], [0.009533], [3.14159273692313], [8.33333335670261e-08],
+    
+    // Group: N = 1,000
+    [1,000], [Secuencial], [0.007800], [3.14159273692313], [8.33333366756506e-08],
+    [], [Reduce], [0.013100], [3.14159273692313], [8.33333366756506e-08],
+    [], [Send], [0.006300], [3.14159273692313], [8.33333366756506e-08],
+    [], [AllGather], [0.008700], [3.14159273692313], [8.33333366756506e-08],
+    
+    table.hline(stroke: 0.5pt + gray),
+    
+    // Group: N = 10,000
+    [10,000], [Secuencial], [0.065600], [3.14159265442323], [8.33440427783216e-10],
+    [], [Reduce], [0.066100], [3.14159265442323], [8.33440427783216e-10],
+    [], [Send], [0.094400], [3.14159265442323], [8.33440427783216e-10],
+    [], [AllGather], [0.122000], [3.14159265442323], [8.33440427783216e-10],
+    
+    table.hline(stroke: 0.5pt + gray),
+    
+    // Group: N = 1,000,000
+    [1,000,000], [Secuencial], [6.694400], [3.14159265359130], [1.50945922428036e-12],
+    [], [Reduce], [5.887600], [3.14159265359130], [1.50945922428036e-12],
+    [], [Send], [6.176702], [3.14159265359130], [1.50945922428036e-12],
+    [], [AllGather], [7.837703], [3.14159265359130], [1.50945922428036e-12],
+    
     table.hline(),
   ),
-  caption: [Resultados para $N = 1,000$],
+  caption: [Rendimiento comparativo entre ejecución secuencial y distintas versiones de MPI para 1 proceso.],
 )
 
 #figure(
   table(
     stroke: none,
-    columns: 4,
+    columns: 5,
     table.hline(),
-    table.header([*Versión*], [*Tiempo (ms)*], [*Aproximación*], [*Error*]),
+    table.header([*$N$*], [*Versión*], [*Tiempo (ms)*], [*Aproximación*], [*Error*]),
     table.hline(),
-    [Secuencial], table.vline(), [0.057922], [3.14159265442323], [8.33440427783216e-10],
-    [Gather], [0.100905], [3.14159265442316], [8.33363156260702e-10],
-    [Send], [0.028338], [3.14159265442316], [8.33362712171493e-10],
-    [AllGather], [0.028876], [3.14159265442316], [8.33362712171493e-10],
+
+    // Group: N = 1,000
+    [1,000], [Reduce], [0.612202], [3.14159273692313], [8.33333366756506e-08],
+    [], [Send], [0.005400], [3.14159273692313], [8.33333366756506e-08],
+    [], [AllGather], [0.023200], [3.14159273692313], [8.33333366756506e-08],
+
+    table.hline(stroke: 0.5pt + gray),
+
+    // Group: N = 10,000
+    [10,000], [Reduce], [0.112198], [3.14159265442317], [8.33380919829096e-10],
+    [], [Send], [0.034699], [3.14159265442317], [8.33380919829096e-10],
+    [], [AllGather], [0.035599], [3.14159265442317], [8.33380919829096e-10],
+
+    table.hline(stroke: 0.5pt + gray),
+
+    // Group: N = 1,000,000
+    [1,000,000], [Reduce], [3.151810], [3.14159265358348], [6.30961949354969e-12],
+    [], [Send], [3.909611], [3.14159265358348], [6.30961949354969e-12],
+    [], [AllGather], [6.692720], [3.14159265358348], [6.30961949354969e-12],
+
     table.hline(),
   ),
-  caption: [Resultados para $N = 10,000$],
+  caption: [Rendimiento comparativo entre distintas versiones de MPI para 2 procesos.],
 )
 
 #figure(
   table(
     stroke: none,
-    columns: 4,
+    columns: 5,
     table.hline(),
-    table.header([*Versión*], [*Tiempo (ms)*], [*Aproximación*], [*Error*]),
+    table.header([*$N$*], [*Versión*], [*Tiempo (ms)*], [*Aproximación*], [*Error*]),
     table.hline(),
-    [Secuencial], table.vline(), [5.89328], [3.1415926535913], [1.50945922428036e-12],
-    [Reduce], [1.62432], [3.14159265358765], [2.14450679436595e-12],
-    [Send], [1.73439], [3.14159265358765], [2.14450679436595e-12],
-    [AllGather], [1.664277], [3.14159265358765], [2.14450679436595e-12],
+
+    // Group: N = 1,000
+    [1,000], [Reduce], [0.045927], [3.14159273692313], [8.33333331229369e-08],
+    [], [Send], [0.005472], [3.14159273692313], [8.33333335670261e-08],
+    [], [AllGather], [0.009533], [3.14159273692313], [8.33333335670261e-08],
+
+    table.hline(stroke: 0.5pt + gray),
+
+    // Group: N = 10,000
+    [10,000], [Reduce], [0.100905], [3.14159265442316], [8.33363156260702e-10],
+    [], [Send], [0.028338], [3.14159265442316], [8.33362712171493e-10],
+    [], [AllGather], [0.028876], [3.14159265442316], [8.33362712171493e-10],
+
+    table.hline(stroke: 0.5pt + gray),
+
+    // Group: N = 1,000,000
+    [1,000,000], [Reduce], [1.624320], [3.14159265358765], [2.14450679436595e-12],
+    [], [Send], [1.734390], [3.14159265358765], [2.14450679436595e-12],
+    [], [AllGather], [1.664277], [3.14159265358765], [2.14450679436595e-12],
+
     table.hline(),
   ),
-  caption: [Resultados para $N = 1,000,000$],
+  caption: [Rendimiento comparativo entre distintas versiones de MPI para 4 procesos.],
 )
+
+#figure(
+  table(
+    stroke: none,
+    columns: 5,
+    table.hline(),
+    table.header([*$N$*], [*Versión*], [*Tiempo (ms)*], [*Aproximación*], [*Error*]),
+    table.hline(),
+
+    // Group: N = 1,000
+    [1,000], [Reduce], [0.185], [3.14159273692313], [8.33333335670261e-08],
+    [], [Send], [0.004900], [3.14159273692313], [8.33333331229369e-08],
+    [], [AllGather], [0.008900], [3.14159273692313], [8.33333331229369e-08],
+
+    table.hline(stroke: 0.5pt + gray),
+
+    // Group: N = 10,000
+    [10,000], [Reduce], [0.849599], [3.14159265442314], [8.33347613138358e-10],
+    [], [Send], [0.060000], [3.14159265442314], [8.33348057227568e-10],
+    [], [AllGather], [0.021400], [3.14159265442314], [8.33348057227568e-10],
+
+    table.hline(stroke: 0.5pt + gray),
+
+    // Group: N = 1,000,000
+    [1,000,000], [Reduce], [1.998700], [3.14159265358870], [1.09512399149025e-12],
+    [], [Send], [2.209100], [3.14159265358870], [1.09467990228040e-12],
+    [], [AllGather], [1.258800], [3.14159265358870], [1.09467990228040e-12],
+
+    table.hline(),
+  ),
+  caption: [Rendimiento comparativo entre distintas versiones de MPI para 8 procesos.],
+)
+
+Por lo observado, usar demasiados procesos ralentiza el tiempo de ejecución. Esto puede ser por la cantidad de comunicación que debe hacerse para un problema simple como este.
 
 Podemos observar que los errores difieren entre cada versión. Esto es completamente esperado, ya que la precisión de punto flotante hace que los resultados sean distintos. Para la versión secuencial, los valores se suman de la siguiente manera:
 #figure(
