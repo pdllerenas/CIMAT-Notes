@@ -4,44 +4,106 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/socket.h>
-#include <sys/types.h>
+#include <errno.h>
 
-int main() {
+#include <sys/types.h>
+#include <string.h>
+#include <unistd.h>
+#include <time.h>
+
+int main()
+{
   struct sockaddr_in server;
   int s;
   int rc;
   char buf[256];
+  int oldflags;
 
   server.sin_family = AF_INET;
   server.sin_port = htons(7500);
   server.sin_addr.s_addr = inet_addr("127.0.0.1");
   s = socket(AF_INET, SOCK_STREAM, 0);
-  if (s < 0) {
+  if (s < 0)
+  {
     perror("socket call failed");
     exit(1);
   }
-
+  time_t t0 = time(NULL);
   rc = connect(s, (struct sockaddr *)&server, sizeof(server));
+  time_t t1 = time(NULL);
 
-  if (rc) {
+  if (rc)
+  {
+    double total = difftime(t1, t0);
+    printf("%lf seconds with no response\n",total);
     perror("connect call failed");
     exit(1);
   }
 
-  fgets(buf, sizeof(buf), stdin);
-
-  rc = send(s, buf, sizeof(buf), 0);
-  if (rc <= 0) {
-    perror("send call failed");
+  printf("Connected to server.\n");
+  // non block stdin
+  if ((oldflags = fcntl(0, F_GETFL, 0)) < 0)
+  {
+    exit(1);
+  }
+  if (fcntl(0, F_SETFL, O_NONBLOCK) < 0)
+  {
     exit(1);
   }
 
-  rc = recv(s, buf, sizeof(buf), 0);
-  if (rc <= 0) {
-    perror("recv call failed");
+  // non block socket
+  if ((oldflags = fcntl(s, F_GETFL, 0)) < 0)
+  {
     exit(1);
-  } else {
-    printf("%s\n", buf);
+  }
+  if (fcntl(s, F_SETFL, O_NONBLOCK) < 0)
+  {
+    exit(1);
+  }
+
+  while (1)
+  {
+    rc = read(0, buf, sizeof(buf) - 1);
+    if (rc > 0)
+    {
+      buf[rc] = '\0';
+      send(s, buf, rc, 0);
+      if (strncasecmp(buf, "adios", 5) == 0)
+      {
+        printf("Client closed...\n");
+        break;
+      }
+    }
+    else if (rc == 0)
+    {
+      printf("Input closed...\n");
+      break;
+    }
+    else if (rc < 0 && errno != EAGAIN && errno != EWOULDBLOCK)
+    {
+      perror("read failed");
+      exit(1);
+    }
+
+    rc = recv(s, buf, sizeof(buf) - 1, 0);
+    if (rc > 0)
+    {
+      buf[rc] = '\0';
+      printf("Server: %s", buf);
+      if (strncasecmp(buf, "adios", 5) == 0)
+        break;
+    }
+    else if (rc == 0)
+    {
+      printf("Connection closed by server.\n");
+      break;
+    }
+    else if (rc < 0 && errno != EAGAIN && errno != EWOULDBLOCK)
+    {
+      perror("recv call failed");
+      exit(1);
+    }
+    usleep(20000);
   }
   exit(0);
 }
