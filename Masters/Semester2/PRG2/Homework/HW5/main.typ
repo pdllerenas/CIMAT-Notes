@@ -62,7 +62,12 @@ grafo, generamos el grafo condensado que resulta a partir del grafo cociente
 sobre la relación de equivalencia dada por las componentes fuertemente conexas.
 Es decir, el resultado es un DAG. Cada nodo del DAG representa 1 algoritmo distinto.
 Las aristas representan una reducción, que no necesariamente genera una equivalencia.
-Entonces, buscamos los nodos que no tienen ancestro.
+
+Cualquier nodo (problema) en el DAG que tenga al menos un ancestro (in-degree >
+0) puede ser resuelto indirectamente utilizando el algoritmo de dicho ancestro.
+Por lo tanto, los únicos problemas para los que estamos obligados a escribir un
+algoritmo desde cero son aquellos que no son el resultado de ninguna reducción,
+es decir, los nodos raíz o sin ancestros en nuestro grafo condensado.
 === Ejemplo
 Supongamos que tenemos la entrada
 #figure(
@@ -162,10 +167,13 @@ posibles.
 )
 
 == Solución
-Para encontrar todos los ordenamientos topológicos, usaremos el algoritmo de
-Kahn, que se basa en usar BFS. Buscamos los nodos sin ancestros, los agregamos
-a una lista, y los borramos del grafo. Para obtener todos los ordenamientos,
-utilizamos backtracking.
+A diferencia del algoritmo clásico de Kahn que toma un solo nodo sin ancestros
+en cada paso, aquí utilizaremos backtracking. En cada paso recursivo,
+iteraremos sobre todos los nodos que actualmente tengan in-degree 0. Elegimos
+uno, lo agregamos a nuestro ordenamiento actual, reducimos el in-degree de sus
+vecinos y llamamos a la recursión. Al regresar de la recursión (backtrack),
+deshacemos estos cambios para poder elegir un nodo distinto y así explorar
+todas las permutaciones válidas.
 
 === Ejemplo
 Supongamos que tenemos el siguiente grafo dirigido:
