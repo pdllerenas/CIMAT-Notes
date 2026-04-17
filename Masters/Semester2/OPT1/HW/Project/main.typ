@@ -6,7 +6,7 @@
 #set math.equation(numbering: "(1)")
 
 #show: ams-article.with(
-  title: [],
+  title: [A Review on the Multi-Secant Limited-Memory BFGS Model],
   authors: (
     (
       name: "Gerardo Rocha",
@@ -23,28 +23,17 @@
 )
 
 = Introduction
-We provide a C++ implementation of the MS-LBFGS algorithm proposed by Gubarev
-to verify its claimed performance advantages over standard single-secant
-methods.
+Consider the optimization problem $min_(x in RR) f(x)$ with $f in C^2$. Define $g colon.eq nabla f$. Denote by
+$
+  s_k = x_k - x_(k-1), quad y_k = g_k - g_(k-1)
+$
+that is, the vector difference of an iteration with its previous iteration. Define the matrices
+$
+  S_m = [s_(k - m +1), dots, s_k], quad Y_m = [y_(k - m + 1) , dots, y_k]
+$
+Thus, we write
+$
+  nabla^2 f S_m = Y_m + O(norm(S_m)^2_F).
+$ 
 
-= Algorithm Implementation
-The algorithm requires an approximation of the inverse Hessian matrix. The
-limited-memory constraint necessitates a distinct, compact representation for
-this matrix. Because numerical stability is a priority, we implement the
-paper's proposed symmetric damping scheme. This involves dynamically dropping
-older secant pairs when specific overlap conditions are not met. Finally, a
-numerically stable Armijo line-search optimizer is integrated alongside the
-quasi-Newton method.
 
-= Benchmarks
-A performance comparison with the classic L-BFGS algorithm will be conducted.
-We will first test the algorithm on random quadratics with a high condition
-number to observe the multi-secant behavior in an isolated environment.
-Subsequently, tests using the CUTEst dataset will be performed to evaluate its
-efficiency in practical, large-scale scenarios.
-
-= Evaluation
-We will evaluate the overall performance of the algorithm and cross-reference
-our findings with the results proposed in the original paper. Additionally,
-profiling of the algorithm's memory usage and computational overhead will be
-performed.
