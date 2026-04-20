@@ -1,7 +1,10 @@
 *.zip
 venv/
 lib64/
+build/
 share/
+output/
+*.vtk
 bin/
 lib/
 pyvenv.cfg
