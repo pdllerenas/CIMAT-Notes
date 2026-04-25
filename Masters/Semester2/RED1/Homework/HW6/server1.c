@@ -8,32 +8,55 @@
 #include <time.h>
 #include <unistd.h>
 
-#include "ChatPacket.h"
-
-typedef enum { EMPTY, UNREGISTERED, REGISTERED } ClientState;
-typedef struct {
+typedef enum
+{
+  EMPTY,
+  UNREGISTERED,
+  REGISTERED
+} ClientState;
+typedef struct
+{
   ClientState state;
   char name[32];
 } Client;
 
-void broadcast(int max_sock, fd_set master_set, Client *clients, int s,
-               char *announce, int len) {
-  for (int j = 0; j <= max_sock; j++) {
-    if (FD_ISSET(j, &master_set) && j != s && clients[j].state == REGISTERED) {
+
+void broadcast_user_list(int max_sock, int s, fd_set *master_set, Client *clients)
+{
+  char announce[512] = "\n=== Active users ===\n";
+  
+  for (int k = 0; k <= max_sock; k++)
+  {
+    if (FD_ISSET(k, master_set) && k != s && clients[k].state == REGISTERED)
+    {
+      strcat(announce, clients[k].name);
+      strcat(announce, "\n");
+    }
+  }
+  strcat(announce, "====================\n");
+  
+  int len = strlen(announce);
+  for (int j = 0; j <= max_sock; j++)
+  {
+    if (FD_ISSET(j, master_set) && j != s && clients[j].state == REGISTERED)
+    {
       send(j, announce, len, 0);
     }
   }
 }
 
-int main(int argc, char *argv[]) {
-  if (argc != 2) {
+int main(int argc, char *argv[])
+{
+  if (argc != 2)
+  {
     printf("Usage: %s <user count>\n", argv[0]);
     exit(1);
   }
   int N = atoi(argv[1]);
 
   int s = socket(AF_INET, SOCK_STREAM, 0);
-  if (s < 0) {
+  if (s < 0)
+  {
     perror("socket call failed");
     exit(1);
   }
@@ -44,11 +67,13 @@ int main(int argc, char *argv[]) {
   local.sin_port = htons(7500);
   local.sin_addr.s_addr = htonl(INADDR_ANY);
 
-  if (bind(s, (struct sockaddr *)&local, sizeof(local))) {
+  if (bind(s, (struct sockaddr *)&local, sizeof(local)))
+  {
     perror("listen call failed");
     exit(1);
   }
-  if (listen(s, N)) {
+  if (listen(s, N))
+  {
     perror("listen call failed");
     exit(1);
   }
@@ -62,75 +87,74 @@ int main(int argc, char *argv[]) {
   Client clients[FD_SETSIZE];
   memset(clients, 0, sizeof(clients));
 
-  while (1) {
+  while (1)
+  {
     read_set = master_set;
 
-    if (select(max_sock + 1, &read_set, NULL, NULL, NULL) == -1) {
+    if (select(max_sock + 1, &read_set, NULL, NULL, NULL) == -1)
+    {
       perror("select error");
       exit(1);
     }
-    for (int i = 0; i < max_sock + 1; i++) {
-      if (FD_ISSET(i, &read_set)) {
-        // new client
-        if (i == s) {
+    for (int i = 0; i < max_sock + 1; i++)
+    {
+      if (FD_ISSET(i, &read_set))
+      {
+        if (i == s)
+        {
           int new_client = accept(s, NULL, NULL);
-          if (new_client > 0) {
+          if (new_client > 0)
+          {
             printf("New client connected (socket %d)\n", new_client);
             FD_SET(new_client, &master_set);
-            if (new_client > max_sock) {
+            if (new_client > max_sock)
+            {
               max_sock = new_client;
             }
             clients[new_client].state = UNREGISTERED;
             memset(clients[new_client].name, 0, 32);
           }
-        } else {
+        }
+        else
+        {
           char buf[256];
           memset(buf, 0, sizeof(buf));
           int nbytes = recv(i, buf, sizeof(buf) - 1, 0);
 
-          if (nbytes <= 0) {
-            if (nbytes == 0) {
+          if (nbytes <= 0)
+          {
+            if (nbytes == 0)
+            {
               printf("Client on socket %d disconnected\n", i);
-            } else {
+            }
+            else
+            {
               perror("recv call failed");
             }
             close(i);
             FD_CLR(i, &master_set);
-            char announce[128];
-            int len = snprintf(announce, sizeof(announce),
-                               "\n=== %s has left ===\n", clients[i].name);
-            for (int j = 0; j <= max_sock; j++) {
-              if (FD_ISSET(j, &master_set) && j != s &&
-                  clients[j].state == REGISTERED) {
-                send(j, announce, len, 0);
-              }
-            }
-          } else {
+            broadcast_user_list(max_sock, s, &master_set, clients);
+          }
+          else
+          {
             buf[strcspn(buf, "\r\n")] = 0;
-            if (clients[i].state == UNREGISTERED) {
+            if (clients[i].state == UNREGISTERED)
+            {
               strncpy(clients[i].name, buf, 31);
               clients[i].state = REGISTERED;
-
-              char announce[128];
-              int len = snprintf(announce, sizeof(announce),
-                                 "\n=== %s has joined ===\n", clients[i].name);
-							// broadcast message
-              for (int j = 0; j <= max_sock; j++) {
-                if (FD_ISSET(j, &master_set) && j != s &&
-                    clients[j].state == REGISTERED) {
-                  send(j, announce, len, 0);
-                }
-              }
-            } else if (clients[i].state == REGISTERED) {
+              broadcast_user_list(max_sock, s, &master_set, clients);
+            }
+            else if (clients[i].state == REGISTERED)
+            {
               char formatted_msg[512];
               int msg_len = snprintf(formatted_msg, sizeof(formatted_msg),
                                      "%s: %s\n", clients[i].name, buf);
 
-              // broadcast message
-              for (int j = 0; j <= max_sock; j++) {
-                // only send to people who are fully registered
+              for (int j = 0; j <= max_sock; j++)
+              {
                 if (FD_ISSET(j, &master_set) && j != s && j != i &&
-                    clients[j].state == REGISTERED) {
+                    clients[j].state == REGISTERED)
+                {
                   send(j, formatted_msg, msg_len, 0);
                 }
               }
