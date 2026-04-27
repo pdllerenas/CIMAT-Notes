@@ -1,3 +1,4 @@
 {
-  "workbench.colorTheme": "Visual Studio Dark - C++"
+  "workbench.colorTheme": "Dark Modern",
+  "python-envs.defaultEnvManager": "ms-python.python:system"
 }
