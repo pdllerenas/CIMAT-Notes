@@ -11,6 +11,7 @@
 #include <unistd.h>
 
 #define BUF_SIZE 1440
+#define NUM_PACKETS 1000000
 
 struct Payload
 {
@@ -18,38 +19,13 @@ struct Payload
   char data[BUF_SIZE - 4];
 };
 
-void tcp()
+void tcp(char *ip, char *port)
 {
+  struct Payload p;
+  memset(p.data, 0, sizeof(p.data));
 
   struct sockaddr_in server;
-  int s;
-  int rc;
-  char buf[BUF_SIZE];
-  int oldflags;
-
-  int listen_sock = socket(AF_INET, SOCK_STREAM, 0);
-  struct sockaddr_in listen_addr;
-  listen_addr.sin_family = AF_INET;
-  listen_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-  listen_addr.sin_port = 7501;
-
-  if (bind(listen_sock, (struct sockaddr *)&listen_addr, sizeof(listen_addr)) < 0)
-  {
-    perror("Bind failed");
-    exit(1);
-  }
-  listen(listen_sock, 1);
-
-  socklen_t len = sizeof(listen_addr);
-  getsockname(listen_sock, (struct sockaddr *)&listen_addr, &len);
-  int my_p2p_port = ntohs(listen_addr.sin_port);
-  printf("Listening for P2P connections on port %d\n", my_p2p_port);
-
-  fcntl(listen_sock, F_SETFL, O_NONBLOCK);
-
-  server.sin_family = AF_INET;
-  server.sin_port = htons(7500);
-  server.sin_addr.s_addr = inet_addr("148.207.185.20");
+  int s, rc;
 
   s = socket(AF_INET, SOCK_STREAM, 0);
   if (s < 0)
@@ -58,58 +34,83 @@ void tcp()
     exit(1);
   }
 
+  // int buffer_size = 32 * 1024; 
+  // if (setsockopt(s, SOL_SOCKET, SO_SNDBUF, &buffer_size, sizeof(buffer_size)) < 0)
+  // {
+  //   perror("setsockopt SO_SNDBUF failed");
+  // }
+
+  server.sin_family = AF_INET;
+  server.sin_port = htons(atoi(port));
+  server.sin_addr.s_addr = inet_addr(ip);
+
   rc = connect(s, (struct sockaddr *)&server, sizeof(server));
   if (rc)
   {
     perror("connect call failed");
     exit(1);
   }
-  memset(buf, 52, BUF_SIZE - 1);
-  buf[BUF_SIZE - 1] = '\0';
-  rc = send(s, buf, sizeof(buf), 0);
-  rc = recv(s, buf, sizeof(buf), 0);
+
+  for (int i = 1; i <= NUM_PACKETS; i++)
+  {
+    p.seq_number = htonl(i);
+    send(s, &p, sizeof(p), 0);
+  }
+  close(s);
+  printf("TCP Transmission Complete.\n");
 }
 
-void udp()
+void udp(char *ip, char *port)
 {
   struct Payload p;
-  memset(p.data, 52, sizeof(p.data));
+  memset(p.data, 0, sizeof(p.data));
 
   struct sockaddr_in server;
-  int sockfd, n;
-
-  char server_addr[INET_ADDRSTRLEN] = {"127.0.0.1"};
-  char buf[BUF_SIZE], buf1[BUF_SIZE];
+  int sockfd;
 
   if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) == -1)
   {
     printf("Error: %s\n", strerror(errno));
     exit(0);
   }
-  printf("Socket = %d\n", sockfd);
+
+  // int buffer_size = 32 * 1024;
+  // if (setsockopt(sockfd, SOL_SOCKET, SO_SNDBUF, &buffer_size, sizeof(buffer_size)) < 0)
+  // {
+  //   perror("setsockopt SO_SNDBUF failed");
+  // }
 
   memset(&server, 0, sizeof(server));
   server.sin_family = AF_INET;
 
-  if (inet_pton(AF_INET, server_addr, &server.sin_addr.s_addr) <= 0)
+  if (inet_pton(AF_INET, ip, &server.sin_addr.s_addr) <= 0)
   {
     perror("inet_pton");
     exit(0);
   }
-  server.sin_port = htons(7500);
+  server.sin_port = htons(atoi(port));
 
-  for (int i = 1; i <= 100; i++)
+  for (int i = 1; i <= NUM_PACKETS; i++)
   {
     p.seq_number = htonl(i);
-    printf("p = %u\n", p.seq_number);
     sendto(sockfd, &p, sizeof(p), 0, (struct sockaddr *)&server, sizeof(server));
   }
 
+  // termination packet
+  sendto(sockfd, "", 0, 0, (struct sockaddr *)&server, sizeof(server));
   close(sockfd);
+  printf("UDP Transmission Complete.\n");
 }
 
-int main()
+int main(int argc, char *argv[])
 {
-  udp();
+  if (argc != 3)
+  {
+    printf("Usage: %s <ip> <port>\n", argv[0]);
+    exit(1);
+  }
+  udp(argv[1], argv[2]);
+  sleep(10);
+  tcp(argv[1], argv[2]);
   return 0;
 }
