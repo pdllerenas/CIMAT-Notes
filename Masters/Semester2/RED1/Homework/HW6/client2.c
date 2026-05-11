@@ -22,7 +22,7 @@ int main()
   struct sockaddr_in listen_addr;
   listen_addr.sin_family = AF_INET;
   listen_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-  listen_addr.sin_port = 0; // kernel will assign a free port
+  listen_addr.sin_port = 7501;
 
   if (bind(listen_sock, (struct sockaddr *)&listen_addr, sizeof(listen_addr)) < 0)
   {
@@ -40,7 +40,7 @@ int main()
 
   server.sin_family = AF_INET;
   server.sin_port = htons(7500);
-  server.sin_addr.s_addr = inet_addr("127.0.0.1");
+  server.sin_addr.s_addr = inet_addr("148.207.185.20");
 
   s = socket(AF_INET, SOCK_STREAM, 0);
   if (s < 0)
