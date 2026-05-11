@@ -34,11 +34,11 @@ void tcp(char *ip, char *port)
     exit(1);
   }
 
-  // int buffer_size = 32 * 1024; 
-  // if (setsockopt(s, SOL_SOCKET, SO_SNDBUF, &buffer_size, sizeof(buffer_size)) < 0)
-  // {
-  //   perror("setsockopt SO_SNDBUF failed");
-  // }
+  int buffer_size = 5000 * 1024; 
+  if (setsockopt(s, SOL_SOCKET, SO_SNDBUF, &buffer_size, sizeof(buffer_size)) < 0)
+  {
+    perror("setsockopt SO_SNDBUF failed");
+  }
 
   server.sin_family = AF_INET;
   server.sin_port = htons(atoi(port));
@@ -74,11 +74,11 @@ void udp(char *ip, char *port)
     exit(0);
   }
 
-  // int buffer_size = 32 * 1024;
-  // if (setsockopt(sockfd, SOL_SOCKET, SO_SNDBUF, &buffer_size, sizeof(buffer_size)) < 0)
-  // {
-  //   perror("setsockopt SO_SNDBUF failed");
-  // }
+  int buffer_size = 32 * 1024;
+  if (setsockopt(sockfd, SOL_SOCKET, SO_SNDBUF, &buffer_size, sizeof(buffer_size)) < 0)
+  {
+    perror("setsockopt SO_SNDBUF failed");
+  }
 
   memset(&server, 0, sizeof(server));
   server.sin_family = AF_INET;

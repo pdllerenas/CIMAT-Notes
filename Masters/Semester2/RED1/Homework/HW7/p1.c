@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <time.h>
 #include <signal.h>
 #include <sys/shm.h>
 #include <unistd.h>
@@ -10,157 +11,183 @@
 
 // 1200 byte strings
 #define SHM_SIZE 1200
+#define NUM_BLOCKS 80
 
-static int s = 0;
+typedef struct
+{
+    size_t bytes;
+    char data[SHM_SIZE];
+} DataBlock;
+
+typedef struct
+{
+    int offset;
+    DataBlock blocks[NUM_BLOCKS];
+} SharedData;
+
+// do not store in cache, instead, read directly from memory
+static volatile sig_atomic_t s = 0;
 
 void handler(int signum)
 {
     if (signum == SIGINT)
     {
-        printf("Exitint program.\n");
+        printf("Exiting program.\n");
         s = -1;
     }
     else if (signum == SIGUSR1)
     {
         printf("Data available in shared memory.\n");
-        s = 0;
+        s = 1;
     }
     else if (signum == SIGUSR2)
     {
         printf("Data read by child.\n");
-        s = 0;
-    }
-    else
-    {
-        printf("Unhandled exception.\n");
-        s = -2;
+        s = 1;
     }
 }
 
-int CopyFileToSHM(const char *filename, char *shm, pid_t pid)
+void CopyFileToSHM(const char *filename, SharedData *shm, pid_t pid)
 {
-    struct sigaction sa_new;
-    struct sigaction sa_old;
-
-    sigset_t sigSetNew, sigSetOld, suspendSet;
-
-    sa_new.sa_handler = handler;
-    sigemptyset(&sa_new.sa_mask);
-    sa_new.sa_flags = 0;
-
-    sigaction(SIGUSR2, &sa_new, &sa_old);
-    sigemptyset(&suspendSet);
-    sigfillset(&suspendSet);
-    sigdelset(&suspendSet, SIGUSR2);
-
     FILE *fptr = fopen(filename, "r");
     if (fptr == NULL)
     {
         perror("fopen failed");
-        return 1;
+        return;
     }
 
-    size_t bytes_read = 0;
-
-    while ((bytes_read = fread(shm + bytes_read, 1, SHM_SIZE, fptr)) > 0)
-    {
-        int status;
-        kill(pid, SIGUSR1);
-        sigsuspend(&suspendSet);
-        if (s != 0) {
-            break;
-        }
-    }
-    kill(pid, SIGINT);
-
-    fclose(fptr);
-    return 0;
-}
-
-void CopySHMToFile(const char *filename, char *shm, pid_t pid)
-{
-    struct sigaction sa_new;
-    struct sigaction sa_old;
-
-    sigset_t sigSetNew, sigSetOld, suspendSet;
-
-    sa_new.sa_handler = handler;
-    sigemptyset(&sa_new.sa_mask);
-    sa_new.sa_flags = 0;
-
-    sigaction(SIGUSR1, &sa_new, &sa_old);
-    sigemptyset(&suspendSet);
-    sigfillset(&suspendSet);
-    sigdelset(&suspendSet, SIGUSR1);
-    sigdelset(&suspendSet, SIGINT);
-
-    FILE *fptr = fopen(filename, "w");
-    size_t bytes_read = 0;
+    shm->offset = -1;
     while (1)
     {
-        if ((bytes_read = fwrite(shm + bytes_read, SHM_SIZE, 1, fptr)) <= 0)
+        // read data and copy to shm data, use offset
+        size_t bytes_read = fread(shm->blocks[++shm->offset].data, 1, SHM_SIZE, fptr);
+        shm->blocks[shm->offset].bytes = bytes_read;
+
+        // notify child that data is ready
+        kill(pid, SIGUSR1);
+
+        // when EOF is reached, stop reading
+        if (bytes_read == 0)
         {
-            return;
-        }
-        kill(pid, SIGUSR2);
-        sigsuspend(&suspendSet);
-        if (s != 0) {
             break;
         }
+
+        // wait for child to finish reading
+        s = 0;
+        while (s == 0)
+        {
+            pause();
+        }
+    }
+
+    // notify child that we are done processing file
+    kill(pid, SIGINT);
+    fclose(fptr);
+}
+
+void CopySHMToFile(const char *filename, SharedData *shm, pid_t pid)
+{
+    FILE *fptr = fopen(filename, "w");
+    if (fptr == NULL)
+    {
+        perror("fopen failed");
+        return;
+    }
+
+    while (1)
+    {
+        // await parent signal of done writing
+        s = 0;
+        while (s == 0)
+        {
+            pause();
+        }
+
+        // if parent signals no more data, exit function
+        size_t bytes = shm->blocks[shm->offset].bytes;
+        if (s == -1 || bytes == 0)
+        {
+            break;
+        }
+
+        // write newly read bytes
+        fwrite(shm->blocks[shm->offset].data, 1, bytes, fptr);
+
+        kill(pid, SIGUSR2);
     }
 
     fclose(fptr);
 }
 
+// write random text
 void NonsenseWriter(const char *filename)
 {
+    srand(time(NULL));
     FILE *fptr = fopen(filename, "w");
-    for (int i = 0; i < 80 * SHM_SIZE; i++)
+    for (int i = 0; i < NUM_BLOCKS; i++)
     {
-        fputc('a' + (rand() % 10), fptr);
+        for (int j = 0; j < SHM_SIZE; j++)
+        {
+            fputc('a' + (rand() % 26), fptr);
+        }
+        fputc('\n', fptr);
     }
+
+    fclose(fptr);
 }
 
 int main(void)
 {
-    // generate key
-    key_t key = ftok("shmfile", 65);
-    pid_t parentid = getpid();
-
     // get shared memory id, create if non existent
-    int shmid = shmget(key, SHM_SIZE * 80, 0666 | IPC_CREAT);
+    int shmid = shmget(IPC_PRIVATE, sizeof(SharedData), 0666 | IPC_CREAT);
+    if (shmid == -1)
+    {
+        perror("shmget failed");
+        return 1;
+    }
 
-    // attach to shared memory
-    char *str = (char *)shmat(shmid, (void *)0, 0);
-
-    if (str == (char *)(-1))
+    // attach memory
+    SharedData *shm = (SharedData *)shmat(shmid, NULL, 0);
+    if (shm == (void *)-1)
     {
         perror("shmat failed");
         return 1;
     }
+
+    struct sigaction sa;
+    sa.sa_handler = handler;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = 0;
+
+    sigaction(SIGUSR1, &sa, NULL);
+    sigaction(SIGUSR2, &sa, NULL);
+    sigaction(SIGINT, &sa, NULL);
+
+    NonsenseWriter("in.txt");
 
     pid_t pid = fork();
 
     // child will read from shared memory
     if (pid == 0)
     {
-        // signal(SIGUSR1, HandleItemsWritten);
-        // signal(SIGINT, HandleInterrupt);
-        pause();
-        printf("Data read from shared memory: %s\n", str);
-        CopySHMToFile("out.txt", str, parentid);
+        CopySHMToFile("out.txt", shm, getppid());
     }
     else if (pid > 0)
-    { // parent writes to shared memory
-        NonsenseWriter("in.txt");
-        signal(SIGUSR2, HandleItemsRead);
-        CopyFileToSHM("in.txt", str, pid);
+    {
+        CopyFileToSHM("in.txt", shm, pid);
+        wait(NULL); // wait for child
     }
 
-    if (shmdt(str) == -1)
+    if (shmdt(shm) == -1)
     {
         perror("shmdt failed");
         return 1;
+    }
+
+    if (pid > 0)
+    {
+        shmctl(shmid, IPC_RMID, NULL);
+        printf("Parent done.\n");
     }
 
     return 0;

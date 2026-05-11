@@ -43,11 +43,11 @@ void tcp(char *port)
     exit(1);
   }
 
-  // int buffer_size = 32 * 1024;
-  // if (setsockopt(listen_sock, SOL_SOCKET, SO_RCVBUF, &buffer_size, sizeof(buffer_size)) < 0)
-  // {
-  //   perror("setsockopt SO_RCVBUF failed");
-  // }
+  int buffer_size = 5000 * 1024;
+  if (setsockopt(listen_sock, SOL_SOCKET, SO_RCVBUF, &buffer_size, sizeof(buffer_size)) < 0)
+  {
+    perror("setsockopt SO_RCVBUF failed");
+  }
 
   int opt = 1;
   setsockopt(listen_sock, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
@@ -129,11 +129,11 @@ void udp(char *port)
     exit(1);
   }
 
-  // int buffer_size = 32 * 1024;
-  // if (setsockopt(sockfd, SOL_SOCKET, SO_RCVBUF, &buffer_size, sizeof(buffer_size)) < 0)
-  // {
-  //   perror("setsockopt SO_RCVBUF failed");
-  // }
+  int buffer_size = 32 * 1024;
+  if (setsockopt(sockfd, SOL_SOCKET, SO_RCVBUF, &buffer_size, sizeof(buffer_size)) < 0)
+  {
+    perror("setsockopt SO_RCVBUF failed");
+  }
 
   memset(&local, 0, sizeof(local));
   local.sin_family = AF_INET;
