@@ -1,0 +1,12 @@
+name = "MSLBFGS"
+uuid = "c4b0bd88-1b86-41c9-8fc1-6044336f0baa"
+version = "0.1.0"
+authors = ["pdllerenas <pdllerenas@gmail.com>"]
+
+[deps]
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[compat]
+LinearAlgebra = "1.12.0"
+Test = "1.11.0"
