@@ -10,7 +10,7 @@ using Revise
 using MSLBFGS
 
 function execute_comprehensive_cutest_suite()
-	problem_corpus = select_sif_problems(min_var = 4, max_con = 0)
+	problem_corpus = select_sif_problems(min_var = 4, max_con = 0, max_var = 1000)
 
 	blacklist = ["AKIVA", "INDEF", "PARKCH", "STRATEC", "FLETCBV2", "DANWOODLS", "RAT43LS",
 		"BA-L16LS", "BA-L21LS", "BA-L49LS", "BA-L52LS", "BA-L73LS", "FLETCBV3",
@@ -62,9 +62,9 @@ function execute_comprehensive_cutest_suite()
 				f_wrapper(x) = obj(nlp, x)
 				g_wrapper!(g, x) = grad!(nlp, x, g)
 
-				optim_options = Optim.Options(iterations = 20000, g_tol = 1e-8)
+				optim_options = Optim.Options(iterations = 10000, g_tol = 1e-8)
 
-				_, _, iter_ms, conv_ms = optimize_mslbfgs(f_wrapper, g_wrapper!, copy(x0), 5, max_iter = 20000)
+				_, _, iter_ms, conv_ms = optimize_mslbfgs(f_wrapper, g_wrapper!, copy(x0), 5, max_iter = 10000)
 				if conv_ms
 					evals_ms = iter_ms + 1
 				end
