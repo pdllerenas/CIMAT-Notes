@@ -1,6 +1,33 @@
+function check_strong_wolfe(f_val_new::Float64, f_val_old::Float64,
+	g_new::Vector{Float64}, g_old::Vector{Float64},
+	p::Vector{Float64}, alpha::Float64;
+	c1::Float64 = 1e-4, c2::Float64 = 0.9)
+
+	# Evaluate the directional derivative at the base coordinate
+	dir_deriv_old = dot(g_old, p)
+
+	# Verify the sufficient decrease (Armijo) condition
+	if f_val_new > f_val_old + c1 * alpha * dir_deriv_old
+		return false
+	end
+
+	# Verify the strong curvature condition
+	dir_deriv_new = dot(g_new, p)
+	if abs(dir_deriv_new) > c2 * abs(dir_deriv_old)
+		return false
+	end
+
+	# Both conditions are rigorously satisfied
+	return true
+end
+
+# =====================================================================
+# Main Global Optimization Wrapper (MS-LBFGS)
+# =====================================================================
 function optimize_mslbfgs(f::Function, g!::Function, x0::Vector{Float64}, L_max::Int = 8;
 	max_iter::Int = 10000,
 	eps_g::Float64 = 1e-8, eps_g_min::Float64 = 1e-4, eps_g_max::Float64 = 1.0)
+
 	n = length(x0)
 	state = MSLBFGS_State(n, L_max)
 
@@ -15,7 +42,9 @@ function optimize_mslbfgs(f::Function, g!::Function, x0::Vector{Float64}, L_max:
 	reset_search = true
 
 	while norm(g, Inf) > tau_convergence && iter < max_iter
+		# =====================================================================
 		# Compute Search Direction
+		# =====================================================================
 		if state.m == 0 || reset_search
 			d = -g
 		else
@@ -37,34 +66,56 @@ function optimize_mslbfgs(f::Function, g!::Function, x0::Vector{Float64}, L_max:
 			end
 		end
 
-		# Line Search Execution
+		# =====================================================================
+		# Line Search Execution (Strong Wolfe Conditions Integration)
+		# =====================================================================
 		alpha = 1.0
 		x_new = copy(x)
+		g_new = zeros(n)
+
 		f_val = f(x)
 		g_dot_d = dot(g, d)
 
 		step_success = false
-		while alpha > 1e-10
+		alpha_min = 0.0
+		alpha_max = Inf
+
+		# 1D Bracketing and Bisection Zoom Phase
+		for ls_iter in 1:40
 			x_new .= x .+ alpha .* d
 			f_new = f(x_new)
 
+			# Guard against numerical overflow in severe non-convexities
 			if isnan(f_new) || isinf(f_new)
+				alpha_max = alpha
 				alpha *= 0.5
 				continue
 			end
 
-			if reset_search
-				if f_new <= f_val + 0.1 * alpha * g_dot_d
-					step_success = true
-					break
-				end
+			# Evaluate the trial gradient to compute the new directional derivative
+			g!(g_new, x_new)
+
+			# Unconditionally test the exact Strong Wolfe limits via your function
+			if check_strong_wolfe(f_new, f_val, g_new, g, d, alpha, c1 = 1e-4, c2 = 0.9)
+				step_success = true
+				break
 			else
-				if f_new <= f_val + 1e-4 * alpha * g_dot_d
-					step_success = true
-					break
+				# Constraint violation logic: Determine proper bracketing interval
+				dir_deriv_new = dot(g_new, d)
+				if f_new > f_val + 1e-4 * alpha * g_dot_d || dir_deriv_new > 0
+					# Violates sufficient decrease OR overshoots local minimum
+					alpha_max = alpha
+					alpha = 0.5 * (alpha_min + alpha_max)
+				else
+					# Violates curvature condition; optimal alpha strictly lies to the right
+					alpha_min = alpha
+					if isinf(alpha_max)
+						alpha *= 2.0 # Aggressive extrapolation
+					else
+						alpha = 0.5 * (alpha_min + alpha_max)
+					end
 				end
 			end
-			alpha *= 0.5
 		end
 
 		if !step_success
@@ -74,10 +125,9 @@ function optimize_mslbfgs(f::Function, g!::Function, x0::Vector{Float64}, L_max:
 		end
 		reset_search = false
 
-		# Update Gradients and Displacements
-		g_new = zeros(n)
-		g!(g_new, x_new)
-
+		# =====================================================================
+		# Update Displacements
+		# =====================================================================
 		s_k = x_new - x
 		y_k = g_new - g
 
@@ -99,9 +149,7 @@ function optimize_mslbfgs(f::Function, g!::Function, x0::Vector{Float64}, L_max:
 				enforce_overlap_stability!(state, Matrix{Float64}(I, n, n), Matrix{Float64}(I, n, n))
 				update_compact_factors!(state)
 			catch e
-				# If the secants are numerically linearly dependent, matrices become 
-				# rank-deficient. We catch the crash, wipe the BFGS memory, and seamlessly 
-				# fall back to Steepest Descent to step out of the flat geometry.
+				# Seamless fallback to Steepest Descent upon singularity
 				state.m = 0
 				reset_search = true
 			end

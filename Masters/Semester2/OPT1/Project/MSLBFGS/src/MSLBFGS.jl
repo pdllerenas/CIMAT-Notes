@@ -8,6 +8,7 @@ export enforce_overlap_stability!
 export update_compact_factors!
 export apply_compact_hessian
 export optimize_mslbfgs
+export check_strong_wolfe
 
 
 include("State.jl")

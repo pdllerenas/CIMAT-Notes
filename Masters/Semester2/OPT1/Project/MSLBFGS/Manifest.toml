@@ -757,7 +757,7 @@ uuid = "6f1432cf-f94c-5a45-995e-cdbf5db27b0b"
 version = "3.5.1"
 
 [[deps.MSLBFGS]]
-deps = ["BenchmarkProfiles", "CUTEst", "LinearAlgebra", "NLPModels", "Optim", "Plots", "Test"]
+deps = ["BenchmarkProfiles", "CUTEst", "LinearAlgebra", "NLPModels", "Optim", "Plots", "Revise", "Test"]
 path = "."
 uuid = "c4b0bd88-1b86-41c9-8fc1-6044336f0baa"
 version = "0.1.0"
