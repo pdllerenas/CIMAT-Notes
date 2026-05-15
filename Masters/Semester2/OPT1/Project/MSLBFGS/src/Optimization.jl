@@ -25,7 +25,7 @@ end
 # Main Global Optimization Wrapper (MS-LBFGS)
 # =====================================================================
 function optimize_mslbfgs(f::Function, g!::Function, x0::Vector{Float64}, L_max::Int = 8;
-	max_iter::Int = 10000,
+	max_iter::Int = 20000,
 	eps_g::Float64 = 1e-8, eps_g_min::Float64 = 1e-4, eps_g_max::Float64 = 1.0)
 
 	n = length(x0)
@@ -41,7 +41,9 @@ function optimize_mslbfgs(f::Function, g!::Function, x0::Vector{Float64}, L_max:
 	iter = 0
 	reset_search = true
 
+	# Global convergence loop relying strictly on gradient tolerance and iteration budget
 	while norm(g, Inf) > tau_convergence && iter < max_iter
+
 		# =====================================================================
 		# Compute Search Direction
 		# =====================================================================
@@ -95,7 +97,7 @@ function optimize_mslbfgs(f::Function, g!::Function, x0::Vector{Float64}, L_max:
 			# Evaluate the trial gradient to compute the new directional derivative
 			g!(g_new, x_new)
 
-			# Unconditionally test the exact Strong Wolfe limits via your function
+			# Unconditionally test the exact Strong Wolfe limits
 			if check_strong_wolfe(f_new, f_val, g_new, g, d, alpha, c1 = 1e-4, c2 = 0.9)
 				step_success = true
 				break
