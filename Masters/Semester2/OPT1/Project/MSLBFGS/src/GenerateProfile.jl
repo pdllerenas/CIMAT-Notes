@@ -9,6 +9,9 @@ using Dates # Needed for explicit time seeding
 using Revise
 using MSLBFGS
 
+ENV["MASTSIF"] = ""
+CUTEst.set_mastsif("sifcollection")
+
 function execute_comprehensive_cutest_suite()
 	problem_corpus = select_sif_problems(min_var = 4, max_con = 0, max_var = 1000)
 
