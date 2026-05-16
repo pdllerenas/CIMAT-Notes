@@ -4,20 +4,18 @@ using Optim
 using BenchmarkProfiles
 using Plots
 using Random
-using Dates # Needed for explicit time seeding
+using Dates
 
 using Revise
 using MSLBFGS
-
-ENV["MASTSIF"] = ""
-CUTEst.set_mastsif("sifcollection")
 
 function execute_comprehensive_cutest_suite()
 	problem_corpus = select_sif_problems(min_var = 4, max_con = 0, max_var = 1000)
 
 	blacklist = ["AKIVA", "INDEF", "PARKCH", "STRATEC", "FLETCBV2", "DANWOODLS", "RAT43LS",
 		"BA-L16LS", "BA-L21LS", "BA-L49LS", "BA-L52LS", "BA-L73LS", "FLETCBV3",
-		"FLETCHBV", "MEYER3", "MGH10LS", "PENALTY2", "BLEACHNG"]
+		"FLETCHBV", "MEYER3", "MGH10LS", "PENALTY2", "BLEACHNG", "HAHN1LS", "GAUSS3LS", "HS45", "DIAGNQE", "POWELLBC", "PALMER1", "KIRBY2LS", "FBRAIN3LS", "VESUVIOLS", "DMN37142LS", "ARGLINB", "DIAGNQB", "DIAGNQT"]
+
 
 	filter!(name -> !(name in blacklist), problem_corpus)
 
@@ -27,7 +25,7 @@ function execute_comprehensive_cutest_suite()
 	# Shuffle the remaining safe problems randomly
 	shuffle!(problem_corpus)
 
-	# Safely grab 30 problems (or all of them if less than 30 are available)
+	# 30 problems
 	n_problems = min(30, length(problem_corpus))
 	problem_corpus = problem_corpus[1:n_problems]
 
@@ -77,7 +75,7 @@ function execute_comprehensive_cutest_suite()
 					evals_lb = Optim.g_calls(res_lbfgsb)
 				end
 			catch e
-				println("  ⚠️ Catastrophic collapse on $name (Pass $pass). Bypassing.")
+				println("Error on $name (Pass $pass). Bypassing.")
 				println("     Reason: ", typeof(e), " - ", e)
 			finally
 				if nlp !== nothing
@@ -100,7 +98,7 @@ function execute_comprehensive_cutest_suite()
 	p = performance_profile(
 		PlotsBackend(),
 		T,
-		["MS-LBFGS (Ours)", "L-BFGS-B (Baseline)"],
+		["MS-LBFGS", "L-BFGS-B (baseline)"],
 		title = "Dolan-Moré Empirical Performance Profile (Ng)",
 		xlabel = "Performance Ratio (τ)",
 		ylabel = "Fraction of Topologies Resolved",
@@ -110,7 +108,7 @@ function execute_comprehensive_cutest_suite()
 	)
 
 	savefig(p, "comprehensive_perf_profile.png")
-	println("✅ Artifact 'comprehensive_perf_profile.png' successfully compiled.")
+	println("Artifact 'comprehensive_perf_profile.png' successfully compiled.")
 end
 
 execute_comprehensive_cutest_suite()

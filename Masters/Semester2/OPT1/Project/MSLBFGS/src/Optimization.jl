@@ -1,23 +1,24 @@
+# =====================================================================
+# Strong Wolfe Conditions Evaluator
+# =====================================================================
 function check_strong_wolfe(f_val_new::Float64, f_val_old::Float64,
 	g_new::Vector{Float64}, g_old::Vector{Float64},
 	p::Vector{Float64}, alpha::Float64;
 	c1::Float64 = 1e-4, c2::Float64 = 0.9)
 
-	# Evaluate the directional derivative at the base coordinate
 	dir_deriv_old = dot(g_old, p)
 
-	# Verify the sufficient decrease (Armijo) condition
+	# 1. Verify the sufficient decrease (Armijo) condition
 	if f_val_new > f_val_old + c1 * alpha * dir_deriv_old
 		return false
 	end
 
-	# Verify the strong curvature condition
+	# 2. Verify the strong curvature condition
 	dir_deriv_new = dot(g_new, p)
 	if abs(dir_deriv_new) > c2 * abs(dir_deriv_old)
 		return false
 	end
 
-	# Both conditions are rigorously satisfied
 	return true
 end
 
@@ -151,9 +152,7 @@ function optimize_mslbfgs(f::Function, g!::Function, x0::Vector{Float64}, L_max:
 				enforce_overlap_stability!(state, Matrix{Float64}(I, n, n), Matrix{Float64}(I, n, n))
 				update_compact_factors!(state)
 			catch e
-				# Seamless fallback to Steepest Descent upon singularity
-				state.m = 0
-				reset_search = true
+				break
 			end
 		else
 			reset_search = true
