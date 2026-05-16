@@ -8,12 +8,12 @@ function check_strong_wolfe(f_val_new::Float64, f_val_old::Float64,
 
 	dir_deriv_old = dot(g_old, p)
 
-	# 1. Verify the sufficient decrease (Armijo) condition
+	# Verify the sufficient decrease (Armijo) condition
 	if f_val_new > f_val_old + c1 * alpha * dir_deriv_old
 		return false
 	end
 
-	# 2. Verify the strong curvature condition
+	# Verify the strong curvature condition
 	dir_deriv_new = dot(g_new, p)
 	if abs(dir_deriv_new) > c2 * abs(dir_deriv_old)
 		return false
@@ -42,12 +42,12 @@ function optimize_mslbfgs(f::Function, g!::Function, x0::Vector{Float64}, L_max:
 	iter = 0
 	reset_search = true
 
-	# Global convergence loop relying strictly on gradient tolerance and iteration budget
+	# Global convergence loop relying strictly on gradient tolerance and iterations
 	while norm(g, Inf) > tau_convergence && iter < max_iter
 
-		# =====================================================================
+		# ==========================
 		# Compute Search Direction
-		# =====================================================================
+		# ==========================
 		if state.m == 0 || reset_search
 			d = -g
 		else
@@ -69,9 +69,9 @@ function optimize_mslbfgs(f::Function, g!::Function, x0::Vector{Float64}, L_max:
 			end
 		end
 
-		# =====================================================================
-		# Line Search Execution (Strong Wolfe Conditions Integration)
-		# =====================================================================
+		# =======================
+		# Line Search Execution 
+		# =======================
 		alpha = 1.0
 		x_new = copy(x)
 		g_new = zeros(n)

@@ -16,7 +16,7 @@ mutable struct MSLBFGS_State{T <: AbstractFloat}
 	# Overlap matrix O = S^T Y
 	O::Matrix{T}
 
-	# Kernel matrices arising from the variational derivation limit (alpha -> +∞)
+	# Kernel matrices arising from the variational derivation limit (alpha -> infinity)
 	K_R::Matrix{T}          # Right kernel: sqrt(O * O^T)
 	K_L::Matrix{T}          # Left kernel: sqrt(O^T * O)
 

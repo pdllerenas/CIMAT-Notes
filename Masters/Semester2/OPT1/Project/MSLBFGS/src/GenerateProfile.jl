@@ -44,6 +44,7 @@ function execute_comprehensive_cutest_suite()
 			nlp = nothing
 			evals_ms = Inf
 			evals_lb = Inf
+			println(pass)
 
 			try
 				nlp = CUTEstModel(name)

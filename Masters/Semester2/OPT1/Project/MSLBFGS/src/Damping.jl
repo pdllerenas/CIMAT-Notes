@@ -6,9 +6,9 @@ using LinearAlgebra
 
 function enforce_overlap_stability!(state::MSLBFGS_State, B_approx::Matrix, H_approx::Matrix, eps_s::Float64 = 1e-2, eps_y::Float64 = 1e-3)
 
-	# Dynamic Secant Truncation Loop
+	# Secant Truncation Loop
 	while state.m > 1
-		# Re-evaluate dense kernels for the current memory length (from Phase 2)
+		# Re-evaluate dense kernels for the current memory length
 		evaluate_dense_kernels!(state, false)
 
 		Sm = view(state.S, :, 1:state.m)
@@ -27,7 +27,7 @@ function enforce_overlap_stability!(state::MSLBFGS_State, B_approx::Matrix, H_ap
 		if (det_KR >= eps_s * det_S_B_S) && (inv_trace_KL >= eps_y * tr_Y_H_Y)
 			break
 		else
-			# Discard the OLDEST secant constraint by shifting the history arrays left
+			# Discard the oldest secant constraint by shifting the history arrays left
 			for i in 1:(state.m-1)
 				state.S[:, i] .= state.S[:, i+1]
 				state.Y[:, i] .= state.Y[:, i+1]
@@ -81,7 +81,7 @@ function solve_2d_damping_subproblem(a_0, b_0, Delta, epsilon)
 
 	theta_low = 0.0
 	theta_high = 0.5
-	theta_opt = 0.5 # Default to the strictly safe upper bound
+	theta_opt = 0.5 
 
 	# 1D Bisection loop to find the minimal symmetric deformation
 	# 20 iterations yield precision well beyond floating-point requirements

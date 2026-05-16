@@ -1,8 +1,8 @@
 using LinearAlgebra
 
-# =============================================================================
-#  Core Variational MS-BFGS Kernel Evaluations
-# =============================================================================
+# ==========================================
+# Variational MS-:BFGS Kernel Evaluations
+# ==========================================
 
 function evaluate_dense_kernels!(state::MSLBFGS_State, enforce_exactness::Bool = false)
 	m = state.m
@@ -10,20 +10,19 @@ function evaluate_dense_kernels!(state::MSLBFGS_State, enforce_exactness::Bool =
 		return nothing
 	end
 
-	# Extract the active mathematical window based on current memory length m
+	# Extract the window based on current memory length m
 	Sm = view(state.S, :, 1:m)
 	Ym = view(state.Y, :, 1:m)
 	Om = view(state.O, 1:m, 1:m)
 
-	# Compute the current overlap matrix O = S^T Y
+	# O = S^T Y
 	mul!(Om, Sm', Ym)
 
 	# Evaluate the asymptotic dense kernels K_R and K_L
-	# Utilizing LinearAlgebra.sqrt on Symmetric matrices guarantees SPD results
 	KR_dense = Matrix(sqrt(Symmetric(Om * Om')))
 	KL_dense = Matrix(sqrt(Symmetric(Om' * Om)))
 
-	# Implement optional strict exactness for the most recent secant pair
+	# Strict exactness for the most recent secant pair
 	if enforce_exactness
 		# Isolate the m-th column of the overlap matrix and its transpose
 		o_m = Om[:, m]

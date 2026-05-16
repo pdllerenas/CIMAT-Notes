@@ -38,13 +38,13 @@
         
         update_compact_factors!(state)
         
-        # 1. Check X augmentation
+        # Check X augmentation
         # X[1, 2] gets O[1, 2]
         @test state.X[1, 2] == 1.0
         # X[2, 2] gets O[2, 2]
         @test state.X[2, 2] == 2.0
         
-        # 2. Check R augmentation (Cholesky behavior)
+        # Check R augmentation (Cholesky behavior)
         # cholesky([4 1; 1 4]).L yields lower triangular factor
         L_fact = cholesky(Symmetric([4.0 1.0; 1.0 4.0])).L
         @test state.R[2, 2] == L_fact[2, 2]
@@ -68,11 +68,11 @@
         
         result_v = apply_compact_hessian(state, v, H0_scale)
         
-        # 1. Dimensionality check (must return a vector of size n)
+        # Dimensionality check (must return a vector of size n)
         @test length(result_v) == n
         @test typeof(result_v) == Vector{Float64}
         
-        # 2. Numerical stability check
+        # Numerical stability check
         @test !any(isnan.(result_v))
         @test !any(isinf.(result_v))
     end

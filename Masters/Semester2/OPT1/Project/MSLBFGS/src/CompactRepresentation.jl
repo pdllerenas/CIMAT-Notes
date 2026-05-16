@@ -18,17 +18,13 @@ function update_compact_factors!(state::MSLBFGS_State)
 
 	if k == 1
 		# Base Case: Initialization of operators for a single secant
-		# Mutate the preallocated 1x1 view in-place 
 		X_curr .= O_curr
-
-		# r-factor of the initial SPD kernel: K = r * r^T
-		# Extract and assign the scalar square root safely using `begin`
 		R_curr[begin, begin] = sqrt(KR_curr[begin, begin])
 
 		return nothing
 	end
 
-	# Augment the X matrix (Effective Overlap)
+	# Augment the X matrix
 	# Partition indices: 
 	# 'prev' represents subsets 1 and 2 (older and shared active displacements)
 	# 'new' represents subset 3 (the most recent displacement)
@@ -44,15 +40,12 @@ function update_compact_factors!(state::MSLBFGS_State)
 	# X_{new, prev} = O_{new, prev_active} * (O_{prev_active})^{-1} * X_{prev_active, older}
 	# For a sequential 1-by-1 update, we assemble the lower row vector
 	O_22 = view(O_curr, prev, prev)
-	X_21 = view(X_curr, prev, prev) # Simplified subset mapping for demonstration
+	X_21 = view(X_curr, prev, prev)
 	O_32_row = transpose(O_curr[new, prev])
 
-	# Solve O_22 \ X_21 safely and multiply by O_32
+	# Solve O_22 \ X_21, multiply by O_32
 	X_curr[new, prev] .= vec(O_32_row * (O_22 \ X_21))
 
-	# -------------------------------------------------------------------------
-	# Augment the R matrix (Inhomogeneous Factorization)
-	# -------------------------------------------------------------------------
 	# Perform the Cholesky-like decomposition of the updated right kernel KR
 	# KR = r * r^T. We extract the relevant block factors.
 	r_factor_new = cholesky(Symmetric(KR_curr)).L
@@ -74,8 +67,8 @@ function update_compact_factors!(state::MSLBFGS_State)
 	return nothing
 end
 
-# Helper evaluation function mapping the compact representation to a vector 'v'
-# H * v = Π^T * H0 * Π * v + S * R^{-T} * R^{-1} * S^T * v
+# Helper evaluation function mapping the compact representation to a vector v
+# H * v = Pi^T * H0 * Pi * v + S * R^{-T} * R^{-1} * S^T * v
 function apply_compact_hessian(state::MSLBFGS_State, v::Vector{Float64}, H0_scale::Float64 = 1.0)
 	k = state.m
 	Sk = view(state.S, :, 1:k)
@@ -83,24 +76,22 @@ function apply_compact_hessian(state::MSLBFGS_State, v::Vector{Float64}, H0_scal
 	Xk = view(state.X, 1:k, 1:k)
 	Rk = view(state.R, 1:k, 1:k)
 
-	# Inner product evaluations
 	S_v = Sk' * v
 
-	# Inhomogeneous term application: S * R^{-T} * R^{-1} * (S^T * v)
+	# S * R^{-T} * R^{-1} * (S^T * v)
 	inhomo_v = Sk * (Rk' \ (Rk \ S_v))
 
-	# Projector application: Π = I - Y * X^{-1} * S^T
-	# Π * v = v - Y * (X \ (S^T * v))
+	# Projector application: Pi = I - Y * X^{-1} * S^T
+	# Pi * v = v - Y * (X \ (S^T * v))
 	Pi_v = v - Yk * (Xk \ S_v)
 
-	# H0 application (Assuming H0 is an initial scaled identity matrix)
+	# H0 application (H0  is scaled identity)
 	H0_Pi_v = H0_scale .* Pi_v
 
-	# Π^T * (H0 * Π * v)
-	# Π^T * u = u - S * X^{-T} * Y^T * u
+	# Pi^T * (H0 * Pi * v)
+	# Pi^T * u = u - S * X^{-T} * Y^T * u
 	Y_H0_Pi_v = Yk' * H0_Pi_v
 	homo_v = H0_Pi_v - Sk * (Xk' \ Y_H0_Pi_v)
 
-	# Total approximated inverse Hessian evaluation
 	return homo_v + inhomo_v
 end
