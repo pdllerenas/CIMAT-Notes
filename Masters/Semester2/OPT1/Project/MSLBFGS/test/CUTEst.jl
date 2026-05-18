@@ -5,7 +5,7 @@ using NLPModels
  using MSLBFGS
 
 function run_benchmarks()
-    # 1. Grab 5 small, unconstrained problems
+    # Grab 5 small, unconstrained problems
     problem_names = select_sif_problems(min_var=2, max_var=50, max_con=0)[1:5]
 
     println("--- Starting CUTEst Benchmark ---")

@@ -93,7 +93,7 @@ necessary and sufficient for the existence of a symmetric linear operator
 satisfying multiple exact secant conditions (Schnabel, 1983). Beyond $m=1$,
 this symmetry is not guaranteed.
 
-Gubarev (2024) resolves this tension through a *variational formulation*: one
+Gubarev (2026) resolves this tension through a *variational formulation*: one
 seeks the SPD matrix $H$ closest to $H_0$ satisfying $H Y_m approx S_m$ in a
 penalized sense, with the penalty weights eliminated analytically in the limit
 $alpha -> +infinity$.
@@ -286,7 +286,7 @@ end
     + *end*
     + *return* $x$, $f(x)$, iter, $norm(g)_infinity <= tau$
   ],
-  caption: [Main loop of the MS-LBFGS optimizer.],
+  caption: [Main loop of the MS-LBFGS optimizer. Here we use strong Wolfe conditions instead of Armijo, as done by the original article.],
 )
 
 === Convergence Criterion
