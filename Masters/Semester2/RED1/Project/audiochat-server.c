@@ -1,58 +1,81 @@
-#include <fcntl.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/socket.h>
-#include <sys/types.h>
 #include <unistd.h>
 
+#define MAX_CLIENTS 10
 #define BUFFER_SIZE 2048
-#define MAX_CLIENTS 5
+
+// Protocol packet types
+#define TYPE_AUDIO 0
+#define TYPE_REGISTER 1
+#define TYPE_TEXT 2
 
 typedef struct
 {
   int active;
   struct sockaddr_in addr;
+  char name[32];
 } Client;
 
-int main(int argc, char *argv[])
+void broadcast_user_list(int s, Client *clients)
 {
-  if (argc != 2)
+  char pkt[BUFFER_SIZE];
+  // so client knows what is being sent
+  pkt[0] = TYPE_TEXT;
+
+  strcpy(pkt + 1, "\n=== Active Users ===\n");
+  for (int i = 0; i < MAX_CLIENTS; i++)
   {
-    fprintf(stderr, "Usage: %s <port>\n", argv[0]);
-    exit(0);
+    if (clients[i].active)
+    {
+      strcat(pkt + 1, clients[i].name);
+      strcat(pkt + 1, "\n");
+    }
   }
+  strcat(pkt + 1, "====================\n");
+
+  int pkt_len = 1 + strlen(pkt + 1) + 1;
+
+  for (int i = 0; i < MAX_CLIENTS; i++)
+  {
+    if (clients[i].active)
+    {
+      sendto(s, pkt, pkt_len, 0, (struct sockaddr *)&clients[i].addr, sizeof(clients[i].addr));
+    }
+  }
+}
+
+int main()
+{
   int s = socket(AF_INET, SOCK_DGRAM, 0);
   if (s < 0)
   {
-    perror("socket call failed");
+    perror("socket failed");
     exit(1);
   }
 
   struct sockaddr_in local;
   local.sin_family = AF_INET;
-  local.sin_port = htons(argv[1]);
+  local.sin_port = htons(7500);
   local.sin_addr.s_addr = htonl(INADDR_ANY);
 
-  int opt = 1;
-  setsockopt(s, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
-
-  if (bind(s, (struct sockaddr *)&local, sizeof(local)))
+  if (bind(s, (struct sockaddr *)&local, sizeof(local)) < 0)
   {
-    perror("bind call failed");
+    perror("bind failed");
     exit(1);
   }
 
   Client clients[MAX_CLIENTS];
   memset(clients, 0, sizeof(clients));
 
+  printf("Listening on port 7500...\n");
   char buf[BUFFER_SIZE];
   struct sockaddr_in client_addr;
-  socklen_t addr_len = sizeof(clients);
-
-  printf("Listening on port %s\n", argv[1]);
+  socklen_t addr_len = sizeof(client_addr);
 
   while (1)
   {
@@ -60,7 +83,9 @@ int main(int argc, char *argv[])
     if (nbytes <= 0)
       continue;
 
-    // check if client is new
+    // determine type of packet
+    int type = buf[0];
+
     int client_idx = -1;
     for (int i = 0; i < MAX_CLIENTS; i++)
     {
@@ -73,32 +98,42 @@ int main(int argc, char *argv[])
       }
     }
 
-    if (client_idx == -1)
+    if (type == TYPE_REGISTER)
     {
-      for (int i = 0; i < MAX_CLIENTS; i++)
+      // new client
+      if (client_idx == -1)
       {
-        if (!clients[i].active)
+        for (int i = 0; i < MAX_CLIENTS; i++)
         {
-          clients[i].active = 1;
-          clients[i].addr = client_addr;
-          client_idx = i;
-          printf("New client - %s:%d\n", inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port));
-          break;
+          if (!clients[i].active)
+          {
+            client_idx = i;
+            clients[i].active = 1;
+            clients[i].addr = client_addr;
+            break;
+          }
         }
       }
-    }
-
-    if (client_idx != -1)
-    {
-      for (int i = 0; i < MAX_CLIENTS; i++)
+      if (client_idx != -1)
       {
-        if (clients[i].active && i != client_idx)
+        strncpy(clients[client_idx].name, buf + 1, 31);
+        printf("Registered user: %s\n", clients[client_idx].name);
+        broadcast_user_list(s, clients);
+      }
+    }
+    else if (type == TYPE_AUDIO)
+    {
+      if (client_idx != -1)
+      {
+        for (int i = 0; i < MAX_CLIENTS; i++)
         {
-          sendto(s, buf, nbytes, 0, (struct sockaddr *)&clients[i].addr, sizeof(clients[i].addr));
+          if (clients[i].active && i != client_idx)
+          {
+            sendto(s, buf, nbytes, 0, (struct sockaddr *)&clients[i].addr, sizeof(clients[i].addr));
+          }
         }
       }
     }
   }
-  close(s);
   return 0;
 }
