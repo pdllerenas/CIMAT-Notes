@@ -125,6 +125,7 @@ int main()
     {
       if (client_idx != -1)
       {
+        sleep(1);
         for (int i = 0; i < MAX_CLIENTS; i++)
         {
           if (clients[i].active && i != client_idx)

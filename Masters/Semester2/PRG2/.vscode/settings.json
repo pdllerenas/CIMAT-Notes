@@ -3,5 +3,5 @@
         "clang-diagnostic-error"
     ],
     "C_Cpp.errorSquiggles": "disabled",
-    "workbench.colorTheme": "Dark Modern"
+    "workbench.colorTheme": "Visual Studio Dark - C++"
 }
