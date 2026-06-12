@@ -2,28 +2,27 @@
 #define RAND_H
 
 #include <random>
+#include <chrono>
+#include <thread>
 
 class Random
 {
-private:
-  std::uniform_real_distribution<double> dis;
-  std::mt19937 gen;
-
 public:
-  Random(int seed) : gen(seed), dis(0.0, 1.0) {}
-
-  Random(double lower, double upper) : gen(std::random_device{}()), dis(lower, upper) {}
-
-  Random() : gen(std::random_device{}()), dis(0.0, 1.0) {}
+  Random() {}
 
   double GetRand(double lower, double upper)
   {
-    return lower + (upper - lower) * dis(gen);
+    // ensure the generator is created once per thread. 
+    // we do not want race conditions on the in-between step
+    // of number generations (https://stackoverflow.com/questions/21237905/how-do-i-generate-thread-safe-uniform-random-numbers)
+    static thread_local std::mt19937 generator(std::random_device{}() + std::hash<std::thread::id>{}(std::this_thread::get_id()));
+    std::uniform_real_distribution<double> dis(lower, upper);
+    return dis(generator);
   }
 
   double GetRand()
   {
-    return dis(gen);
+    return GetRand(0.0, 1.0);
   }
 };
 

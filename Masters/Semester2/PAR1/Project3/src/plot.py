@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 
 # 1. Load the experimental data
 # Assuming 'datos_358.dat' has two columns separated by spaces or tabs: i and VFC_i
-data = np.loadtxt('datos_358.txt')
+data = np.loadtxt('datos_358.csv', delimiter=',')
 i_exp = data[:, 0]
 v_exp = data[:, 1]
 

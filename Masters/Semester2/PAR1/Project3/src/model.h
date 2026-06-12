@@ -27,14 +27,29 @@ double V(double i, const Point &p)
   return V_est;
 }
 
-double Michalewicz(const Point &x)
+double objective_Rosenbrock(const Point &x)
 {
-  return -std::sin(x[0]) * std::pow(sin(x[0] * x[0] / M_PI), 20) - std::sin(x[1]) * std::pow(sin(2 * x[1] * x[1] / M_PI), 20);
+  double sum = 0.0;
+  for (size_t i = 0; i < x.size() - 1; ++i)
+  {
+    double term1 = x[i + 1] - x[i] * x[i];
+    double term2 = 1.0 - x[i];
+    sum += 100.0 * term1 * term1 + term2 * term2;
+  }
+  return sum;
 }
 
-double Rosenbrock(const Point &x)
+double objective_Michalewicz(const Point &x)
 {
-  return std::pow(1.0 - x[0], 2) + 100.0 * std::pow(x[1] - std::pow(x[0], 2), 2);
+  double sum = 0.0;
+  int m = 10;
+  for (size_t i = 0; i < x.size(); ++i)
+  {
+    double term1 = sin(x[i]);
+    double term2 = sin(((i + 1) * x[i] * x[i]) / M_PI);
+    sum += term1 * pow(term2, 2 * m);
+  }
+  return -sum;
 }
 
 // Sum of Squared Errors (SSE)
@@ -42,6 +57,7 @@ double objective_SSE(const Point &theta, const std::vector<DataPoint> &experimen
 {
   double sse = 0.0;
 
+#pragma omp parallel for reduction(+ : sse) default(none) shared(experiment_data, theta)
   for (int k = 0; k < experiment_data.size(); ++k)
   {
     double current_i = experiment_data[k].i;
@@ -59,9 +75,10 @@ double objective_SSE(const Point &theta, const std::vector<DataPoint> &experimen
 double objective_SAE(const Point &theta, const std::vector<DataPoint> &data)
 {
   double sae = 0.0;
+#pragma omp parallel for reduction(+ : sae) default(none) shared(theta, data)
   for (const auto &point : data)
   {
-    double V_est = V(point.i, Point{theta[0], theta[1], theta[2], theta[3], theta[4]});
+    double V_est = V(point.i, theta);
     sae += std::abs(point.VFC_i - V_est);
   }
   return sae;
@@ -70,14 +87,14 @@ double objective_SAE(const Point &theta, const std::vector<DataPoint> &data)
 // Median Absolute Error (MAE)
 double objective_MAE(const Point &theta, const std::vector<DataPoint> &data)
 {
-  std::vector<double> errors;
-  errors.reserve(data.size());
-  for (const auto &point : data)
-  {
-    double V_est = V(point.i, Point{theta[0], theta[1], theta[2], theta[3], theta[4]});
-    errors.push_back(std::abs(point.VFC_i - V_est));
-  }
+  std::vector<double> errors(data.size());
 
+#pragma omp parallel for default(none) shared(theta, data, errors)
+  for (int k = 0; k < data.size(); k++)
+  {
+    double V_est = V(data[k].i, theta);
+    errors[k] = std::abs(data[k].VFC_i - V_est);
+  }
 
   int n = errors.size();
   auto middle = errors.begin() + n / 2;
